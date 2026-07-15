@@ -1,0 +1,30 @@
+/* Self-hosted IBM Plex (SIL OFL 1.1) via @fontsource — never a font CDN.
+   Subset CSS carries unicode-range, so a browser downloads only the scripts
+   actually rendered: English pages skip the Arabic woff2 files and Arabic
+   pages fetch Latin faces only for technical terms. */
+
+/* IBM Plex Sans — English editorial + UI, and Latin islands on Arabic pages */
+@import "@fontsource/ibm-plex-sans/latin-400.css";
+@import "@fontsource/ibm-plex-sans/latin-500.css";
+@import "@fontsource/ibm-plex-sans/latin-600.css";
+@import "@fontsource/ibm-plex-sans/latin-700.css";
+
+/* IBM Plex Sans Arabic — Arabic editorial + UI */
+@import "@fontsource/ibm-plex-sans-arabic/arabic-400.css";
+@import "@fontsource/ibm-plex-sans-arabic/arabic-500.css";
+@import "@fontsource/ibm-plex-sans-arabic/arabic-600.css";
+@import "@fontsource/ibm-plex-sans-arabic/arabic-700.css";
+
+/* IBM Plex Mono — annotations, figure labels, code, measured values */
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+
+/* Metric-compatible local fallbacks to limit layout shift while Plex loads. */
+@font-face {
+  font-family: "Plex Sans Fallback";
+  src: local("Helvetica Neue"), local("Arial");
+  size-adjust: 102%;
+  ascent-override: 98%;
+  descent-override: 26%;
+  line-gap-override: 0%;
+}

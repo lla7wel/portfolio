@@ -1,0 +1,72 @@
+/* Small explicit base reset (replaces the removed Tailwind preflight). */
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    min-block-size: 100dvh;
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-inline-size: 100%;
+  }
+
+  img,
+  video {
+    block-size: auto;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4 {
+    overflow-wrap: break-word;
+  }
+
+  ul[role="list"],
+  ol[role="list"] {
+    list-style: none;
+    padding: 0;
+  }
+
+  :target {
+    scroll-margin-block-start: calc(var(--header-block) + 1rem);
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+}

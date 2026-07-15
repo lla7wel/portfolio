@@ -1,0 +1,192 @@
+@layer components {
+  /* -- Annotation language (IBM Plex Mono) -------------------------------- */
+  .anno {
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    unicode-bidi: isolate;
+  }
+  .anno[data-tone="signal"] {
+    color: var(--color-signal);
+  }
+  .anno[data-tone="trace"] {
+    color: var(--color-trace);
+  }
+
+  /* Figure / project code chips: FIG 01.1, SYS-01 … */
+  .fig-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--color-signal);
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  /* Artifact type label: HARDWARE PHOTOGRAPH, RENDER, SEEDED DEMONSTRATION DATA … */
+  .artifact-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    border: 1px solid var(--color-rule);
+    border-radius: 3px;
+    padding: 0.1rem 0.45rem;
+    background: var(--color-surface);
+    white-space: nowrap;
+  }
+  .artifact-label::before {
+    content: "";
+    inline-size: 0.5em;
+    block-size: 0.5em;
+    border-radius: 50%;
+    background: var(--color-rule-strong);
+  }
+  .artifact-label[data-kind="photo"]::before {
+    background: var(--color-signal);
+  }
+  .artifact-label[data-kind="render"]::before,
+  .artifact-label[data-kind="seeded"]::before {
+    background: var(--color-trace);
+  }
+  .artifact-label[data-kind="simulation"]::before,
+  .artifact-label[data-kind="diagram"]::before {
+    background: var(--color-cyan);
+  }
+
+  /* Buttons — engineering-instrument controls, not SaaS pills. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-block-size: 44px;
+    padding: 0.55rem 1.25rem;
+    border-radius: var(--radius-control);
+    border: 1px solid var(--color-rule-strong);
+    background: var(--color-surface-raised);
+    color: var(--color-ink);
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+      border-color var(--dur-control) var(--ease-standard),
+      background var(--dur-control) var(--ease-standard),
+      color var(--dur-control) var(--ease-standard);
+  }
+  .btn:hover {
+    border-color: var(--color-signal);
+  }
+  .btn[data-variant="primary"] {
+    background: var(--color-ink);
+    color: var(--color-canvas);
+    border-color: var(--color-ink);
+  }
+  .btn[data-variant="primary"]:hover {
+    background: var(--color-signal);
+    border-color: var(--color-signal);
+    color: #08211a;
+  }
+
+  /* Status tag — function-indicating border, not a pill cloud. */
+  .status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-signal);
+    white-space: nowrap;
+  }
+  :lang(ar) .status-tag {
+    text-transform: none;
+    letter-spacing: 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-small);
+  }
+  .status-tag::before {
+    content: "";
+    inline-size: 0.55em;
+    block-size: 0.55em;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* Meta definition rows (role / timeframe / stack / links). */
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--space-4) var(--space-5);
+    border-block: 1px solid var(--color-rule);
+    padding-block: var(--space-4);
+    font-size: var(--text-small);
+  }
+  .meta-grid dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin-block-end: var(--space-1);
+  }
+  :lang(ar) .meta-grid dt {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .meta-grid dd {
+    margin: 0;
+  }
+
+  /* Technical corner marks on raised panels. */
+  .corner-marks {
+    position: relative;
+  }
+  .corner-marks::before,
+  .corner-marks::after {
+    content: "";
+    position: absolute;
+    inline-size: 10px;
+    block-size: 10px;
+    border-color: var(--color-rule-strong);
+    border-style: solid;
+    pointer-events: none;
+  }
+  .corner-marks::before {
+    inset-block-start: -1px;
+    inset-inline-start: -1px;
+    border-width: 1px 0 0 1px;
+  }
+  .corner-marks::after {
+    inset-block-end: -1px;
+    inset-inline-end: -1px;
+    border-width: 0 1px 1px 0;
+  }
+
+  /* Raised media panel. */
+  .media-panel {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-media);
+    box-shadow: var(--shadow-raised);
+    overflow: hidden;
+  }
+
+  /* Inline icon sizing. */
+  .icon {
+    inline-size: 1.25em;
+    block-size: 1.25em;
+    flex-shrink: 0;
+  }
+}

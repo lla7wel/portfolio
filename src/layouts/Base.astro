@@ -1,22 +1,31 @@
 ---
 import "../styles/global.css";
+import sansLatin400 from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url";
+import sansLatin600 from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2?url";
+import sansArabic400 from "@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-400-normal.woff2?url";
+import sansArabic600 from "@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-600-normal.woff2?url";
 import {
   type Locale,
   t,
   dirFor,
-  localePath,
   switchLocalePath,
 } from "../lib/i18n";
+import SiteHeader from "../components/global/SiteHeader.astro";
+import SiteFooter from "../components/global/SiteFooter.astro";
 
 interface Props {
   locale: Locale;
   title?: string;
   description?: string;
-  /** JSON-LD object(s) to embed, already truth-checked against the claim registry. */
+  /** JSON-LD object(s), already truth-checked against the claim registry. */
   jsonLd?: object | object[];
+  /** Absolute-path OG image (1200×630); defaults to the site card. */
+  ogImage?: string;
+  /** Optional mono route label shown in the desktop header, e.g. "SYS-01". */
+  routeLabel?: string;
 }
 
-const { locale, title, description, jsonLd } = Astro.props;
+const { locale, title, description, jsonLd, ogImage, routeLabel } = Astro.props;
 const dir = dirFor(locale);
 const pageTitle = title ? `${title} — ${t(locale, "hero.name")}` : t(locale, "site.title");
 const pageDescription = description ?? t(locale, "site.description");
@@ -28,14 +37,10 @@ const altPath = pathname.startsWith("/404")
 const enUrl = new URL(locale === "en" ? pathname : altPath, Astro.site);
 const arUrl = new URL(locale === "ar" ? pathname : altPath, Astro.site);
 const canonical = new URL(pathname, Astro.site);
-
-const nav = [
-  { href: localePath(locale, ""), key: "nav.home" as const },
-  { href: localePath(locale, "work/"), key: "nav.work" as const },
-  { href: localePath(locale, "about/"), key: "nav.about" as const },
-  { href: localePath(locale, "notes/"), key: "nav.notes" as const },
-  { href: localePath(locale, "contact/"), key: "nav.contact" as const },
-];
+const ogImageUrl = new URL(ogImage ?? "/og/default.png", Astro.site);
+// Body face + the heading weight (measured: h1 at 600 drives mobile LCP).
+const bodyFont = locale === "ar" ? sansArabic400 : sansLatin400;
+const displayFont = locale === "ar" ? sansArabic600 : sansLatin600;
 ---
 
 <!doctype html>
@@ -49,87 +54,66 @@ const nav = [
     <link rel="alternate" hreflang="en" href={enUrl} />
     <link rel="alternate" hreflang="ar" href={arUrl} />
     <link rel="alternate" hreflang="x-default" href={enUrl} />
+    <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f2ec" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#090d0f" />
+    <meta name="theme-color" content="#f4f2ec" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:locale" content={locale === "ar" ? "ar" : "en_US"} />
+    <meta property="og:locale:alternate" content={locale === "ar" ? "en_US" : "ar"} />
+    <meta property="og:site_name" content={t(locale, "hero.name")} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
     <meta name="generator" content={Astro.generator} />
     {
       jsonLd && (
-        <script
-          type="application/ld+json"
-          set:html={JSON.stringify(jsonLd)}
-        />
+        <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
       )
     }
     <script is:inline>
-      // Theme: honor stored choice; default follows system. Runs pre-paint.
-      const stored = localStorage.getItem("theme");
-      if (stored === "dark" || stored === "light") {
-        document.documentElement.dataset.theme = stored;
-      }
+      // Theme: honor stored choice pre-paint; default follows system.
+      try {
+        const stored = localStorage.getItem("theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (e) {}
     </script>
   </head>
   <body>
     <a class="skip-link" href="#main">{t(locale, "nav.skip")}</a>
-    <header>
-      <nav
-        aria-label={locale === "ar" ? "التنقل الرئيسي" : "Main navigation"}
-        class="wide"
-        style="max-inline-size: var(--wide-max); margin-inline:auto; padding-inline: var(--space-gutter); display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem 1.25rem; padding-block:1rem; border-block-end:1px solid var(--line);"
-      >
-        <a
-          href={localePath(locale, "")}
-          style="font-weight:600; text-decoration:none; margin-inline-end:auto;"
-          >{t(locale, "hero.name")}</a
-        >
-        {
-          nav.slice(1).map((item) => (
-            <a
-              href={item.href}
-              aria-current={pathname === item.href ? "page" : undefined}
-            >
-              {t(locale, item.key)}
-            </a>
-          ))
-        }
-        <a href={altPath} lang={locale === "ar" ? "en" : "ar"} dir={locale === "ar" ? "ltr" : "rtl"} rel="alternate">
-          {t(locale, "nav.switchLocale")}
-        </a>
-        <button
-          id="theme-toggle"
-          type="button"
-          class="chip"
-          aria-pressed="false"
-          aria-label={locale === "ar" ? "تبديل السمة الداكنة" : "Toggle dark theme"}
-          style="cursor:pointer;"
-        >◐</button>
-      </nav>
-    </header>
-    <main id="main" style="padding-block: 2.5rem 4rem;">
+    <SiteHeader locale={locale} altPath={altPath} routeLabel={routeLabel} />
+    <main id="main">
       <slot />
     </main>
-    <footer
-      style="border-block-start:1px solid var(--line); padding-block:1.5rem; margin-block-start:2rem;"
+    <SiteFooter locale={locale} altPath={altPath} />
+    <div
+      id="a11y-announcer"
+      class="visually-hidden"
+      aria-live="polite"
+      data-dark={t(locale, "theme.dark")}
+      data-light={t(locale, "theme.light")}
     >
-      <div class="measure" style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:space-between; color:var(--ink-muted); font-size:var(--step--1);">
-        <span>© {new Date().getFullYear()} {t(locale, "hero.name")}</span>
-        <span>{t(locale, "footer.rights")}</span>
-        <a href="https://github.com/lla7wel">GitHub</a>
-      </div>
-    </footer>
+    </div>
     <script>
-      const btn = document.getElementById("theme-toggle");
-      btn?.addEventListener("click", () => {
-        const root = document.documentElement;
-        const systemDark = matchMedia("(prefers-color-scheme: dark)").matches;
-        const current =
-          root.dataset.theme ?? (systemDark ? "dark" : "light");
-        const next = current === "dark" ? "light" : "dark";
-        root.dataset.theme = next;
-        localStorage.setItem("theme", next);
-        btn.setAttribute("aria-pressed", String(next === "dark"));
-      });
+      import { initTheme } from "../scripts/theme";
+      import { initMobileNavigation } from "../scripts/mobile-navigation";
+      initTheme();
+      initMobileNavigation();
     </script>
   </body>
 </html>
+

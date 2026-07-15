@@ -7,15 +7,31 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "validate:claims": "node scripts/validate-claims.mjs",
+    "validate:locales": "node scripts/validate-locales.mjs",
+    "generate:og": "node scripts/generate-og.mjs",
+    "generate:icons": "node scripts/generate-icons.mjs",
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test tests/e2e/accessibility.spec.ts",
+    "audit:perf": "lhci autorun",
+    "verify": "npm run validate:claims && npm run validate:locales && npm run check && npm run build && npm run test:e2e"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",
     "@astrojs/sitemap": "^3.4.0",
+    "@fontsource/ibm-plex-mono": "^5.2.7",
+    "@fontsource/ibm-plex-sans": "^5.2.8",
+    "@fontsource/ibm-plex-sans-arabic": "^5.2.9",
     "astro": "^5.12.0"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.0",
-    "tailwindcss": "^4.1.0"
+    "@astrojs/check": "^0.9.9",
+    "@axe-core/playwright": "^4.12.1",
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.61.1",
+    "sharp": "^0.35.3",
+    "svgo": "^4.0.2",
+    "typescript": "^5.9.3"
   }
 }

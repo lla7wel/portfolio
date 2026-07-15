@@ -1,0 +1,235 @@
+/* ---------------------------------------------------------------------------
+   Measured Systems — design tokens.
+   Semantic only: components never use literal colors.
+--------------------------------------------------------------------------- */
+
+:root {
+  /* -- Color: light ------------------------------------------------------- */
+  --color-canvas: #f4f2ec;
+  --color-surface: #fcfbf8;
+  --color-surface-raised: #ffffff;
+  --color-ink: #111619;
+  --color-ink-muted: #59636a;
+  --color-rule: #c9ced0;
+  --color-rule-strong: #98a1a6;
+  --color-signal: #087a55;
+  --color-signal-soft: #d9f0e5;
+  --color-trace: #945800;
+  --color-cyan: #006c82;
+  --color-danger: #a83232;
+  --color-focus: #005fcc;
+
+  --shadow-raised:
+    0 1px 0 rgba(17, 22, 25, 0.06),
+    0 24px 60px rgba(17, 22, 25, 0.1);
+  --shadow-low: 0 1px 2px rgba(17, 22, 25, 0.08);
+
+  color-scheme: light;
+
+  /* -- Typography --------------------------------------------------------- */
+  --font-sans: "IBM Plex Sans", "Plex Sans Fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --text-display: clamp(3.1rem, 7.5vw, 7.5rem);
+  --text-title: clamp(2.5rem, 5vw, 5.5rem);
+  --text-section: clamp(1.9rem, 3.3vw, 3.4rem);
+  --text-sub: clamp(1.25rem, 2vw, 1.75rem);
+  --text-body-lg: clamp(1.08rem, 1.4vw, 1.3rem);
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-annotation: 0.75rem;
+
+  --leading-body: 1.6;
+  --leading-tight: 1.12;
+  --leading-heading: 1.2;
+
+  /* -- Spacing (4·8·12·16·24·32·48·64·96·128) ------------------------------ */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  /* -- Layout -------------------------------------------------------------- */
+  --canvas-max: 92.5rem; /* 1480px visual canvas */
+  --content-max: 46rem;  /* ~66–72ch editorial measure */
+  --wide-max: 72rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+
+  /* -- Surfaces ------------------------------------------------------------ */
+  --radius: 6px;
+  --radius-media: 10px;
+  --radius-control: 6px;
+
+  /* -- Motion --------------------------------------------------------------- */
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-technical: cubic-bezier(0.33, 1, 0.68, 1);
+  --dur-feedback: 120ms;
+  --dur-control: 180ms;
+  --dur-panel: 320ms;
+  --dur-section: 560ms;
+  --dur-signal: 1800ms;
+
+  /* -- Header --------------------------------------------------------------- */
+  --header-block: 4rem;
+}
+
+:root[data-theme="dark"] {
+  --color-canvas: #090d0f;
+  --color-surface: #101619;
+  --color-surface-raised: #171e22;
+  --color-ink: #f0f3f2;
+  --color-ink-muted: #aab4b8;
+  --color-rule: #2d383d;
+  --color-rule-strong: #4b5b62;
+  --color-signal: #63e6af;
+  --color-signal-soft: #123b2d;
+  --color-trace: #f0b35a;
+  --color-cyan: #6ed1e8;
+  --color-danger: #ff8585;
+  --color-focus: #79afff;
+  --shadow-raised:
+    0 1px 0 rgba(255, 255, 255, 0.04),
+    0 28px 70px rgba(0, 0, 0, 0.38);
+  --shadow-low: 0 1px 2px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-canvas: #090d0f;
+    --color-surface: #101619;
+    --color-surface-raised: #171e22;
+    --color-ink: #f0f3f2;
+    --color-ink-muted: #aab4b8;
+    --color-rule: #2d383d;
+    --color-rule-strong: #4b5b62;
+    --color-signal: #63e6af;
+    --color-signal-soft: #123b2d;
+    --color-trace: #f0b35a;
+    --color-cyan: #6ed1e8;
+    --color-danger: #ff8585;
+    --color-focus: #79afff;
+    --shadow-raised:
+      0 1px 0 rgba(255, 255, 255, 0.04),
+      0 28px 70px rgba(0, 0, 0, 0.38);
+    --shadow-low: 0 1px 2px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+  }
+}
+
+/* -- Arabic optical adjustments (IBM Plex Sans Arabic guidance) ----------- */
+:root:lang(ar) {
+  --font-sans: "IBM Plex Sans Arabic", "IBM Plex Sans", "Plex Sans Fallback", system-ui, sans-serif;
+  --text-display: clamp(2.9rem, 7.1vw, 7.1rem);
+  --text-title: clamp(2.4rem, 4.75vw, 5.2rem);
+  --text-section: clamp(1.8rem, 3.1vw, 3.2rem);
+  --leading-body: 1.75;
+  --leading-tight: 1.3;
+  --leading-heading: 1.45;
+}
+
+/* -- Project accent families ------------------------------------------------
+   Accents never carry meaning alone; always paired with text or shape.
+   --accent is for shapes/borders/large elements; --accent-ink is the
+   text-safe variant (darkened toward ink in light theme, the raw accent in
+   dark theme where the bright values already pass on dark surfaces). */
+[data-project] {
+  --accent-ink: color-mix(in oklab, var(--accent) 52%, var(--color-ink));
+}
+:root[data-theme="dark"] [data-project] {
+  --accent-ink: var(--accent);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) [data-project] {
+    --accent-ink: var(--accent);
+  }
+}
+
+[data-project="english-home-platform"] {
+  --accent: var(--color-cyan);
+  --accent-2: #e0705f; /* restrained coral: human-handoff states */
+  --accent-soft: color-mix(in oklab, var(--color-cyan) 12%, transparent);
+}
+[data-project="nova-raid"] {
+  --accent: #18b7ce;   /* TFT cyan */
+  --accent-2: #d44fa4; /* magenta */
+  --accent-3: #e8b53a; /* warm yellow */
+  --accent-soft: color-mix(in oklab, #18b7ce 12%, transparent);
+}
+[data-project="pico-voice-terminal"] {
+  --accent: #2f9e5f;   /* phosphor green */
+  --accent-2: #b0653a; /* copper */
+  --accent-3: var(--color-trace); /* signal amber */
+  --accent-soft: color-mix(in oklab, #2f9e5f 12%, transparent);
+}
+[data-project="fpga-digital-logic"] {
+  --accent: #2c9e4b;   /* oscilloscope green */
+  --accent-2: #7a5cc0; /* verification violet */
+  --accent-soft: color-mix(in oklab, #2c9e4b 12%, transparent);
+}
+[data-project="smart-home-controller"] {
+  --accent: #b07818;   /* safety amber */
+  --accent-2: #3d7ab8; /* sensor blue */
+  --accent-3: var(--color-danger); /* cutoff red */
+  --accent-soft: color-mix(in oklab, #b07818 12%, transparent);
+}
+[data-project="miramar"] {
+  --accent: #5c6b78;   /* steel gray */
+  --accent-2: #b8402e; /* safety red */
+  --accent-3: #2e5f8a; /* industrial blue */
+  --accent-soft: color-mix(in oklab, #5c6b78 14%, transparent);
+}
+
+:root[data-theme="dark"] [data-project="nova-raid"] {
+  --accent: #3fd4ea;
+  --accent-2: #ef7cc4;
+  --accent-3: #f2cd60;
+}
+:root[data-theme="dark"] [data-project="pico-voice-terminal"] {
+  --accent: #55d68d;
+  --accent-2: #de9a6b;
+}
+:root[data-theme="dark"] [data-project="fpga-digital-logic"] {
+  --accent: #52d67c;
+  --accent-2: #ab90e8;
+}
+:root[data-theme="dark"] [data-project="smart-home-controller"] {
+  --accent: #e5ae4a;
+  --accent-2: #74aede;
+}
+:root[data-theme="dark"] [data-project="miramar"] {
+  --accent: #9fb0be;
+  --accent-2: #e8705c;
+  --accent-3: #6ba3d4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) [data-project="nova-raid"] {
+    --accent: #3fd4ea;
+    --accent-2: #ef7cc4;
+    --accent-3: #f2cd60;
+  }
+  :root:not([data-theme="light"]) [data-project="pico-voice-terminal"] {
+    --accent: #55d68d;
+    --accent-2: #de9a6b;
+  }
+  :root:not([data-theme="light"]) [data-project="fpga-digital-logic"] {
+    --accent: #52d67c;
+    --accent-2: #ab90e8;
+  }
+  :root:not([data-theme="light"]) [data-project="smart-home-controller"] {
+    --accent: #e5ae4a;
+    --accent-2: #74aede;
+  }
+  :root:not([data-theme="light"]) [data-project="miramar"] {
+    --accent: #9fb0be;
+    --accent-2: #e8705c;
+    --accent-3: #6ba3d4;
+  }
+}

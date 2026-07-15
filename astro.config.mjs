@@ -2,12 +2,10 @@
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import tailwindcss from "@tailwindcss/vite";
 
-// Canonical origin. Final domain: mohamedelbahlool.com (available as of
-// 2026-07-14, not yet purchased). Until it's connected, deploys set SITE_URL
-// to the Vercel production URL so canonicals/hreflang/sitemap stay truthful.
-const site = process.env.SITE_URL ?? "https://mohamedelbahlool.com";
+// Canonical origin: the live custom domain (apex 308-redirects to www).
+// Preview deploys may override with SITE_URL so canonicals stay truthful.
+const site = process.env.SITE_URL ?? "https://www.mohamedelbahlool.com";
 
 export default defineConfig({
   site,
@@ -27,8 +25,5 @@ export default defineConfig({
       prefixDefaultLocale: true,
       redirectToDefaultLocale: false,
     },
-  },
-  vite: {
-    plugins: [tailwindcss()],
   },
 });

@@ -1,0 +1,58 @@
+---
+import { type Locale, t } from "../../lib/i18n";
+
+interface Props {
+  locale: Locale;
+  altPath: string;
+}
+const { locale, altPath } = Astro.props;
+const otherLang = locale === "ar" ? "en" : "ar";
+---
+
+<a
+  class="lang-switch"
+  href={altPath}
+  lang={otherLang}
+  dir={otherLang === "ar" ? "rtl" : "ltr"}
+  hreflang={otherLang}
+  rel="alternate"
+  data-lang-switch
+>
+  {t(locale, "nav.switchLocale")}
+</a>
+
+<style>
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 44px;
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-control);
+    border: 1px solid var(--color-rule);
+    text-decoration: none;
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--color-ink-muted);
+    transition:
+      color var(--dur-control) var(--ease-standard),
+      border-color var(--dur-control) var(--ease-standard);
+  }
+  .lang-switch:hover {
+    color: var(--color-ink);
+    border-color: var(--color-rule-strong);
+  }
+</style>
+
+<script>
+  // Store the explicit choice so the root redirect honors it next visit.
+  document.querySelectorAll<HTMLAnchorElement>("[data-lang-switch]").forEach((a) =>
+    a.addEventListener("click", () => {
+      try {
+        localStorage.setItem("locale", a.getAttribute("hreflang") ?? "en");
+      } catch {
+        /* private mode */
+      }
+    }),
+  );
+</script>

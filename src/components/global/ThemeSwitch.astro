@@ -1,0 +1,42 @@
+---
+import { type Locale, t } from "../../lib/i18n";
+import Icon from "./Icon.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<button
+  type="button"
+  class="theme-switch"
+  data-theme-switch
+  aria-pressed="false"
+  aria-label={t(locale, "theme.toggle")}
+>
+  <Icon name="theme" />
+</button>
+
+<style>
+  .theme-switch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 44px;
+    block-size: 44px;
+    border-radius: var(--radius-control);
+    border: 1px solid transparent;
+    color: var(--color-ink-muted);
+    transition:
+      color var(--dur-control) var(--ease-standard),
+      border-color var(--dur-control) var(--ease-standard);
+  }
+  .theme-switch:hover {
+    color: var(--color-ink);
+    border-color: var(--color-rule);
+  }
+  .theme-switch[aria-pressed="true"] {
+    color: var(--color-signal);
+  }
+</style>

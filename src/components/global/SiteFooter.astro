@@ -1,0 +1,162 @@
+---
+import { type Locale, t, localePath } from "../../lib/i18n";
+import Icon from "./Icon.astro";
+import LanguageSwitch from "./LanguageSwitch.astro";
+
+interface Props {
+  locale: Locale;
+  altPath: string;
+}
+const { locale, altPath } = Astro.props;
+
+const email = "tmtmd24@gmail.com";
+const github = "https://github.com/lla7wel";
+const linkedin = "https://www.linkedin.com/in/mohamed-elbahlool-1373002bb/";
+
+const nav = [
+  { href: localePath(locale, ""), key: "nav.home" as const },
+  { href: localePath(locale, "work/"), key: "nav.work" as const },
+  { href: localePath(locale, "about/"), key: "nav.about" as const },
+  { href: localePath(locale, "notes/"), key: "nav.notes" as const },
+  { href: localePath(locale, "contact/"), key: "nav.contact" as const },
+];
+---
+
+<footer class="site-footer">
+  <div class="canvas">
+    <div class="invite">
+      <p class="anno" data-tone="signal">{locale === "ar" ? "تواصل" : "CONTACT"}</p>
+      <p class="close-line">{t(locale, "contact.close")}</p>
+      <div class="cta-row">
+        <a class="btn" data-variant="primary" href={`mailto:${email}`}>
+          <Icon name="email" />
+          <span class="mono">{email}</span>
+        </a>
+        <a class="btn" href={localePath(locale, "contact/")}>{t(locale, "cta.contact")}</a>
+      </div>
+    </div>
+
+    <div class="grid-row">
+      <div class="col">
+        <p class="anno">{locale === "ar" ? "روابط" : "PROFILES"}</p>
+        <ul role="list">
+          <li>
+            <a href={github} rel="me">
+              <Icon name="github" /> GitHub
+              <span class="visually-hidden">— {t(locale, "cs.externalLink")}</span>
+            </a>
+          </li>
+          <li>
+            <a href={linkedin} rel="me">
+              <Icon name="linkedin" /> LinkedIn
+              <span class="visually-hidden">— {t(locale, "cs.externalLink")}</span>
+            </a>
+          </li>
+          <li>
+            <a href={`mailto:${email}`}>
+              <Icon name="email" /> {t(locale, "contact.email")}
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col">
+        <p class="anno">{locale === "ar" ? "الموقع" : "SITE"}</p>
+        <ul role="list">
+          {
+            nav.map((item) => (
+              <li>
+                <a href={item.href}>{t(locale, item.key)}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="col context">
+        <p class="anno">{locale === "ar" ? "السياق" : "CONTEXT"}</p>
+        <p class="muted">{t(locale, "footer.context")}</p>
+        <p class="muted">{t(locale, "hero.langs")}</p>
+        <LanguageSwitch locale={locale} altPath={altPath} />
+      </div>
+    </div>
+
+    <div class="legal">
+      <span>© {new Date().getFullYear()} {t(locale, "hero.name")}</span>
+      <span class="muted">{t(locale, "footer.rights")}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-block-start: var(--space-9);
+    border-block-start: 1px solid var(--color-rule);
+    background: var(--color-surface);
+    padding-block: var(--space-8) var(--space-6);
+  }
+
+  .invite {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-block-end: var(--space-7);
+    border-block-end: 1px solid var(--color-rule);
+  }
+  .close-line {
+    font-size: var(--text-sub);
+    font-weight: 600;
+    max-inline-size: 28ch;
+    text-wrap: balance;
+    line-height: var(--leading-heading);
+  }
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .grid-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    padding-block: var(--space-7);
+  }
+  @media (min-width: 45em) {
+    .grid-row {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .col ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-block-start: var(--space-3);
+  }
+  .col a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-decoration: none;
+    color: var(--color-ink);
+    min-block-size: 32px;
+  }
+  .col a:hover {
+    color: var(--color-signal);
+  }
+  .context p {
+    margin-block: var(--space-3) 0;
+    font-size: var(--text-small);
+  }
+  .context :global(.lang-switch) {
+    margin-block-start: var(--space-4);
+  }
+
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    justify-content: space-between;
+    border-block-start: 1px solid var(--color-rule);
+    padding-block-start: var(--space-5);
+    font-size: var(--text-small);
+  }
+</style>

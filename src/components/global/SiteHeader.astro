@@ -1,0 +1,217 @@
+---
+import { type Locale, t, localePath } from "../../lib/i18n";
+import Icon from "./Icon.astro";
+import ThemeSwitch from "./ThemeSwitch.astro";
+import LanguageSwitch from "./LanguageSwitch.astro";
+
+interface Props {
+  locale: Locale;
+  altPath: string;
+  /** Optional mono route label, e.g. "SYS-01" on a case study. */
+  routeLabel?: string;
+}
+const { locale, altPath, routeLabel } = Astro.props;
+const pathname = Astro.url.pathname;
+
+const nav = [
+  { href: localePath(locale, "work/"), key: "nav.work" as const },
+  { href: localePath(locale, "about/"), key: "nav.about" as const },
+  { href: localePath(locale, "notes/"), key: "nav.notes" as const },
+  { href: localePath(locale, "contact/"), key: "nav.contact" as const },
+];
+const isActive = (href: string) =>
+  pathname === href || (href !== localePath(locale, "") && pathname.startsWith(href));
+---
+
+<header class="site-header">
+  <div class="bar canvas">
+    <a class="wordmark" href={localePath(locale, "")}>
+      <svg class="mark" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="25" height="25" rx="5" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <path d="M7 19V9.5l4 5 4-5V19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="21" cy="9" r="2" fill="var(--color-signal)" stroke="none" />
+      </svg>
+      <span class="name">{t(locale, "hero.name")}</span>
+    </a>
+
+    {routeLabel && <span class="route-label fig-label" aria-hidden="true">{routeLabel}</span>}
+
+    <nav class="desktop-nav" aria-label={t(locale, "nav.main")}>
+      {
+        nav.map((item) => (
+          <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>
+            {t(locale, item.key)}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="controls">
+      <LanguageSwitch locale={locale} altPath={altPath} />
+      <ThemeSwitch locale={locale} />
+      <button
+        type="button"
+        class="nav-toggle"
+        data-nav-toggle
+        aria-expanded="false"
+        aria-controls="mobile-nav-panel"
+      >
+        <span class="visually-hidden">{t(locale, "nav.menu")}</span>
+        <span class="icon-open"><Icon name="menu" /></span>
+        <span class="icon-close"><Icon name="close" /></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-panel canvas" id="mobile-nav-panel" hidden>
+    <nav aria-label={t(locale, "nav.main")}>
+      <ul role="list">
+        <li>
+          <a href={localePath(locale, "")} aria-current={pathname === localePath(locale, "") ? "page" : undefined}>
+            {t(locale, "nav.home")}
+          </a>
+        </li>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>
+                {t(locale, item.key)}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-block-end: 1px solid var(--color-rule);
+    background: var(--color-canvas);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    min-block-size: var(--header-block);
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+    font-weight: 600;
+    margin-inline-end: auto;
+    min-block-size: 44px;
+  }
+  .mark {
+    inline-size: 28px;
+    block-size: 28px;
+    color: var(--color-ink);
+    flex-shrink: 0;
+  }
+  .name {
+    white-space: nowrap;
+  }
+  .route-label {
+    display: none;
+  }
+
+  .desktop-nav {
+    display: none;
+    gap: var(--space-5);
+  }
+  .desktop-nav a {
+    text-decoration: none;
+    color: var(--color-ink-muted);
+    font-weight: 500;
+    padding-block: var(--space-2);
+    border-block-end: 2px solid transparent;
+    transition: color var(--dur-control) var(--ease-standard);
+  }
+  .desktop-nav a:hover {
+    color: var(--color-ink);
+  }
+  .desktop-nav a[aria-current="page"] {
+    color: var(--color-ink);
+    border-block-end-color: var(--color-signal);
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 44px;
+    block-size: 44px;
+    border-radius: var(--radius-control);
+    border: 1px solid var(--color-rule);
+    color: var(--color-ink);
+  }
+  .nav-toggle .icon-close,
+  .nav-toggle[aria-expanded="true"] .icon-open {
+    display: none;
+  }
+  .nav-toggle[aria-expanded="true"] .icon-close {
+    display: inline-flex;
+  }
+  .icon-open,
+  .icon-close {
+    display: inline-flex;
+  }
+
+  .mobile-panel {
+    border-block-start: 1px solid var(--color-rule);
+    padding-block: var(--space-4);
+  }
+  .mobile-panel ul {
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-panel a {
+    display: flex;
+    align-items: center;
+    min-block-size: 48px;
+    text-decoration: none;
+    font-size: var(--text-body-lg);
+    font-weight: 500;
+    color: var(--color-ink);
+    border-block-end: 1px solid var(--color-rule);
+  }
+  .mobile-panel a[aria-current="page"] {
+    color: var(--color-signal);
+  }
+  .mobile-panel li:last-child a {
+    border-block-end: none;
+  }
+
+  @media (min-width: 64em) {
+    .desktop-nav {
+      display: flex;
+    }
+    .nav-toggle,
+    .mobile-panel {
+      display: none;
+    }
+    .route-label {
+      display: inline;
+      color: var(--color-ink-muted);
+    }
+  }
+
+  /* At very narrow widths, tighten the wordmark so nothing wraps. */
+  @media (max-width: 26em) {
+    .name {
+      font-size: var(--text-small);
+      white-space: normal;
+      line-height: 1.2;
+      max-inline-size: 9rem;
+    }
+  }
+</style>
