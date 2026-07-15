@@ -15,6 +15,10 @@ links:
   - label: "Project page & UF2 download"
     href: "https://lla7wel.github.io/nova-raid/"
 claims: ["C1", "C2"]
+summary:
+  problem: "The ST7796S panel takes roughly 39 ms to receive a full frame over SPI — by itself more than a 25 fps budget — on a dual-core Cortex-M0+ with no FPU (design calculations, not on-hardware measurements)."
+  contribution: "Designed and wrote the whole game bare-metal, solo: the dual-core pipeline, 24.8 fixed-point math, DMA/SPI streaming, a testable HAL with a desktop host harness, and the release engineering."
+  result: "Released as drag-and-drop UF2s with green CI; the first run on real hardware exposed a panel-init defect no simulator caught — fixed and documented the same day in v1.0.1."
 translationStatus: reviewed
 ---
 
@@ -65,20 +69,3 @@ README.
 intentionally unused, and other board lots may need one-line config flips
 for joystick orientation.
 
-## Gallery
-
-<div class="figure-grid">
-<figure>
-  <img src="/images/nova-raid/hardware-gameplay.jpg" alt="NOVA RAID gameplay running on the physical Pico Breadboard Kit with joystick and buttons visible" width="900" height="1600" loading="lazy" />
-  <figcaption>Hardware photograph — gameplay on the physical EP-0172 board (v1.0.0, pre-fix colors).</figcaption>
-</figure>
-<figure>
-  <img src="/images/nova-raid/splash-render.png" alt="NOVA RAID splash screen with title logo and starfield" width="480" height="320" loading="lazy" />
-  <figcaption>Render — splash frame captured pixel-true by the desktop host harness, not a photograph.</figcaption>
-</figure>
-</div>
-
-<figure>
-  <img src="/images/nova-raid/block-diagram.svg" alt="Block diagram: core 0 simulation and rendering, core 1 pixel doubling and DMA SPI streaming to the ST7796S panel" loading="lazy" />
-  <figcaption>Diagram — dual-core rendering and display pipeline (from the repository).</figcaption>
-</figure>

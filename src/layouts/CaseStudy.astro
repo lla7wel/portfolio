@@ -1,0 +1,397 @@
+---
+/* Case-study framework: shared trustworthy structure, per-project art
+   direction via data-project accents and the injected explainer/evidence
+   slots. Desktop gets a sticky section nav; mobile a disclosure ToC. */
+import type { ImageMetadata } from "astro";
+import Base from "./Base.astro";
+import Figure from "../components/content/Figure.astro";
+import AccessibleLightbox from "../components/content/AccessibleLightbox.astro";
+import ProjectToc from "../components/content/ProjectToc.astro";
+import Icon from "../components/global/Icon.astro";
+import { type Locale, t, localePath } from "../lib/i18n";
+import type { ArtifactKind } from "../lib/artifacts";
+
+interface NavRef {
+  key: string;
+  title: string;
+}
+
+interface Props {
+  locale: Locale;
+  project: {
+    key: string;
+    title: string;
+    outcome: string;
+    status: "production" | "released" | "team" | "live" | "coursework";
+    role: string;
+    timeframe: string;
+    stack: string[];
+    links: { label: string; href: string }[];
+    summary?: { problem: string; contribution: string; result: string };
+  };
+  code: string;
+  hero?: { src: ImageMetadata | string; alt: string; caption: string; kind: ArtifactKind; code?: string };
+  headings: { depth: number; slug: string; text: string }[];
+  relatedNote?: { key: string; title: string };
+  prev?: NavRef;
+  next?: NavRef;
+  ogImage?: string;
+}
+
+const { locale, project, code, hero, headings, relatedNote, prev, next, ogImage } = Astro.props;
+const ar = locale === "ar";
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    name: project.title,
+    description: project.outcome,
+    author: { "@type": "Person", name: "Mohamed Khalid Elbahlool" },
+    codeRepository: project.links.find((l) => l.href.includes("github.com"))?.href,
+    inLanguage: locale,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: t(locale, "nav.work"),
+        item: new URL(localePath(locale, "work/"), Astro.site).toString(),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: project.title,
+        item: new URL(localePath(locale, `work/${project.key}/`), Astro.site).toString(),
+      },
+    ],
+  },
+];
+
+const sections: { id: string; label: string }[] = [
+  ...(project.summary ? [{ id: "cs-summary", label: t(locale, "cs.summary") }] : []),
+  ...(Astro.slots.has("explainer")
+    ? [{ id: "cs-explainer", label: ar ? "شرح النظام" : "System explainer" }]
+    : []),
+  ...headings.filter((h) => h.depth === 2).map((h) => ({ id: h.slug, label: h.text })),
+  ...(Astro.slots.has("evidence") ? [{ id: "cs-evidence", label: t(locale, "cs.evidence") }] : []),
+];
+---
+
+<Base
+  locale={locale}
+  title={project.title}
+  description={project.outcome}
+  jsonLd={jsonLd}
+  routeLabel={code}
+  ogImage={ogImage}
+>
+  <article data-project={project.key}>
+    {/* 1 — Identity */}
+    <header class="cs-head canvas">
+      <div class="ident">
+        <p class="topline">
+          <span class="fig-label">{code}</span>
+          <span class="status-tag">{t(locale, `status.${project.status}`)}</span>
+        </p>
+        <h1>{project.title}</h1>
+        <p class="lead">{project.outcome}</p>
+      </div>
+
+      <dl class="meta-grid">
+        <div>
+          <dt>{t(locale, "cs.role")}</dt>
+          <dd>{project.role}</dd>
+        </div>
+        <div>
+          <dt>{t(locale, "cs.timeframe")}</dt>
+          <dd>{project.timeframe}</dd>
+        </div>
+        <div>
+          <dt>{t(locale, "cs.stack")}</dt>
+          <dd><span class="ltr-island">{project.stack.join(" · ")}</span></dd>
+        </div>
+        <div>
+          <dt>{t(locale, "cs.links")}</dt>
+          <dd class="links">
+            {
+              project.links.map((l) => (
+                <a href={l.href}>
+                  {l.label}
+                  <Icon name="external" class="icon sm" />
+                  <span class="visually-hidden">— {t(locale, "cs.externalLink")}</span>
+                </a>
+              ))
+            }
+          </dd>
+        </div>
+      </dl>
+
+      {/* 2 — Immediate hero evidence */}
+      {
+        hero && (
+          <Figure
+            locale={locale}
+            src={hero.src}
+            alt={hero.alt}
+            caption={hero.caption}
+            kind={hero.kind}
+            code={hero.code}
+            loading="eager"
+            sizes="(min-width: 64em) 80rem, 100vw"
+            class="cs-hero-figure"
+          />
+        )
+      }
+    </header>
+
+    <div class="cs-body canvas">
+      <ProjectToc locale={locale} sections={sections} />
+
+      <div class="cs-content">
+        {/* 3 — Recruiter summary */}
+        {
+          project.summary && (
+            <section id="cs-summary" class="summary corner-marks" aria-labelledby="summary-h">
+              <h2 id="summary-h" class="anno" data-tone="signal">
+                {t(locale, "cs.summary")}
+              </h2>
+              <dl>
+                <div>
+                  <dt>{ar ? "المشكلة" : "Problem"}</dt>
+                  <dd>{project.summary.problem}</dd>
+                </div>
+                <div>
+                  <dt>{ar ? "مساهمتي" : "Contribution"}</dt>
+                  <dd>{project.summary.contribution}</dd>
+                </div>
+                <div>
+                  <dt>{ar ? "النتيجة" : "Result"}</dt>
+                  <dd>{project.summary.result}</dd>
+                </div>
+              </dl>
+            </section>
+          )
+        }
+
+        {/* 5 — Interactive architecture/signal explanation */}
+        {
+          Astro.slots.has("explainer") && (
+            <section id="cs-explainer" class="explainer">
+              <slot name="explainer" />
+            </section>
+          )
+        }
+
+        {/* 4/6/8 — MDX prose */}
+        <div class="prose">
+          <slot />
+        </div>
+
+        {/* 7 — Validation & evidence gallery */}
+        {
+          Astro.slots.has("evidence") && (
+            <section id="cs-evidence" aria-label={t(locale, "cs.evidence")}>
+              <h2 class="ev-title">{t(locale, "cs.evidence")}</h2>
+              <slot name="evidence" />
+            </section>
+          )
+        }
+
+        {/* 9 — Related note */}
+        {
+          relatedNote && (
+            <aside class="related callout" aria-label={t(locale, "cs.relatedNote")}>
+              <p class="anno">{t(locale, "cs.relatedNote")}</p>
+              <a href={localePath(locale, `notes/${relatedNote.key}/`)}>{relatedNote.title}</a>
+            </aside>
+          )
+        }
+      </div>
+    </div>
+
+    {/* 10 — Previous / next */}
+    <nav class="cs-nav canvas" aria-label={ar ? "تنقّل بين المشاريع" : "Project navigation"}>
+      {
+        prev ? (
+          <a class="nav-card prev" href={localePath(locale, `work/${prev.key}/`)}>
+            <span class="anno">
+              <Icon name="prev" class="icon sm" /> {t(locale, "cs.prevProject")}
+            </span>
+            <span class="title">{prev.title}</span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        next && (
+          <a class="nav-card next" href={localePath(locale, `work/${next.key}/`)}>
+            <span class="anno">
+              {t(locale, "cs.nextProject")} <Icon name="next" class="icon sm" />
+            </span>
+            <span class="title">{next.title}</span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+
+  <AccessibleLightbox locale={locale} />
+</Base>
+
+<style>
+  .cs-head {
+    padding-block: var(--space-7) var(--space-6);
+  }
+  .topline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-block-end: var(--space-4);
+  }
+  h1 {
+    font-size: var(--text-section);
+    max-inline-size: 24ch;
+    margin-block-end: var(--space-4);
+  }
+  .cs-head .lead {
+    color: var(--color-ink-muted);
+    max-inline-size: 56ch;
+    text-wrap: pretty;
+  }
+  .meta-grid {
+    margin-block: var(--space-6);
+  }
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  :global(.icon.sm) {
+    inline-size: 0.9em;
+    block-size: 0.9em;
+  }
+  :global(.cs-hero-figure) {
+    margin-block: var(--space-4) 0 !important;
+  }
+
+  .cs-body {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-6);
+  }
+  @media (min-width: 64em) {
+    .cs-body {
+      grid-template-columns: 14rem minmax(0, 1fr);
+      align-items: start;
+      column-gap: var(--space-8);
+    }
+  }
+  .cs-content {
+    min-inline-size: 0;
+    max-inline-size: var(--wide-max);
+  }
+
+  .summary {
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    padding: var(--space-5);
+    margin-block-end: var(--space-6);
+  }
+  .summary h2 {
+    margin-block-end: var(--space-4);
+  }
+  :lang(ar) .summary h2 {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .summary dl {
+    display: grid;
+    gap: var(--space-4);
+  }
+  @media (min-width: 45em) {
+    .summary dl {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .summary dt {
+    font-weight: 600;
+    margin-block-end: var(--space-1);
+  }
+  .summary dd {
+    margin: 0;
+    font-size: var(--text-small);
+    color: var(--color-ink-muted);
+  }
+
+  .explainer {
+    margin-block-end: var(--space-7);
+  }
+
+  .ev-title {
+    font-size: var(--text-sub);
+    margin-block: var(--space-7) var(--space-4);
+  }
+
+  .related {
+    margin-block-start: var(--space-7);
+  }
+  .related a {
+    font-weight: 600;
+    font-size: var(--text-body-lg);
+  }
+  :lang(ar) .related .anno {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .cs-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    padding-block: var(--space-6);
+    border-block-start: 1px solid var(--color-rule);
+  }
+  .nav-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    text-decoration: none;
+    padding: var(--space-4);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius);
+    transition: border-color var(--dur-control) var(--ease-standard);
+  }
+  .nav-card:hover {
+    border-color: var(--color-rule-strong);
+  }
+  .nav-card.next {
+    text-align: end;
+    align-items: flex-end;
+  }
+  .nav-card .anno {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  :lang(ar) .nav-card .anno {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .nav-card .title {
+    font-weight: 600;
+  }
+</style>

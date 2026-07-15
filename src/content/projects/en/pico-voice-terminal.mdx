@@ -15,6 +15,10 @@ links:
   - label: "Control plane (standalone)"
     href: "https://github.com/lla7wel/voice-agent-control-plane"
 claims: ["D1", "D3"]
+summary:
+  problem: "The SPH0645 microphone's pin arrangement made the stock I2S receiver unusable on this build — and a voice terminal needs the whole chain (capture, transport, recognition, tools) to hold together."
+  contribution: "Hand-wired the device, wrote the PIO/DMA capture firmware and display code, and built the standalone self-hosted control plane any WebSocket client can join as a device."
+  result: "A released two-repository system verified end-to-end by a fully offline integration test in CI; in use it typically responds within a couple of seconds (observed, not benchmarked)."
 translationStatus: reviewed
 ---
 
@@ -64,25 +68,3 @@ Four photos of the device running, a wiring diagram, three admin-console
 screenshots, protocol documentation with sequence diagrams, and the passing
 CI run. Build close-up photos are on the capture list and will be added.
 
-## Gallery
-
-<div class="figure-grid">
-<figure>
-  <img src="/images/pico/hero.jpg" alt="Hand-wired Pico W voice terminal on a breadboard with 4-inch TFT display showing the interface" width="1600" height="900" loading="lazy" />
-  <figcaption>Hardware photograph — the assembled terminal running.</figcaption>
-</figure>
-<figure>
-  <img src="/images/pico/screen-ready.jpg" alt="The terminal's TFT display showing the ready state" width="1600" height="900" loading="lazy" />
-  <figcaption>Hardware photograph — ready state on the device display.</figcaption>
-</figure>
-</div>
-
-<figure>
-  <img src="/images/pico/wiring-diagram.svg" alt="Wiring diagram: Pico W connections to ST7796 TFT, SPH0645 I2S microphone, buttons, RGB LED and buzzer" loading="lazy" />
-  <figcaption>Diagram — device wiring (from the repository).</figcaption>
-</figure>
-
-<figure>
-  <img src="/images/pico/console-overview.png" alt="Control-plane admin console overview page listing devices and activity" width="1440" height="860" loading="lazy" />
-  <figcaption>Screenshot — control-plane admin console (from the repository's documentation).</figcaption>
-</figure>

@@ -1,0 +1,168 @@
+---
+/* Miramar — responsive browser/device presentation with honest labeling:
+   screenshots are screenshots, 3D imagery is RENDER. Non-interactive by
+   design; the strength here is the framing and the bilingual comparison. */
+import { Image } from "astro:assets";
+import { type Locale, t } from "../../lib/i18n";
+import ArtifactLabel from "../content/ArtifactLabel.astro";
+import homeDesktop from "../../assets/miramar/home-desktop.png";
+import homeMobile from "../../assets/miramar/home-mobile.png";
+import render3d from "../../assets/miramar/3d-hero.jpg";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const ar = locale === "ar";
+---
+
+<div class="miramar-pres" data-project="miramar">
+  <figure class="stage">
+    <div class="frames ltr-island">
+      <div class="browser corner-marks">
+        <div class="chrome" aria-hidden="true">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url mono">tr-miramar.com</span>
+        </div>
+        <Image
+          src={homeDesktop}
+          alt={ar
+            ? "الصفحة الرئيسية لموقع ميرامار على سطح المكتب: الترويسة والخدمات والقطاعات"
+            : "Miramar home page on desktop: hero, services, and sectors navigation"}
+          width={1200}
+          sizes="(min-width: 64em) 46rem, 100vw"
+          format="webp"
+          quality={80}
+          loading="lazy"
+        />
+      </div>
+      <div class="phone corner-marks">
+        <Image
+          src={homeMobile}
+          alt={ar
+            ? "الصفحة الرئيسية لموقع ميرامار على الهاتف مع قائمة التنقل المدمجة"
+            : "Miramar home page on mobile with the compact navigation"}
+          width={320}
+          format="webp"
+          quality={80}
+          loading="lazy"
+        />
+      </div>
+    </div>
+    <figcaption>
+      <ArtifactLabel locale={locale} kind="screenshot" />
+      <span>
+        {
+          ar
+            ? "الواجهتان المكتبية والمحمولة من توثيق المستودع — الموقع مباشر على tr-miramar.com بالإنجليزية والتركية."
+            : "Desktop and mobile layouts from the repository documentation — live at tr-miramar.com in English and Turkish."
+        }
+      </span>
+    </figcaption>
+  </figure>
+
+  <figure class="render">
+    <div class="media corner-marks">
+      <Image
+        src={render3d}
+        alt={ar
+          ? "مشهد ثلاثي الأبعاد توضيحي من الصفحة الرئيسية — صناعي بأسلوب معماري"
+          : "Illustrative 3D scene from the home page — industrial, architectural styling"}
+        width={1100}
+        sizes="(min-width: 64em) 40rem, 100vw"
+        format="avif"
+        quality={60}
+        loading="lazy"
+      />
+    </div>
+    <figcaption>
+      <ArtifactLabel locale={locale} kind="renderIllustrative" />
+      <span>
+        {
+          ar
+            ? "المشهد الثلاثي الأبعاد الوحيد المتعمد في الموقع — مع بديل ثابت موثق، وليس صورة فوتوغرافية."
+            : "The site's one deliberate 3D scene — shipped with a documented static fallback; not a photograph."
+        }
+      </span>
+    </figcaption>
+  </figure>
+</div>
+
+<style>
+  .miramar-pres {
+    display: grid;
+    gap: var(--space-6);
+  }
+  @media (min-width: 64em) {
+    .miramar-pres {
+      grid-template-columns: 7fr 5fr;
+      align-items: start;
+    }
+  }
+  figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  figcaption {
+    font-size: var(--text-small);
+  }
+
+  .frames {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-4);
+  }
+  .browser {
+    flex: 1;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-media);
+    overflow: hidden;
+    background: var(--color-surface-raised);
+    box-shadow: var(--shadow-raised);
+  }
+  .chrome {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-block-end: 1px solid var(--color-rule);
+    background: var(--color-surface);
+  }
+  .dot {
+    inline-size: 9px;
+    block-size: 9px;
+    border-radius: 50%;
+    background: var(--color-rule-strong);
+    opacity: 0.6;
+  }
+  .chrome .url {
+    margin-inline-start: var(--space-3);
+    font-size: var(--text-annotation);
+    color: var(--color-ink-muted);
+  }
+  .browser :global(img),
+  .phone :global(img),
+  .media :global(img) {
+    inline-size: 100%;
+    block-size: auto;
+    display: block;
+  }
+  .phone {
+    inline-size: 21%;
+    flex-shrink: 0;
+    border: 1px solid var(--color-rule-strong);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--color-surface-raised);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .render .media {
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-media);
+    overflow: hidden;
+  }
+</style>

@@ -15,6 +15,10 @@ links:
   - label: "مفككات Basys 3"
     href: "https://github.com/lla7wel/basys3-decoders"
 claims: ["F1"]
+summary:
+  problem: "المنطق الرقمي في القاعة الدراسية ينتهي عادة عند لقطة شكل موجي — لا يمكن لأحد إعادة إنتاجها أو التحقق منها."
+  contribution: "أعدتُ بناء عمل المقرر كإصدارات حقيقية: اختبارات ذاتية التحقق تمسح فضاء المدخلات كاملًا، ومحاكاة GHDL في CI، ولقطات أشكال موجية من Vivado، وقيود أرجل للوحة Basys 3."
+  result: "512 من 512 متجهًا للجامع وكل متجهات المفككَين الـ36 ناجحة في CI مع كل دفعة؛ أما التشغيل على اللوحة فمُثبت بإفادة المؤلف وموسوم بذلك تحديدًا."
 translationStatus: draft
 ---
 
@@ -40,13 +44,3 @@ translationStatus: draft
 (ناجحة حتى يوليو 2026). وكلاهما عمل مرافق لمقرر تصميم المنطق 1 — موسوم
 كمقرر دراسي موسَّع، لأن هذه هي الحقيقة.
 
-## معرض الأدلة
-
-<figure>
-  <img src="/images/fpga/waveform-collapsed.png" alt="شكل موجي من محاكاة Vivado السلوكية للجامع رباعي البتات عبر عشرة متجهات" width="1800" height="983" loading="lazy" />
-  <figcaption>مخرجات محاكاة — شكل موجي سلوكي من Vivado للجامع رباعي البتات (ليس التقاطًا من العتاد).</figcaption>
-</figure>
-<figure>
-  <img src="/images/fpga/ripple-carry-chain.svg" alt="مخطط سلسلة الجامع المتتابع المبنية من أربعة جوامع أحادية" loading="lazy" />
-  <figcaption>مخطط — سلسلة ripple-carry (من المستودع).</figcaption>
-</figure>

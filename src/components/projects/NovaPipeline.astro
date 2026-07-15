@@ -1,0 +1,174 @@
+---
+/* NOVA RAID — dual-core render pipeline explainer.
+   Physical data flow (core 0 → framebuffer → core 1 → DMA/SPI → panel):
+   technically directional, so the diagram is NOT mirrored in RTL; the
+   surrounding stage list follows the locale. */
+import { type Locale } from "../../lib/i18n";
+import StageExplainerShell from "./StageExplainerShell.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const ar = locale === "ar";
+
+const stages = [
+  {
+    id: "core0",
+    code: "C0",
+    label: ar ? "النواة 0 — المحاكاة" : "Core 0 — simulation",
+    detail: ar
+      ? "خطوة زمنية ثابتة تحدّث حالة اللعبة بحساب نقطة ثابتة 24.8 (لا توجد وحدة فاصلة عائمة على Cortex-M0+)."
+      : "A fixed timestep updates game state in 24.8 fixed-point math — there is no FPU on the Cortex-M0+.",
+  },
+  {
+    id: "state",
+    code: "GS",
+    label: ar ? "حالة اللعبة" : "Game state",
+    detail: ar
+      ? "السفن والموجات والاصطدامات والنقاط، كلها في بنى C خام؛ أعلى النتائج تُحفظ في آخر قطاع فلاش 4 KiB بقفل للنواة الأخرى."
+      : "Ships, waves, collisions, and score in plain C structs; high scores persist in the last 4 KiB flash sector with the second core locked out.",
+  },
+  {
+    id: "fb",
+    code: "FB",
+    label: ar ? "إطار العزل 240×160" : "240×160 framebuffer",
+    detail: ar
+      ? "ترسم النواة 0 إطارًا بدقة 240×160 — ربع دقة الشاشة — ليبقى ضمن ذاكرة RP2040 ووقت الإطار."
+      : "Core 0 renders a 240×160 frame — a quarter of the panel resolution — to fit RP2040 memory and the frame budget.",
+  },
+  {
+    id: "core1",
+    code: "C1",
+    label: ar ? "النواة 1 — مضاعفة البكسل" : "Core 1 — pixel doubling",
+    detail: ar
+      ? "تضاعف النواة 1 كل سطر إلى 480 بكسلًا وتغذي البث — فيتراكب إرسال الشاشة مع محاكاة الإطار التالي بدل أن يحجبها."
+      : "Core 1 doubles each line to 480 pixels and feeds the stream — so the panel transfer overlaps the next frame's simulation instead of blocking it.",
+  },
+  {
+    id: "dma",
+    code: "DMA",
+    label: ar ? "DMA + SPI بسرعة 62.5 MHz" : "DMA + SPI at 62.5 MHz",
+    detail: ar
+      ? "نقل مزدوج العزل عبر DMA على SPI بسرعة 62.5 ميغاهرتز. أرقام ميزانية الإطار حسابات تصميمية من ورقة البيانات، لا قياسات على العتاد."
+      : "Double-buffered DMA streams over SPI at 62.5 MHz. The frame-budget figures are design calculations from the datasheet, not on-hardware measurements.",
+  },
+  {
+    id: "tft",
+    code: "TFT",
+    label: ar ? "شاشة ST7796S" : "ST7796S panel",
+    detail: ar
+      ? "أول تشغيل حقيقي كشف أن اللوحة تعمل بوضع معكوس: v1.0.1 أضاف أمر INVON إلى التهيئة — الخلل الذي لم تستطع أي منصة اختبار مكتبية كشفه."
+      : "The first real boot revealed the panel runs inverted: v1.0.1 added INVON to init — the defect no desktop harness could have caught.",
+  },
+];
+---
+
+<StageExplainerShell
+  locale={locale}
+  title={ar ? "خط العرض ثنائي النواة" : "The dual-core render pipeline"}
+  stages={stages}
+  diagramText={ar
+    ? "مخطط تدفق: النواة صفر تحاكي وترسم في إطار العزل؛ النواة واحد تضاعف البكسل وتبث عبر DMA وSPI إلى الشاشة."
+    : "Flow diagram: core zero simulates and draws into the framebuffer; core one pixel-doubles and streams over DMA and SPI to the panel."}
+>
+  <svg slot="diagram" viewBox="0 0 880 150" aria-hidden="true" class="pipe ltr-island">
+    {/* Core 0 block */}
+    <g data-segment="core0 state fb">
+      <rect x="16" y="26" width="250" height="100" rx="8" class="chip" />
+      <text x="141" y="48" text-anchor="middle" class="chip-title mono">CORE 0</text>
+    </g>
+    <g data-segment="state">
+      <rect x="34" y="62" width="100" height="48" rx="5" class="inner" />
+      <text x="84" y="90" text-anchor="middle" class="inner-label mono">STATE</text>
+    </g>
+    <g data-segment="fb">
+      <rect x="150" y="62" width="100" height="48" rx="5" class="inner" />
+      <text x="200" y="84" text-anchor="middle" class="inner-label mono">FB</text>
+      <text x="200" y="99" text-anchor="middle" class="inner-sub mono">240×160</text>
+    </g>
+    {/* Core 1 block */}
+    <g data-segment="core1">
+      <rect x="330" y="26" width="200" height="100" rx="8" class="chip" />
+      <text x="430" y="48" text-anchor="middle" class="chip-title mono">CORE 1</text>
+      <text x="430" y="90" text-anchor="middle" class="inner-label mono">×2 PIXEL DOUBLE</text>
+    </g>
+    {/* DMA/SPI */}
+    <g data-segment="dma">
+      <rect x="594" y="50" width="120" height="52" rx="5" class="inner" />
+      <text x="654" y="72" text-anchor="middle" class="inner-label mono">DMA·SPI</text>
+      <text x="654" y="88" text-anchor="middle" class="inner-sub mono">62.5 MHz</text>
+    </g>
+    {/* Panel */}
+    <g data-segment="tft">
+      <rect x="770" y="34" width="94" height="84" rx="6" class="chip" />
+      <text x="817" y="72" text-anchor="middle" class="inner-label mono">TFT</text>
+      <text x="817" y="88" text-anchor="middle" class="inner-sub mono">480×320</text>
+    </g>
+    {/* Arrows */}
+    <g class="arrows">
+      <line x1="134" y1="86" x2="150" y2="86" class="arrow" data-segment="state fb" />
+      <line x1="266" y1="76" x2="330" y2="76" class="arrow" data-segment="fb core1" />
+      <line x1="530" y1="76" x2="594" y2="76" class="arrow" data-segment="core1 dma" />
+      <line x1="714" y1="76" x2="770" y2="76" class="arrow" data-segment="dma tft" />
+    </g>
+  </svg>
+</StageExplainerShell>
+
+<style>
+  .pipe {
+    inline-size: 100%;
+    block-size: auto;
+    margin-block-end: var(--space-4);
+    display: none;
+  }
+  @media (min-width: 45em) {
+    .pipe {
+      display: block;
+    }
+  }
+  .chip {
+    fill: var(--color-surface-raised);
+    stroke: var(--color-rule-strong);
+    stroke-width: 1.5;
+    transition: stroke var(--dur-control) var(--ease-technical);
+  }
+  .inner {
+    fill: var(--color-surface);
+    stroke: var(--color-rule);
+    transition: stroke var(--dur-control) var(--ease-technical);
+  }
+  g.is-active .chip,
+  g.is-active .inner {
+    stroke: var(--accent, var(--color-cyan));
+    stroke-width: 2;
+  }
+  .chip-title {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    fill: var(--color-ink-muted);
+  }
+  .inner-label {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    fill: var(--color-ink);
+  }
+  .inner-sub {
+    font-size: 10px;
+    fill: var(--color-ink-muted);
+  }
+  g.is-active .chip-title,
+  g.is-active .inner-label {
+    fill: var(--accent, var(--color-cyan));
+  }
+  .arrow {
+    stroke: var(--color-rule-strong);
+    stroke-width: 2;
+    marker-end: none;
+    transition: stroke var(--dur-control) var(--ease-technical);
+  }
+  .arrow.is-active {
+    stroke: var(--accent, var(--color-cyan));
+    stroke-width: 3;
+  }
+</style>

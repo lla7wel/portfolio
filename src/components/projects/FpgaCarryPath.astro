@@ -1,0 +1,173 @@
+---
+/* FPGA — interactive carry-propagation visualization for the 4-bit
+   ripple-carry adder. Inputs and expected outputs stay visible; selecting a
+   bit stage highlights the carry entering and leaving it. Simulation-backed
+   only — no live-hardware telemetry is claimed. Never mirrored in RTL. */
+import { type Locale } from "../../lib/i18n";
+import StageExplainerShell from "./StageExplainerShell.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const ar = locale === "ar";
+
+/* Worked example vector from the exhaustive sweep: A=1011 (11), B=0110 (6),
+   Cin=0 → Sum=0001 (1) with Cout=1 (11+6=17). */
+const A = [1, 1, 0, 1]; // bit 0..3
+const B = [0, 1, 1, 0];
+const carries = [0, 0, 1, 1, 1]; // C0..C4 (C4 = carry out)
+const sums = [1, 0, 0, 0];
+
+const stages = [0, 1, 2, 3].map((i) => ({
+  id: `fa${i}`,
+  code: `FA${i}`,
+  label: ar ? `المرحلة ${i} — جامع كامل` : `Stage ${i} — full adder`,
+  detail: ar
+    ? `المدخلات: A${i}=${A[i]}، B${i}=${B[i]}، ناقل داخل C${i}=${carries[i]}. المخرجات: S${i}=${sums[i]}، ناقل خارج C${i + 1}=${carries[i + 1]}. تحققت المحاكاة الشاملة من هذه المرحلة عبر كل تركيبات المدخلات الـ512.`
+    : `Inputs: A${i}=${A[i]}, B${i}=${B[i]}, carry-in C${i}=${carries[i]}. Outputs: S${i}=${sums[i]}, carry-out C${i + 1}=${carries[i + 1]}. The exhaustive simulation checked this stage across all 512 input combinations.`,
+}));
+
+const faX = (i: number) => 700 - i * 190; // bit 0 on the right (LSB), like the schematic
+---
+
+<div class="fpga-carry" data-project="fpga-digital-logic" data-explainer-scope>
+  <div class="vector mono" aria-hidden="true">
+    <span>A = 1011₂ (11)</span>
+    <span>B = 0110₂ (6)</span>
+    <span>Cin = 0</span>
+    <span class="expect">SUM = 0001₂ · Cout = 1 (= 17)</span>
+  </div>
+  <p class="visually-hidden">
+    {
+      ar
+        ? "مثال من المحاكاة: أ يساوي 1011 أي أحد عشر، ب يساوي 0110 أي ستة، الناقل صفر؛ الناتج 0001 مع ناقل خارجي واحد، أي سبعة عشر."
+        : "Worked example from the simulation: A equals binary 1011 (eleven), B equals 0110 (six), carry-in zero; the sum is 0001 with carry-out one — seventeen."
+    }
+  </p>
+
+  <svg viewBox="0 0 880 190" aria-hidden="true" class="chain ltr-island">
+    {/* Cin arrow (right edge, feeding FA0) */}
+    <g data-segment="fa0">
+      <line x1="850" y1="95" x2={faX(0) + 120} y2="95" class="carry" />
+      <text x="856" y="88" class="c-label mono" text-anchor="start">C0=0</text>
+    </g>
+    {
+      [0, 1, 2, 3].map((i) => (
+        <>
+          <g data-segment={`fa${i}`}>
+            <rect x={faX(i)} y="55" width="120" height="80" rx="6" class="fa" />
+            <text x={faX(i) + 60} y="88" text-anchor="middle" class="fa-title mono">FA{i}</text>
+            <text x={faX(i) + 60} y="110" text-anchor="middle" class="fa-io mono">
+              A={A[i]} B={B[i]}
+            </text>
+            {/* inputs from top */}
+            <line x1={faX(i) + 60} y1="20" x2={faX(i) + 60} y2="55" class="wire" />
+            <text x={faX(i) + 60} y="14" text-anchor="middle" class="c-label mono">
+              A{i}B{i}
+            </text>
+            {/* sum out bottom */}
+            <line x1={faX(i) + 60} y1="135" x2={faX(i) + 60} y2="168" class="wire" />
+            <text x={faX(i) + 60} y="182" text-anchor="middle" class="s-label mono">
+              S{i}={sums[i]}
+            </text>
+          </g>
+          {i < 3 && (
+            <g data-segment={`fa${i} fa${i + 1}`}>
+              <line x1={faX(i)} y1="95" x2={faX(i + 1) + 120} y2="95" class="carry" />
+              <text x={(faX(i) + faX(i + 1) + 120) / 2} y="88" text-anchor="middle" class="c-label mono">
+                C{i + 1}={carries[i + 1]}
+              </text>
+            </g>
+          )}
+        </>
+      ))
+    }
+    {/* Cout (left edge, from FA3) */}
+    <g data-segment="fa3">
+      <line x1={faX(3)} y1="95" x2="30" y2="95" class="carry" />
+      <text x="24" y="88" class="c-label mono" text-anchor="end">C4=1</text>
+    </g>
+  </svg>
+
+  <StageExplainerShell
+    locale={locale}
+    title={ar ? "تتبع انتشار الناقل" : "Tracing the carry propagation"}
+    stages={stages}
+    diagramText={ar
+      ? "أربعة جامعات كاملة متسلسلة من البت الأدنى إلى الأعلى؛ ناقل كل مرحلة يدخل المرحلة التالية."
+      : "Four chained full adders from least to most significant bit; each stage's carry-out feeds the next stage."}
+  />
+</div>
+
+<style>
+  .fpga-carry {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .vector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    font-size: var(--text-small);
+    color: var(--color-ink-muted);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    padding: var(--space-3) var(--space-4);
+  }
+  .vector .expect {
+    color: var(--accent, var(--color-signal));
+    font-weight: 500;
+  }
+
+  .chain {
+    inline-size: 100%;
+    block-size: auto;
+  }
+  .fa {
+    fill: var(--color-surface-raised);
+    stroke: var(--color-rule-strong);
+    stroke-width: 1.5;
+    transition: stroke var(--dur-control) var(--ease-technical);
+  }
+  g.is-active .fa {
+    stroke: var(--accent, var(--color-signal));
+    stroke-width: 2.5;
+  }
+  .fa-title {
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    fill: var(--color-ink);
+  }
+  .fa-io {
+    font-size: 11px;
+    fill: var(--color-ink-muted);
+  }
+  .wire {
+    stroke: var(--color-rule-strong);
+    stroke-width: 1.5;
+  }
+  .carry {
+    stroke: var(--color-rule-strong);
+    stroke-width: 2;
+    transition: stroke var(--dur-control) var(--ease-technical);
+  }
+  g.is-active .carry {
+    stroke: var(--accent-2, #7a5cc0);
+    stroke-width: 3;
+  }
+  .c-label {
+    font-size: 11px;
+    fill: var(--color-ink-muted);
+  }
+  g.is-active .c-label {
+    fill: var(--accent-2, #7a5cc0);
+    font-weight: 600;
+  }
+  .s-label {
+    font-size: 11px;
+    fill: var(--color-ink);
+  }
+</style>

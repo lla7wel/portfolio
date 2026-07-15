@@ -17,6 +17,10 @@ links:
   - label: "Teammate's repository"
     href: "https://github.com/Paola-DG/Smart-Home-Appliance-Controller"
 claims: ["E1"]
+summary:
+  problem: "Exercise the core embedded-systems toolkit — ADC sampling, PWM actuation, debounced GPIO, a single-wire sensor protocol, UART logging — as one coherent appliance controller on real hardware."
+  contribution: "A two-person team project with Paola Dorado Galicia: both of us are credited for design, firmware, and testing; I maintain the repository, documentation, and schematics."
+  result: "A working four-mode controller with a 35 °C safety cutoff, eight documented build states, a schematic in three formats, and a candid limitations list."
 translationStatus: reviewed
 ---
 
@@ -46,15 +50,3 @@ in three formats, and a video walkthrough. The README's limitations section
 is candid: a blocking main loop that can miss button presses, coarse ±2 °C
 sensor resolution, compile-time thresholds, uncalibrated LDR values.
 
-## Gallery
-
-<div class="figure-grid">
-<figure>
-  <img src="/images/smart-home/full-system.jpg" alt="Complete smart-home controller assembly: Arduino UNO, breadboard, DHT11, LCD display, fan and wiring" width="1400" height="1091" loading="lazy" />
-  <figcaption>Hardware photograph — the complete assembly.</figcaption>
-</figure>
-<figure>
-  <img src="/images/smart-home/wiring-diagram.svg" alt="Wiring schematic for the appliance controller: sensors, PN2222 fan driver, LCD, LEDs, buzzer and buttons" loading="lazy" />
-  <figcaption>Diagram — wiring schematic (from the repository).</figcaption>
-</figure>
-</div>

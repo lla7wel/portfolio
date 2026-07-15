@@ -1,0 +1,173 @@
+---
+/* Pico voice terminal — the 2.5D exploded signal composition.
+   Layered HTML/SVG cards with CSS perspective; selecting a stage raises its
+   layer. Static fallback (no JS): the fully composed stack with all labels.
+   Physical signal path — layer order is never mirrored in RTL. */
+import { type Locale } from "../../lib/i18n";
+import StageExplainerShell from "./StageExplainerShell.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const ar = locale === "ar";
+
+const stages = [
+  {
+    id: "mic",
+    code: "MIC",
+    label: ar ? "ميكروفون SPH0645 I2S" : "SPH0645 I2S microphone",
+    detail: ar
+      ? "يلتقط الصوت رقميًا عبر I2S. ترتيب أرجل هذا الميكروفون تحديدًا جعل مستقبل I2S القياسي غير قابل للاستخدام في هذا التركيب."
+      : "Captures audio digitally over I2S. This microphone's pin arrangement made the stock I2S receiver unusable on this build.",
+  },
+  {
+    id: "pio",
+    code: "PIO",
+    label: ar ? "برنامج PIO مخصص" : "Custom PIO capture",
+    detail: ar
+      ? "برنامج PIO مُجمَّع يدويًا من ثماني تعليمات يولّد ساعتي البت والكلمة ويعاين خط البيانات."
+      : "A hand-assembled eight-instruction PIO program generates the bit and word clocks and samples the data line.",
+  },
+  {
+    id: "dma",
+    code: "DMA",
+    label: ar ? "عازل حلقي DMA" : "DMA ring buffer",
+    detail: ar
+      ? "يبث DMA العينات إلى عازل حلقي ثابت — صوت أحادي 16 كيلوهرتز جاهز للإرسال دون إشغال النواة."
+      : "DMA streams samples into a static ring buffer — 16 kHz mono PCM ready to send without occupying the core.",
+  },
+  {
+    id: "wss",
+    code: "WSS",
+    label: ar ? "قناة WebSocket واحدة عبر TLS" : "One TLS WebSocket",
+    detail: ar
+      ? "مصافحة واحدة عند الإقلاع، ثم قناة طويلة العمر: يتدفق الصوت أثناء الكلام، فيكون النص جاهزًا لحظة ترك الزر."
+      : "One handshake at boot, then a long-lived channel: audio streams while you speak, so the transcript is final when the button is released.",
+  },
+  {
+    id: "srv",
+    code: "SRV",
+    label: ar ? "منصة التحكم المستضافة ذاتيًا" : "Self-hosted control plane",
+    detail: ar
+      ? "FastAPI: تزويد الأجهزة برموز تُعرض مرة واحدة، وتعرف كلامي متدفق، وحلقة نموذج بأدوات مقيدة بالأذونات، وإخفاء للأسرار."
+      : "FastAPI: device provisioning with show-once tokens, streaming STT, a permission-gated LLM tool loop, and secret masking.",
+  },
+  {
+    id: "tft",
+    code: "TFT",
+    label: ar ? "شاشة ST7796 مقاس 4 بوصات" : "4″ ST7796 display",
+    detail: ar
+      ? "يرسم الجهاز الرد على الشاشة. عمليًا يصل الرد خلال ثوانٍ قليلة — رقم مُلاحظ، لا قياس منضبط."
+      : "The device draws the reply on screen. In use it typically responds within a couple of seconds — an observed figure, not a controlled benchmark.",
+  },
+];
+---
+
+<div class="pico-path" data-project="pico-voice-terminal" data-explainer-scope>
+  <div class="exploded ltr-island" dir="ltr" aria-hidden="true">
+    {
+      stages.map((s, i) => (
+        <div class="layer" style={`--i:${i}`} data-segment={s.id}>
+          <span class="layer-code mono">{s.code}</span>
+          <span class="layer-line" />
+        </div>
+      ))
+    }
+  </div>
+
+  <StageExplainerShell
+    locale={locale}
+    title={ar ? "مسار الإشارة — من الصوت إلى الشاشة" : "The signal path — voice to display"}
+    stages={stages}
+    diagramText={ar
+      ? "تكوين طبقي مفكك: الميكروفون فوق التقاط PIO فوق عازل DMA فوق قناة WebSocket فوق الخادم فوق الشاشة."
+      : "An exploded layer composition: microphone above PIO capture, DMA buffer, WebSocket link, backend, and display."}
+  />
+</div>
+
+<style>
+  .pico-path {
+    display: grid;
+    gap: var(--space-5);
+  }
+  @media (min-width: 64em) {
+    .pico-path {
+      grid-template-columns: 4fr 8fr;
+      align-items: center;
+    }
+  }
+
+  .exploded {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    perspective: 900px;
+    padding-block: var(--space-5);
+  }
+  .layer {
+    position: relative;
+    inline-size: min(240px, 70%);
+    block-size: 64px;
+    margin-block-start: -26px;
+    border: 1px solid color-mix(in oklab, var(--accent) 45%, var(--color-rule));
+    border-radius: 10px;
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in oklab, var(--accent) 14%, var(--color-surface-raised)),
+        var(--color-surface-raised) 70%
+      );
+    box-shadow: var(--shadow-low);
+    transform: rotateX(56deg) rotateZ(-38deg) translateZ(calc(var(--i) * -2px));
+    transition:
+      transform var(--dur-panel) var(--ease-standard),
+      border-color var(--dur-panel) var(--ease-standard),
+      box-shadow var(--dur-panel) var(--ease-standard);
+  }
+  .layer:nth-child(even) {
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in oklab, var(--accent-2) 14%, var(--color-surface-raised)),
+        var(--color-surface-raised) 70%
+      );
+  }
+  .layer.is-active {
+    transform: rotateX(56deg) rotateZ(-38deg) translateZ(26px);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-raised);
+    z-index: 2;
+  }
+  .layer-code {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 100%;
+    translate: 10px -50%;
+    font-size: var(--text-annotation);
+    letter-spacing: 0.1em;
+    color: var(--color-ink-muted);
+    transform: rotateZ(0deg);
+    white-space: nowrap;
+  }
+  .layer.is-active .layer-code {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .layer-line {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: calc(100% - 6px);
+    inline-size: 14px;
+    block-size: 1px;
+    background: var(--color-rule-strong);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .layer,
+    .layer.is-active {
+      transition: none;
+    }
+  }
+</style>

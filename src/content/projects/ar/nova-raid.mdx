@@ -15,6 +15,10 @@ links:
   - label: "صفحة المشروع وتنزيل UF2"
     href: "https://lla7wel.github.io/nova-raid/"
 claims: ["C1", "C2"]
+summary:
+  problem: "تحتاج شاشة ST7796S نحو 39 مللي ثانية لاستقبال إطار كامل عبر SPI — أكثر من ميزانية 25 إطارًا في الثانية وحدها — على معالج ثنائي النواة بلا وحدة فاصلة عائمة (حسابات تصميمية، لا قياسات على العتاد)."
+  contribution: "صممتُ اللعبة كاملة وكتبتها على العتاد مباشرة وبمفردي: خط العرض ثنائي النواة، وحساب النقطة الثابتة 24.8، والبث عبر DMA وSPI، وطبقة تجريد قابلة للاختبار مع منصة اختبار مكتبية، وهندسة الإصدار."
+  result: "صدرت كملفات UF2 جاهزة للسحب والإفلات مع CI أخضر؛ وكشف أول تشغيل على العتاد الحقيقي عيبًا في تهيئة الشاشة لم يلتقطه أي محاكٍ — أُصلح ووُثّق في اليوم نفسه ضمن v1.0.1."
 translationStatus: draft
 ---
 
@@ -51,20 +55,3 @@ translationStatus: draft
 SVG، وإحدى عشرة دورة CI ناجحة، وإصداران موسومان بملفات UF2. كل كود اللعبة
 والرسوم والأصوات أصلية، والمكونات الخارجية منسوبة في README.
 
-## معرض الأدلة
-
-<div class="figure-grid">
-<figure>
-  <img src="/images/nova-raid/hardware-gameplay.jpg" alt="لعبة NOVA RAID تعمل على لوحة Pico الفعلية مع عصا التحكم والأزرار" width="900" height="1600" loading="lazy" />
-  <figcaption>صورة فوتوغرافية للعتاد — اللعب على اللوحة الفعلية (الإصدار v1.0.0 قبل إصلاح الألوان).</figcaption>
-</figure>
-<figure>
-  <img src="/images/nova-raid/splash-render.png" alt="شاشة افتتاح NOVA RAID بالشعار وحقل النجوم" width="480" height="320" loading="lazy" />
-  <figcaption>إطار مُولَّد — التُقط بدقة البكسل عبر إطار الاختبار المكتبي، وليس صورة فوتوغرافية.</figcaption>
-</figure>
-</div>
-
-<figure>
-  <img src="/images/nova-raid/block-diagram.svg" alt="مخطط كتلي: النواة 0 للمحاكاة والرسم، والنواة 1 لمضاعفة البكسل والبث عبر DMA وSPI إلى الشاشة" loading="lazy" />
-  <figcaption>مخطط — خط الرسم والعرض ثنائي النواة (من المستودع).</figcaption>
-</figure>

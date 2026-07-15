@@ -1,0 +1,155 @@
+---
+/* Shared shell for the interactive stage explainers: baseline = a semantic
+   ordered list of stages with always-visible descriptions; JS upgrades it
+   to a stepper with one active panel and a highlighted diagram segment. */
+import { type Locale, t } from "../../lib/i18n";
+
+export interface Stage {
+  id: string;
+  /** Short control label. */
+  label: string;
+  /** Mono code shown above the label. */
+  code?: string;
+  /** Full description shown in the detail panel / static list. */
+  detail: string;
+}
+
+interface Props {
+  locale: Locale;
+  title: string;
+  stages: Stage[];
+  /** Accessible summary of what the diagram shows. */
+  diagramText: string;
+}
+const { locale, title, stages, diagramText } = Astro.props;
+---
+
+<div class="stage-explainer" data-stage-explainer>
+  <h3 class="ex-title">{title}</h3>
+
+  {/* Optional project-specific diagram (SVG) */}
+  <slot name="diagram" />
+  <p class="visually-hidden">{diagramText}</p>
+
+  <ol class="stages" role="list">
+    {
+      stages.map((s, i) => (
+        <li class="stage">
+          <button type="button" data-stage={s.id} aria-current={i === 0 ? "step" : "false"}>
+            {s.code && <span class="code mono" aria-hidden="true">{s.code}</span>}
+            <span class="label">{s.label}</span>
+          </button>
+          <div class="panel" data-stage-panel={s.id}>
+            <p>{s.detail}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="hint muted" data-explainer-hint>{t(locale, "diagram.selectStage")}</p>
+</div>
+
+<script>
+  import { initStageExplainers } from "../../scripts/system-diagram";
+  initStageExplainers();
+</script>
+
+<style>
+  .stage-explainer {
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-media);
+    background: var(--color-surface);
+    padding: var(--space-5);
+  }
+  .ex-title {
+    font-size: var(--text-body-lg);
+    margin-block-end: var(--space-4);
+  }
+
+  .stages {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    counter-reset: stage;
+  }
+  .stage button {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    inline-size: 100%;
+    min-block-size: 44px;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-control);
+    border: 1px solid transparent;
+    text-align: start;
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--color-ink);
+    counter-increment: stage;
+    transition:
+      border-color var(--dur-control) var(--ease-technical),
+      background var(--dur-control) var(--ease-technical);
+  }
+  .stage button::before {
+    content: counter(stage, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+    color: var(--color-ink-muted);
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  .stage button:hover {
+    border-color: var(--color-rule-strong);
+  }
+  .stage button[aria-current="step"] {
+    background: var(--accent-soft, var(--color-signal-soft));
+    border-color: var(--accent-ink, var(--color-signal));
+  }
+  .stage button[aria-current="step"]::before {
+    color: var(--accent-ink, var(--color-signal));
+  }
+  .stage .code {
+    font-size: var(--text-annotation);
+    letter-spacing: 0.08em;
+    color: var(--accent-ink, var(--color-signal));
+    min-inline-size: 2.6rem;
+  }
+  .panel {
+    padding: var(--space-2) var(--space-3) var(--space-3) calc(var(--space-3) + 1.6rem);
+    font-size: var(--text-small);
+    color: var(--color-ink-muted);
+    max-inline-size: 60ch;
+  }
+
+  .hint {
+    display: none;
+    font-size: var(--text-annotation);
+    margin-block-start: var(--space-3);
+  }
+  [data-enhanced] .hint {
+    display: block;
+  }
+
+  /* Enhanced desktop layout: stages become a two-column stepper+panel. */
+  @media (min-width: 64em) {
+    [data-enhanced] .stages {
+      display: grid;
+      grid-template-columns: minmax(14rem, 18rem) 1fr;
+      column-gap: var(--space-6);
+    }
+    [data-enhanced] .stage {
+      display: contents;
+    }
+    [data-enhanced] .stage button {
+      grid-column: 1;
+    }
+    [data-enhanced] .panel {
+      grid-column: 2;
+      grid-row: 1 / span 20;
+      align-self: start;
+      border-inline-start: 1px solid var(--color-rule);
+      padding: var(--space-2) var(--space-5);
+      font-size: var(--text-body);
+    }
+  }
+</style>

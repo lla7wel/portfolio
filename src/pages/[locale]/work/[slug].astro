@@ -1,7 +1,44 @@
 ---
-import Base from "../../../layouts/Base.astro";
 import { getCollection, render } from "astro:content";
-import { type Locale, t } from "../../../lib/i18n";
+import CaseStudy from "../../../layouts/CaseStudy.astro";
+import Figure from "../../../components/content/Figure.astro";
+import EvidenceGallery from "../../../components/content/EvidenceGallery.astro";
+import EnglishHomeFlow from "../../../components/projects/EnglishHomeFlow.astro";
+import NovaPipeline from "../../../components/projects/NovaPipeline.astro";
+import PicoSignalPath from "../../../components/projects/PicoSignalPath.astro";
+import FpgaCarryPath from "../../../components/projects/FpgaCarryPath.astro";
+import SmartHomeStateMachine from "../../../components/projects/SmartHomeStateMachine.astro";
+import MiramarPresentation from "../../../components/projects/MiramarPresentation.astro";
+import { type Locale } from "../../../lib/i18n";
+import { projectVisuals } from "../../../data/projectVisuals";
+
+// Evidence media (processed by astro:assets)
+import novaSplash from "../../../assets/nova-raid/hardware-splash.jpg";
+import novaGameplay from "../../../assets/nova-raid/hardware-gameplay.jpg";
+import novaDiagnostics from "../../../assets/nova-raid/hardware-diagnostics.jpg";
+import novaHallOfFame from "../../../assets/nova-raid/hardware-hall-of-fame.jpg";
+import novaR01 from "../../../assets/nova-raid/01-splash.png";
+import novaR03 from "../../../assets/nova-raid/03-gameplay.png";
+import novaR09 from "../../../assets/nova-raid/09-hiscores.png";
+import novaR10 from "../../../assets/nova-raid/10-diagnostics.png";
+import picoHero from "../../../assets/pico/hero.jpg";
+import picoBoot from "../../../assets/pico/screen-boot.jpg";
+import picoListening from "../../../assets/pico/screen-listening.jpg";
+import picoReady from "../../../assets/pico/screen-ready.jpg";
+import picoConsoleOverview from "../../../assets/pico/console-overview.png";
+import picoConsoleDevices from "../../../assets/pico/console-devices.png";
+import picoConsoleBehavior from "../../../assets/pico/console-behavior.png";
+import fpgaWaveCollapsed from "../../../assets/fpga/waveform-collapsed.png";
+import fpgaWaveExpanded from "../../../assets/fpga/waveform-expanded.png";
+import shFull from "../../../assets/smart-home/full-system.jpg";
+import shAngle from "../../../assets/smart-home/full-system-angle.jpg";
+import shBreadboard from "../../../assets/smart-home/breadboard-wiring.jpg";
+import shStartup from "../../../assets/smart-home/startup.jpg";
+import shAuto from "../../../assets/smart-home/auto-mode.jpg";
+import shManualMed from "../../../assets/smart-home/manual-mode-fan-medium.jpg";
+import shSleep from "../../../assets/smart-home/sleep-mode.jpg";
+import miramarContact from "../../../assets/miramar/contact-desktop.png";
+import miramarSafety from "../../../assets/miramar/3d-safety-control.jpg";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
@@ -13,48 +50,472 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const locale = project.data.locale as Locale;
-const { Content } = await render(project);
+const ar = locale === "ar";
+const key = project.data.key;
+const { Content, headings } = await render(project);
+const vis = projectVisuals[key];
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareSourceCode",
-  name: project.data.title,
-  author: { "@type": "Person", name: "Mohamed Khalid Elbahlool" },
-  codeRepository: project.data.links.find((l) => l.href.includes("github.com"))?.href,
+// Localized hero evidence per project.
+const heroContent: Record<string, { alt: string; caption: string }> = {
+  "english-home-platform": {
+    alt: ar
+      ? "بنية النشر: Caddy أمام تطبيق Next.js وقاعدة Postgres، ونواة تكاملات تربط Meta webhooks و Gemini"
+      : "Deployment architecture: Caddy in front of the Next.js admin app and Postgres, with an integrations core connecting Meta webhooks and Gemini",
+    caption: ar
+      ? "بنية النشر الفعلية من المستودع — خادم واحد مُدار ذاتيًا تحت Docker Compose (نطاقات توضيحية)."
+      : "The production deployment architecture from the repository — one self-managed VPS under Docker Compose (placeholder domains).",
+  },
+  "nova-raid": {
+    alt: ar
+      ? "شاشة بداية NOVA RAID على لوحة Pico الفعلية بألوان ما قبل الإصلاح المعكوسة"
+      : "NOVA RAID splash screen on the physical Pico board, in the inverted pre-fix colors",
+    caption: ar
+      ? "أول تحقق على العتاد — إصدار v1.0.0 بالألوان المعكوسة التي لم يكشفها أي اختبار مكتبي. وثّق الإصلاح v1.0.1 السبب الجذري."
+      : "First hardware verification — v1.0.0 in the inverted colors no desktop harness could catch. The v1.0.1 fix documents the root cause.",
+  },
+  "pico-voice-terminal": {
+    alt: ar
+      ? "الجهاز الصوتي الموصول يدويًا: شاشة TFT مقاس 4 بوصات وميكروفون I2S و Pico W على لوحة تجارب"
+      : "The hand-wired voice terminal: 4-inch TFT, I2S microphone, and Pico W on a breadboard",
+    caption: ar
+      ? "الجهاز المكتمل أثناء التشغيل — كل الذكاء يعيش في منصة تحكم مستضافة ذاتيًا."
+      : "The assembled terminal, running — all intelligence lives in a self-hosted control plane.",
+  },
+  "smart-home-controller": {
+    alt: ar
+      ? "المنظومة الكاملة: Arduino UNO ولوحة تجارب ومستشعر DHT11 وشاشة LCD ومروحة"
+      : "The complete assembly: Arduino UNO, breadboard, DHT11 sensor, LCD, and fan",
+    caption: ar
+      ? "المنظومة الكاملة — مشروع جامعي ثنائي مع Paola Dorado Galicia في مقرر EEL 4730."
+      : "The complete assembly — a two-person university team project with Paola Dorado Galicia for EEL 4730.",
+  },
+  miramar: {
+    alt: ar
+      ? "الصفحة الرئيسية لموقع ميرامار على سطح المكتب"
+      : "Miramar home page, desktop layout",
+    caption: ar
+      ? "الموقع المباشر على tr-miramar.com — Next.js ثابت أولًا بالإنجليزية والتركية."
+      : "The live site at tr-miramar.com — static-first Next.js in English and Turkish.",
+  },
+  "fpga-digital-logic": {
+    alt: ar
+      ? "مخطط سلسلة النقل السلسلي المكونة من أربعة جامعات كاملة"
+      : "Schematic of the ripple-carry chain built from four full adders",
+    caption: ar
+      ? "سلسلة النقل السلسلي من المستودع — كل مرحلة تحققت عبر اختبارات شاملة ذاتية التحقق في CI."
+      : "The ripple-carry chain from the repository — every stage verified by exhaustive self-checking testbenches in CI.",
+  },
 };
+
+const hero = vis
+  ? {
+      src: vis.hero ?? vis.heroSvg!,
+      alt: heroContent[key]?.alt ?? "",
+      caption: heroContent[key]?.caption ?? "",
+      kind: vis.heroKind as "photo" | "screenshot" | "diagram",
+      code: `${vis.figPrefix}.0`,
+    }
+  : undefined;
+
+// Related note (localized title).
+const notes = await getCollection("notes", (n) => n.data.locale === locale);
+const relatedNote = vis?.relatedNote
+  ? notes
+      .filter((n) => n.data.key === vis.relatedNote)
+      .map((n) => ({ key: n.data.key, title: n.data.title }))[0]
+  : undefined;
+
+// Prev/next in display order.
+const siblings = (await getCollection("projects", (p) => p.data.locale === locale)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const idx = siblings.findIndex((p) => p.data.key === key);
+const prev = idx > 0 ? { key: siblings[idx - 1].data.key, title: siblings[idx - 1].data.title } : undefined;
+const next =
+  idx < siblings.length - 1
+    ? { key: siblings[idx + 1].data.key, title: siblings[idx + 1].data.title }
+    : undefined;
+
+const F = vis?.figPrefix ?? "00";
 ---
 
-<Base locale={locale} title={project.data.title} description={project.data.outcome} jsonLd={jsonLd}>
-  <article class="measure">
-    <header>
-      <div style="display:flex; align-items:baseline; gap:0.75rem; flex-wrap:wrap;">
-        <h1 style="margin-block-end:0;">{project.data.title}</h1>
-        <span class="chip" data-kind="status">{t(locale, `status.${project.data.status}`)}</span>
-      </div>
-      <p style="font-size:var(--step-1); color:var(--ink-muted);">{project.data.outcome}</p>
+<CaseStudy
+  locale={locale}
+  project={project.data}
+  code={vis?.code ?? ""}
+  hero={hero}
+  headings={headings}
+  relatedNote={relatedNote}
+  prev={prev}
+  next={next}
+  ogImage={`/og/${key}.png`}
+>
+  {/* ---- Interactive explainer ---- */}
+  <Fragment slot="explainer">
+    {key === "english-home-platform" && <EnglishHomeFlow locale={locale} />}
+    {key === "nova-raid" && <NovaPipeline locale={locale} />}
+    {key === "pico-voice-terminal" && <PicoSignalPath locale={locale} />}
+    {key === "fpga-digital-logic" && <FpgaCarryPath locale={locale} />}
+    {key === "smart-home-controller" && <SmartHomeStateMachine locale={locale} />}
+    {key === "miramar" && <MiramarPresentation locale={locale} />}
+  </Fragment>
 
-      <dl class="meta-grid">
-        <div>
-          <dt>{t(locale, "cs.role")}</dt>
-          <dd>{project.data.role}</dd>
-        </div>
-        <div>
-          <dt>{t(locale, "cs.timeframe")}</dt>
-          <dd>{project.data.timeframe}</dd>
-        </div>
-        <div>
-          <dt>{t(locale, "cs.stack")}</dt>
-          <dd><span class="ltr-island">{project.data.stack.join(" · ")}</span></dd>
-        </div>
-        <div>
-          <dt>{t(locale, "cs.links")}</dt>
-          <dd style="display:flex; flex-direction:column; gap:0.15rem;">
-            {project.data.links.map((l) => <a href={l.href}>{l.label}</a>)}
-          </dd>
-        </div>
-      </dl>
-    </header>
+  {/* ---- MDX prose ---- */}
+  <Content />
 
-    <Content />
-  </article>
-</Base>
+  {/* ---- Evidence gallery ---- */}
+  <Fragment slot="evidence">
+    {
+      key === "english-home-platform" && (
+        <EvidenceGallery variant="stack">
+          <Figure
+            locale={locale}
+            src="/images/csa/message-flow.svg"
+            width={960}
+            height={620}
+            alt={ar
+              ? "تدفق الرسائل: webhook، تجميع الدفعات، أدوات الكتالوج، المعقم، حارس التسليم، التسليم البشري"
+              : "Message flow: webhook, burst batching, catalog tools, sanitizer, delivery guard, human handoff"}
+            caption={ar
+              ? "تدفق رسالة العميل عبر وسائل الأمان — من المستودع."
+              : "The customer-message flow through the safety guards — from the repository."}
+            code={`${F}.1`}
+            kind="diagram"
+            sourceHref="https://github.com/lla7wel/Customer-Service-Agent"
+            wide
+          />
+        </EvidenceGallery>
+      )
+    }
+    {
+      key === "nova-raid" && (
+        <>
+          <EvidenceGallery variant="pair">
+            <Figure
+              locale={locale}
+              src={novaR01}
+              alt={ar ? "شاشة بداية اللعبة كما يرسمها المحرك" : "The splash screen as the engine draws it"}
+              caption={ar ? "شاشة البداية — التقاط دقيق بالبكسل من منصة الاختبار، وليس صورة." : "Splash — pixel-true harness capture, not a photograph."}
+              code={`${F}.1`}
+              kind="render"
+              width={480}
+            />
+            <Figure
+              locale={locale}
+              src={novaR03}
+              alt={ar ? "إطار من اللعب: سفينة اللاعب وموجات الأعداء" : "Gameplay frame: player ship and enemy waves"}
+              caption={ar ? "اللعب — من منصة الاختبار المكتبية." : "Gameplay — from the desktop host harness."}
+              code={`${F}.2`}
+              kind="render"
+              width={480}
+            />
+            <Figure
+              locale={locale}
+              src={novaR09}
+              alt={ar ? "قائمة أعلى النتائج" : "Hall of fame screen"}
+              caption={ar ? "قاعة المشاهير — تُحفظ النتائج في قطاع الفلاش الأخير." : "Hall of fame — scores persist in the last flash sector."}
+              code={`${F}.3`}
+              kind="render"
+              width={480}
+            />
+            <Figure
+              locale={locale}
+              src={novaR10}
+              alt={ar ? "شاشة التشخيص المدمجة" : "Built-in diagnostics screen"}
+              caption={ar ? "شاشة التشخيص المدمجة في البرنامج الثابت." : "The diagnostics screen built into the firmware."}
+              code={`${F}.4`}
+              kind="render"
+              width={480}
+            />
+          </EvidenceGallery>
+          <EvidenceGallery variant="mosaic">
+            <Figure
+              locale={locale}
+              src={novaGameplay}
+              alt={ar ? "اللعب على اللوحة الفعلية بألوان ما قبل الإصلاح" : "Gameplay on the physical board in pre-fix colors"}
+              caption={ar ? "اللعب على العتاد — v1.0.0 بالألوان المعكوسة قبل الإصلاح." : "Gameplay on hardware — v1.0.0, inverted pre-fix colors."}
+              code={`${F}.5`}
+              kind="photo"
+              width={900}
+            />
+            <Figure
+              locale={locale}
+              src={novaDiagnostics}
+              alt={ar ? "شاشة التشخيص على العتاد الفعلي" : "Diagnostics running on the physical hardware"}
+              caption={ar ? "التشخيص على العتاد — دليل ما قبل الإصلاح." : "Diagnostics on hardware — pre-fix evidence."}
+              code={`${F}.6`}
+              kind="photo"
+              width={900}
+            />
+            <Figure
+              locale={locale}
+              src={novaHallOfFame}
+              alt={ar ? "قاعة المشاهير على العتاد الفعلي" : "Hall of fame on the physical hardware"}
+              caption={ar ? "قاعة المشاهير على العتاد — دليل ما قبل الإصلاح." : "Hall of fame on hardware — pre-fix evidence."}
+              code={`${F}.7`}
+              kind="photo"
+              width={900}
+            />
+          </EvidenceGallery>
+          <Figure
+            locale={locale}
+            src="/images/nova-raid/block-diagram.svg"
+            width={860}
+            height={520}
+            alt={ar
+              ? "مخطط كتلي: النواة 0 للمحاكاة والرسم، والنواة 1 لمضاعفة البكسل والبث عبر DMA وSPI إلى الشاشة"
+              : "Block diagram: core 0 simulation and rendering, core 1 pixel doubling and DMA/SPI streaming to the panel"}
+            caption={ar ? "خط العرض ثنائي النواة — من المستودع." : "The dual-core display pipeline — from the repository."}
+            code={`${F}.8`}
+            kind="diagram"
+            sourceHref="https://github.com/lla7wel/nova-raid"
+            wide
+          />
+        </>
+      )
+    }
+    {
+      key === "pico-voice-terminal" && (
+        <>
+          <EvidenceGallery variant="mosaic">
+            <Figure
+              locale={locale}
+              src={picoBoot}
+              alt={ar ? "شاشة الجهاز أثناء الإقلاع" : "The device display during boot"}
+              caption={ar ? "الإقلاع — مصافحة TLS واحدة تفتح القناة الدائمة." : "Boot — one TLS handshake opens the long-lived channel."}
+              code={`${F}.1`}
+              kind="photo"
+              width={900}
+            />
+            <Figure
+              locale={locale}
+              src={picoListening}
+              alt={ar ? "الشاشة في حالة الاستماع أثناء ضغط زر التحدث" : "The display in the listening state while push-to-talk is held"}
+              caption={ar ? "الاستماع — يتدفق الصوت أثناء الكلام." : "Listening — audio streams while you speak."}
+              code={`${F}.2`}
+              kind="photo"
+              width={900}
+            />
+            <Figure
+              locale={locale}
+              src={picoReady}
+              alt={ar ? "الشاشة في حالة الجاهزية" : "The display in the ready state"}
+              caption={ar ? "الجاهزية — بانتظار ضغطة الزر التالية." : "Ready — waiting for the next press."}
+              code={`${F}.3`}
+              kind="photo"
+              width={900}
+            />
+          </EvidenceGallery>
+          <Figure
+            locale={locale}
+            src="/images/pico/wiring-diagram.svg"
+            width={980}
+            height={740}
+            alt={ar
+              ? "مخطط التوصيل: Pico W مع شاشة ST7796 وميكروفون SPH0645 والأزرار ومؤشر RGB والصافرة"
+              : "Wiring diagram: Pico W to the ST7796 TFT, SPH0645 I2S microphone, buttons, RGB LED, and buzzer"}
+            caption={ar ? "توصيل الجهاز — من المستودع. لا يُعكس اتجاه المخطط في العربية لأنه توصيل فيزيائي." : "The device wiring — from the repository."}
+            code={`${F}.4`}
+            kind="diagram"
+            sourceHref="https://github.com/lla7wel/Pico-AI-Agentic-System"
+            wide
+          />
+          <EvidenceGallery variant="mosaic">
+            <Figure
+              locale={locale}
+              src={picoConsoleOverview}
+              alt={ar ? "نظرة عامة على وحدة تحكم منصة الصوت: النظام والفحوص السريعة" : "Control-plane console overview: system status and quick tests"}
+              caption={ar ? "وحدة التحكم — نسخة عرض محلية دون مفاتيح مزودين." : "The admin console — a local demo instance with no provider keys set."}
+              code={`${F}.5`}
+              kind="screenshot"
+              width={1200}
+            />
+            <Figure
+              locale={locale}
+              src={picoConsoleDevices}
+              alt={ar ? "صفحة الأجهزة مع رمز تزويد محجوب للنشر" : "Devices page with the provisioning token redacted for publication"}
+              caption={ar ? "تزويد الأجهزة — رموز تُعرض مرة واحدة؛ حُجب الرمز هنا للنشر." : "Device provisioning — show-once tokens; the token is redacted here for publication."}
+              code={`${F}.6`}
+              kind="screenshot"
+              width={1200}
+            />
+            <Figure
+              locale={locale}
+              src={picoConsoleBehavior}
+              alt={ar ? "صفحة سلوك المساعد: موجه النظام وحدود الرد" : "Behavior page: system prompt and reply limits"}
+              caption={ar ? "ضبط السلوك في زمن التشغيل — من توثيق المستودع." : "Runtime behavior configuration — from the repository documentation."}
+              code={`${F}.7`}
+              kind="screenshot"
+              width={1200}
+            />
+          </EvidenceGallery>
+        </>
+      )
+    }
+    {
+      key === "fpga-digital-logic" && (
+        <>
+          <EvidenceGallery variant="stack">
+            <Figure
+              locale={locale}
+              src={fpgaWaveCollapsed}
+              alt={ar
+                ? "موجات محاكاة Vivado للجامع ذي 4 بتات عبر عشرة متجهات — الحافلات مطوية"
+                : "Vivado behavioral waveform of the 4-bit adder over ten stimulus vectors — buses collapsed"}
+              caption={ar
+                ? "الموجات المطوية تثبت تطابق كل متجه مسجل مع القيم المتوقعة. تبقى الموجات باتجاه LTR في العربية."
+                : "The collapsed view proves each recorded vector matches its expected outputs — a simulation capture, not on-hardware telemetry."}
+              code={`${F}.1`}
+              kind="waveform"
+              width={1600}
+              wide
+              class="ltr-island"
+            />
+            <Figure
+              locale={locale}
+              src={fpgaWaveExpanded}
+              alt={ar
+                ? "الموجات نفسها مع فرد بتات الحافلات لكل إشارة"
+                : "The same waveform with the bus bits expanded per signal"}
+              caption={ar
+                ? "الموجات المفرودة تُظهر كل بت على حدة — بما فيها انتشار الناقل بين المراحل."
+                : "The expanded view shows every bit — including the carry rippling between stages."}
+              code={`${F}.2`}
+              kind="waveform"
+              width={1600}
+              wide
+              class="ltr-island"
+            />
+          </EvidenceGallery>
+          <EvidenceGallery variant="pair">
+            <Figure
+              locale={locale}
+              src="/images/fpga/decoder-2to4-gates.svg"
+              width={760}
+              height={420}
+              alt={ar ? "مخطط بوابات مفكك الترميز 2 إلى 4" : "Gate-level diagram of the 2-to-4 decoder"}
+              caption={ar ? "مفكك ترميز 2→4 من مستودع Basys 3 المرافق." : "The 2→4 decoder from the companion Basys 3 repository."}
+              code={`${F}.3`}
+              kind="diagram"
+              sourceHref="https://github.com/lla7wel/basys3-decoders"
+              class="ltr-island"
+            />
+            <Figure
+              locale={locale}
+              src="/images/fpga/decoder-bcd-system.svg"
+              width={760}
+              height={420}
+              alt={ar ? "مخطط نظام مفكك BCD مع عرض السبع شرائح" : "BCD decoder system diagram with seven-segment output"}
+              caption={ar ? "نظام مفكك BCD إلى سبع شرائح — قيود أرجل حقيقية للوحة Basys 3." : "The BCD-to-seven-segment system — with real Basys 3 pin constraints."}
+              code={`${F}.4`}
+              kind="diagram"
+              sourceHref="https://github.com/lla7wel/basys3-decoders"
+              class="ltr-island"
+            />
+          </EvidenceGallery>
+        </>
+      )
+    }
+    {
+      key === "smart-home-controller" && (
+        <>
+          <EvidenceGallery variant="mosaic">
+            <Figure
+              locale={locale}
+              src={shStartup}
+              alt={ar ? "شاشة LCD تعرض رسالة بدء التشغيل" : "The LCD showing the startup message"}
+              caption={ar ? "الإقلاع — يبدأ النظام في الوضع التلقائي." : "Startup — the system boots into AUTO."}
+              code={`${F}.1`}
+              kind="photo"
+              width={900}
+            />
+            <Figure
+              locale={locale}
+              src={shAuto}
+              alt={ar ? "الوضع التلقائي: الشاشة تعرض الحرارة والرطوبة والوضع" : "AUTO mode: LCD showing temperature, humidity, and mode"}
+              caption={ar ? "الوضع التلقائي — الحرارة تقود منحنى المروحة." : "AUTO — temperature drives the fan curve."}
+              code={`${F}.2`}
+              kind="photo"
+              width={900}
+            />
+            <Figure
+              locale={locale}
+              src={shManualMed}
+              alt={ar ? "الوضع اليدوي بسرعة مروحة متوسطة" : "MANUAL mode with the fan at medium speed"}
+              caption={ar ? "اليدوي — الزر الثاني يبدّل سرعة المروحة." : "MANUAL — button 2 cycles the fan speed."}
+              code={`${F}.3`}
+              kind="photo"
+              width={900}
+            />
+            <Figure
+              locale={locale}
+              src={shSleep}
+              alt={ar ? "وضع السكون والمؤشر الأزرق كإضاءة ليلية" : "SLEEP mode with the blue LED as a nightlight"}
+              caption={ar ? "السكون — إضاءة ليلية تكيفية عبر مستشعر الضوء." : "SLEEP — an adaptive nightlight via the LDR."}
+              code={`${F}.4`}
+              kind="photo"
+              width={900}
+            />
+            <Figure
+              locale={locale}
+              src={shBreadboard}
+              alt={ar ? "توصيلات لوحة التجارب عن قرب" : "Close-up of the breadboard wiring"}
+              caption={ar ? "توصيلات لوحة التجارب — المستشعرات والأزرار ومشغل المروحة." : "The breadboard wiring — sensors, buttons, and the fan driver."}
+              code={`${F}.5`}
+              kind="photo"
+              width={900}
+            />
+            <Figure
+              locale={locale}
+              src={shAngle}
+              alt={ar ? "زاوية بديلة للمنظومة الكاملة" : "Alternate angle of the complete assembly"}
+              caption={ar ? "زاوية بديلة — الشاشة والمروحة والمتحكم معًا." : "Alternate angle — LCD, fan, and MCU together."}
+              code={`${F}.6`}
+              kind="photo"
+              width={900}
+            />
+          </EvidenceGallery>
+          <Figure
+            locale={locale}
+            src="/images/smart-home/wiring-diagram.svg"
+            width={1240}
+            height={950}
+            alt={ar
+              ? "مخطط توصيل المتحكم: المستشعرات ومشغل المروحة PN2222 والشاشة والمؤشرات والصافرة والأزرار"
+              : "Wiring schematic: sensors, PN2222 fan driver, LCD, LEDs, buzzer, and buttons"}
+            caption={ar ? "مخطط التوصيل — من المستودع؛ اتجاهه الفيزيائي ثابت." : "The wiring schematic — from the repository."}
+            code={`${F}.7`}
+            kind="diagram"
+            sourceHref="https://github.com/lla7wel/smart-home-appliance-controller"
+            wide
+            class="ltr-island"
+          />
+        </>
+      )
+    }
+    {
+      key === "miramar" && (
+        <EvidenceGallery variant="pair">
+          <Figure
+            locale={locale}
+            src={miramarContact}
+            alt={ar ? "صفحة التواصل بنموذج طلب عرض سعر مع تحقق من الحقول" : "Contact page with the validated RFQ-style form"}
+            caption={ar ? "صفحة التواصل — تحقق react-hook-form و Zod." : "The contact page — react-hook-form and Zod validation."}
+            code={`${F}.1`}
+            kind="screenshot"
+            width={1100}
+          />
+          <Figure
+            locale={locale}
+            src={miramarSafety}
+            alt={ar ? "مشهد صناعي توضيحي لأنظمة السلامة والتحكم" : "Illustrative industrial scene for safety and control systems"}
+            caption={ar ? "صورة مولدة توضيحية من أصول الموقع — ليست صورة فوتوغرافية." : "An illustrative render from the site's assets — not a photograph."}
+            code={`${F}.2`}
+            kind="renderIllustrative"
+            width={1100}
+          />
+        </EvidenceGallery>
+      )
+    }
+  </Fragment>
+</CaseStudy>

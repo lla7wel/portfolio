@@ -15,6 +15,10 @@ links:
   - label: "منصة التحكم (مستقلة)"
     href: "https://github.com/lla7wel/voice-agent-control-plane"
 claims: ["D1", "D3"]
+summary:
+  problem: "ترتيب أرجل ميكروفون SPH0645 جعل مستقبل I2S القياسي غير قابل للاستخدام في هذا البناء — والجهاز الصوتي يحتاج السلسلة كاملة (التقاط ونقل وتعرّف وأدوات) لتعمل معًا."
+  contribution: "وصّلتُ الجهاز يدويًا، وكتبتُ برمجيات الالتقاط عبر PIO وDMA وكود الشاشة، وبنيتُ منصة التحكم المستقلة المستضافة ذاتيًا التي يمكن لأي عميل WebSocket الانضمام إليها كجهاز."
+  result: "نظام منشور في مستودعين تحقّق منه اختبار تكامل واحد يعمل دون اتصال في CI؛ وفي الاستخدام يصل الرد عادة خلال ثوانٍ قليلة — رقم ملاحَظ لا قياس منضبط."
 translationStatus: draft
 ---
 
@@ -54,25 +58,3 @@ translationStatus: draft
 البرمجيات الثابتة فكان يدويًا بإجراءات موثقة لأخطر جزأين: مستقبل PIO
 و TLS.
 
-## معرض الأدلة
-
-<div class="figure-grid">
-<figure>
-  <img src="/images/pico/hero.jpg" alt="الجهاز الصوتي المبني يدويًا على لوحة تجارب مع شاشة TFT مقاس 4 بوصات" width="1600" height="900" loading="lazy" />
-  <figcaption>صورة فوتوغرافية للعتاد — الجهاز المجمّع أثناء التشغيل.</figcaption>
-</figure>
-<figure>
-  <img src="/images/pico/screen-ready.jpg" alt="شاشة الجهاز تعرض حالة الاستعداد" width="1600" height="900" loading="lazy" />
-  <figcaption>صورة فوتوغرافية للعتاد — حالة الاستعداد على شاشة الجهاز.</figcaption>
-</figure>
-</div>
-
-<figure>
-  <img src="/images/pico/wiring-diagram.svg" alt="مخطط توصيل: Pico W مع الشاشة والميكروفون والأزرار والمؤشر والجرس" loading="lazy" />
-  <figcaption>مخطط — توصيلات الجهاز (من المستودع).</figcaption>
-</figure>
-
-<figure>
-  <img src="/images/pico/console-overview.png" alt="لوحة إدارة منصة التحكم تعرض الأجهزة والنشاط" width="1440" height="860" loading="lazy" />
-  <figcaption>لقطة شاشة — لوحة إدارة منصة التحكم (من وثائق المستودع).</figcaption>
-</figure>

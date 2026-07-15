@@ -19,6 +19,10 @@ links:
   - label: "Visual matcher"
     href: "https://github.com/lla7wel/visual-product-matcher"
 claims: ["B1", "B3", "B5", "B7"]
+summary:
+  problem: "A retail Facebook page with roughly 61,000 followers (public page count, July 2026) receives a constant stream of product questions in Libyan Arabic — answering means identifying one of more than 4,700 catalog products, often from a photo, without ever inventing a price."
+  contribution: "Designed, built, and operate the entire platform solo — the message pipeline, the matching engines, the bilingual admin console, and the self-hosted infrastructure it runs on."
+  result: "In production for English Home Libya: catalog-true answers, safety guards that each trace to a real incident, and instant human handoff the moment intent turns commercial."
 translationStatus: reviewed
 ---
 
@@ -86,13 +90,3 @@ Solo project, built with modern tooling. It runs on Gemini and Meta's Graph
 API; everything else — including the matching engines — is in the linked
 repositories.
 
-## Gallery
-
-<figure>
-  <img src="/images/csa/architecture.svg" alt="Platform architecture: Caddy in front of the Next.js admin app and Postgres, integrations core connecting Meta webhooks and Gemini" loading="lazy" />
-  <figcaption>Diagram — deployment architecture (from the repository; placeholder domains).</figcaption>
-</figure>
-<figure>
-  <img src="/images/csa/message-flow.svg" alt="Message flow: webhook, burst batching, catalog tools, sanitizer, delivery guard, human handoff" loading="lazy" />
-  <figcaption>Diagram — customer-message flow through the safety guards (from the repository).</figcaption>
-</figure>

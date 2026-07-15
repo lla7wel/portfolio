@@ -1,0 +1,174 @@
+---
+/* English Home — the eight-stage decision path, with an SVG rail whose
+   segments highlight per selected stage. Conceptual sequence: reading order
+   may follow the locale; the rail is decorative (aria-hidden), semantics
+   live in the stage list. */
+import { type Locale } from "../../lib/i18n";
+import StageExplainerShell from "./StageExplainerShell.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const ar = locale === "ar";
+
+const stages = [
+  {
+    id: "message",
+    code: "MSG",
+    label: ar ? "رسالة العميل" : "Customer message",
+    detail: ar
+      ? "يرسل العميل سؤالًا على صفحة فيسبوك — غالبًا «بكم هذا؟» مع صورة. تصل الرسالة عبر Meta webhook."
+      : "A customer messages the Facebook page — usually “how much is this?” with a photo. It arrives over a Meta webhook.",
+  },
+  {
+    id: "batch",
+    code: "BAT",
+    label: ar ? "تجميع الدفعات" : "Burst batching",
+    detail: ar
+      ? "يرسل العملاء خمس رسائل قصيرة لا رسالة واحدة طويلة؛ نافذة خمس ثوانٍ «الأحدث يفوز» تمنع خمسة ردود منفصلة."
+      : "Customers send five short messages, not one long one; a five-second newest-wins window prevents five separate replies.",
+  },
+  {
+    id: "catalog",
+    code: "CAT",
+    label: ar ? "البحث في الكتالوج" : "Catalog lookup",
+    detail: ar
+      ? "تُقرأ الأسعار من الكتالوج الحي فقط — أكثر من 4,700 منتج (يوليو 2026) — ولا يُخترع سعر أبدًا."
+      : "Prices are read only from the live catalog — more than 4,700 products as of July 2026 — and a price is never invented.",
+  },
+  {
+    id: "image",
+    code: "IMG",
+    label: ar ? "مطابقة الصورة" : "Image matching",
+    detail: ar
+      ? "التعرف على المنتج من الصورة يتبع قاعدة «لا تخمين»: المجموعة الفارغة تعيد «لا يوجد»، والتصحيحات البشرية تعلّم المطابق."
+      : "Photo recognition follows the never-guess rule: an empty candidate pool returns none, and human-confirmed corrections teach the matcher.",
+  },
+  {
+    id: "decide",
+    code: "AI",
+    label: ar ? "قرار النموذج" : "AI decision",
+    detail: ar
+      ? "يقرر النموذج الرد اعتمادًا على أدوات الكتالوج فقط، مع إعادة فحص ai_enabled لحظة الإرسال — إن تدخل إنسان أثناء التوليد يُسقَط الرد."
+      : "The model composes a reply using catalog tools only, with a send-time ai_enabled re-check — if a human took over mid-generation, the AI reply is dropped.",
+  },
+  {
+    id: "sanitize",
+    code: "SAN",
+    label: ar ? "معقّم المخرجات" : "Output sanitizer",
+    detail: ar
+      ? "لا يمكن أن تتسرب صيغة الأدوات أو أي نص داخلي إلى رسالة عميل."
+      : "Tool syntax or internal text can never leak into a customer message.",
+  },
+  {
+    id: "deliver",
+    code: "DLV",
+    label: ar ? "حارس التسليم" : "Delivery guard",
+    detail: ar
+      ? "لا تُوسم رسالة بأنها «سلّمت» إلا بعد تأكيد واجهة Meta؛ ولا يمكن لرد بطيء أن يطمس حالة محادثة أحدث."
+      : "A message is only marked delivered when the API confirms it, and a slow response can never overwrite a newer conversation state.",
+  },
+  {
+    id: "handoff",
+    code: "HUM",
+    label: ar ? "تسليم بشري" : "Human handoff",
+    detail: ar
+      ? "لحظة تحول النية إلى شراء أو استرجاع أو شكوى، تنتقل المحادثة إلى إنسان — وتتوقف الأتمتة."
+      : "The moment intent moves to orders, refunds, or complaints, the conversation goes to a human — and automation stands down.",
+  },
+];
+
+const W = 880;
+const nodeX = (i: number) => 40 + i * ((W - 80) / (stages.length - 1));
+---
+
+<StageExplainerShell
+  locale={locale}
+  title={ar ? "مسار القرار — من رسالة العميل إلى التسليم البشري" : "The decision path — from customer message to human handoff"}
+  stages={stages}
+  diagramText={ar
+    ? "مخطط خطي بثماني عقد يمثل تسلسل المعالجة من استقبال الرسالة حتى التسليم البشري."
+    : "A linear diagram of eight nodes representing the processing sequence from message receipt to human handoff."}
+>
+  <svg
+    slot="diagram"
+    viewBox={`0 0 ${W} 84`}
+    aria-hidden="true"
+    class="rail"
+  >
+    {
+      stages.slice(0, -1).map((s, i) => (
+        <line
+          x1={nodeX(i)}
+          y1="42"
+          x2={nodeX(i + 1)}
+          y2="42"
+          class="seg"
+          data-segment={`${s.id} ${stages[i + 1].id}`}
+        />
+      ))
+    }
+    {
+      stages.map((s, i) => (
+        <g data-segment={s.id} class="node-g">
+          <circle cx={nodeX(i)} cy="42" r="7" class="node" />
+          <text x={nodeX(i)} y="20" text-anchor="middle" class="code mono">
+            {s.code}
+          </text>
+        </g>
+      ))
+    }
+  </svg>
+</StageExplainerShell>
+
+<style>
+  .rail {
+    inline-size: 100%;
+    block-size: auto;
+    margin-block-end: var(--space-4);
+    display: none;
+  }
+  @media (min-width: 45em) {
+    .rail {
+      display: block;
+    }
+  }
+  /* The conceptual sequence follows reading order in Arabic. */
+  :global([dir="rtl"]) .rail {
+    transform: scaleX(-1);
+  }
+  :global([dir="rtl"]) .rail text {
+    transform: scaleX(-1);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .seg {
+    stroke: var(--color-rule-strong);
+    stroke-width: 2;
+    transition: stroke var(--dur-control) var(--ease-technical);
+  }
+  .seg.is-active {
+    stroke: var(--accent, var(--color-cyan));
+    stroke-width: 3;
+  }
+  .node {
+    fill: var(--color-surface-raised);
+    stroke: var(--color-rule-strong);
+    stroke-width: 2;
+    transition: stroke var(--dur-control) var(--ease-technical);
+  }
+  .node-g.is-active .node {
+    stroke: var(--accent, var(--color-cyan));
+    fill: var(--accent-soft, var(--color-signal-soft));
+  }
+  .code {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    fill: var(--color-ink-muted);
+  }
+  .node-g.is-active .code {
+    fill: var(--accent, var(--color-cyan));
+    font-weight: 600;
+  }
+</style>

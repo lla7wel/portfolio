@@ -15,6 +15,10 @@ links:
   - label: "Basys 3 decoders"
     href: "https://github.com/lla7wel/basys3-decoders"
 claims: ["F1"]
+summary:
+  problem: "Classroom digital logic usually ends at a waveform screenshot — unreproducible and unverifiable by anyone else."
+  contribution: "Rebuilt the coursework as real releases: self-checking testbenches sweeping the entire input space, GHDL simulation in CI, Vivado waveform captures, and Basys 3 pin constraints."
+  result: "512 of 512 adder vectors and all 36 decoder vectors green in CI on every push; on-board bring-up is author-attested and labeled as exactly that."
 translationStatus: reviewed
 ---
 
@@ -42,13 +46,3 @@ Both repositories run their full testbench suites in GitHub Actions on
 every push (green as of July 2026). Both are companion work to Logic
 Design I — labeled as coursework-extended, because that's what it is.
 
-## Gallery
-
-<figure>
-  <img src="/images/fpga/waveform-collapsed.png" alt="Vivado behavioral simulation waveform of the 4-bit ripple-carry adder over ten stimulus vectors" width="1800" height="983" loading="lazy" />
-  <figcaption>Simulation output — Vivado behavioral waveform for the 4-bit adder (not an on-hardware capture).</figcaption>
-</figure>
-<figure>
-  <img src="/images/fpga/ripple-carry-chain.svg" alt="Schematic of the ripple-carry chain built from four full adders" loading="lazy" />
-  <figcaption>Diagram — ripple-carry chain (from the repository).</figcaption>
-</figure>
