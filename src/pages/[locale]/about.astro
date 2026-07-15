@@ -1,105 +1,238 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Journey from "../../components/home/Journey.astro";
 import { type Locale, t } from "../../lib/i18n";
 
 export function getStaticPaths() {
   return [{ params: { locale: "en" } }, { params: { locale: "ar" } }];
 }
 const locale = Astro.params.locale as Locale;
+const ar = locale === "ar";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  mainEntity: {
+    "@type": "Person",
+    name: "Mohamed Khalid Elbahlool",
+    alumniOf: { "@type": "CollegeOrUniversity", name: "Florida International University" },
+    knowsLanguage: ["en", "ar", "tr"],
+    sameAs: [
+      "https://github.com/lla7wel",
+      "https://www.linkedin.com/in/mohamed-elbahlool-1373002bb/",
+    ],
+  },
+};
 ---
 
-<Base locale={locale} title={t(locale, "about.title")}>
-  <div class="measure">
-    {
-      locale === "en" ? (
-        <>
-          <h1>About</h1>
-          <p>
-            I grew up between Libya and Turkey and now study Computer
-            Engineering at Florida International University in Miami. I work in
-            Arabic, English, and Turkish — and the systems I build do too: the
-            product-matching engine behind the customer-service platform I
-            operate literally reconciles a catalog across those three
-            languages.
-          </p>
-          <p>
-            My path has run from micro:bit robots, to a carefully guarded
-            dry-run automation for a real retail business, to where I am now:
-            operating a self-hosted production platform for English Home
-            Libya, and building embedded systems that I verify on real
-            hardware — a Raspberry Pi Pico arcade game with a released fix for
-            a defect that only appeared on the physical panel, and a
-            hand-wired voice terminal with a custom PIO audio-capture path.
-          </p>
-          <h2>Experience</h2>
-          <h3 style="margin-block-end:0.2rem;">Digital Systems &amp; Automation Specialist — English Home Libya</h3>
-          <p style="color:var(--ink-muted); margin-block-start:0;">2023 – Present · Remote</p>
-          <p>
-            I run the digital side of a retail business serving customers in
-            Libya: customer messaging in Arabic and English, product catalogs,
-            domain/DNS and branded email, and the self-hosted customer-service
-            platform documented in the flagship case study. The platform's
-            requirements came directly from two years of doing that work by
-            hand.
-          </p>
-          <h3 style="margin-block-end:0.2rem;">Learning Assistant II — FIU Mastery Math Lab</h3>
-          <p style="color:var(--ink-muted); margin-block-start:0;">August 2024 – Present · ~20 hours/week</p>
-          <p>
-            I support Algebra, Precalculus, and Trigonometry students through
-            mini-lessons, guided practice, and one-on-one tutoring — daily
-            practice in technical communication, collaborative problem
-            solving, and explaining mathematical ideas to students from very
-            different backgrounds.
-          </p>
-          <h2>Education</h2>
-          <ul>
-            <li>B.S. Computer Engineering, Florida International University — senior (93 credits), expected August 2027</li>
-            <li>GPA 3.6+ (verified July 2026) · Dean's List: Fall 2024, Spring 2025</li>
-            <li>Embedded coursework: C and C++ for Embedded Systems, Programming Embedded Systems; Logic Design and Circuit Analysis (Summer 2026)</li>
+<Base locale={locale} title={t(locale, "about.title")} jsonLd={jsonLd} routeLabel="ABOUT">
+  <div class="canvas about">
+    <header class="head">
+      <p class="anno" data-tone="signal">{ar ? "نبذة" : "ABOUT"}</p>
+      <h1>{ar ? "نبذة" : "About"}</h1>
+    </header>
+
+    <div class="grid-2">
+      <div class="prose">
+        {
+          ar ? (
+            <>
+              <p class="lead">
+                نشأت بين ليبيا وتركيا، وأدرس اليوم هندسة الحاسوب في جامعة فلوريدا
+                الدولية في ميامي. أعمل بالعربية والإنجليزية والتركية — والأنظمة
+                التي أبنيها كذلك: محرك مطابقة المنتجات خلف منصة خدمة العملاء التي
+                أشغّلها يطابق فعليًا كتالوجًا واحدًا عبر هذه اللغات الثلاث.
+              </p>
+              <p>
+                بدأ مساري من روبوتات micro:bit، ثم أتمتةٍ تجريبية محكومة بضوابط
+                صارمة لصالح نشاط تجاري حقيقي، وصولًا إلى ما أعمل عليه الآن: تشغيل
+                منصة إنتاجية مستضافة ذاتيًا لـ English Home Libya، وبناء أنظمة
+                مدمجة أتحقق منها على عتاد حقيقي — لعبة أركيد على Raspberry Pi Pico
+                صدر لها إصلاح موثَّق لعيب لم يظهر إلا على الشاشة الفعلية، وجهاز
+                صوتي مبني يدويًا بمسار التقاط صوت مخصص عبر PIO.
+              </p>
+              <p>
+                طريقتي في العمل واحدة مهما اختلفت الطبقة: أدلة قبل الادعاءات،
+                وحواجز أمان تولد من أعطال حقيقية، وتوثيق يجعل التحقق ممكنًا لأي
+                أحد. هذا الموقع نفسه مبني على سجل ادعاءات مُتحقق منه.
+              </p>
+            </>
+          ) : (
+            <>
+              <p class="lead">
+                I grew up between Libya and Turkey and now study Computer
+                Engineering at Florida International University in Miami. I work
+                in Arabic, English, and Turkish — and the systems I build do too:
+                the product-matching engine behind the customer-service platform
+                I operate literally reconciles a catalog across those three
+                languages.
+              </p>
+              <p>
+                My path has run from micro:bit robots, to a carefully guarded
+                dry-run automation for a real retail business, to where I am now:
+                operating a self-hosted production platform for English Home
+                Libya, and building embedded systems that I verify on real
+                hardware — a Raspberry Pi Pico arcade game with a released fix
+                for a defect that only appeared on the physical panel, and a
+                hand-wired voice terminal with a custom PIO audio-capture path.
+              </p>
+              <p>
+                The working method is the same at every layer: evidence before
+                claims, guards born from real incidents, and documentation that
+                lets anyone verify. This site itself is built on a verified claim
+                registry.
+              </p>
+            </>
+          )
+        }
+      </div>
+
+      <aside class="facts">
+        <div class="fact-block corner-marks">
+          <p class="anno">{ar ? "التعليم" : "EDUCATION"}</p>
+          <ul role="list">
+            {
+              ar ? (
+                <>
+                  <li>بكالوريوس هندسة الحاسوب، جامعة فلوريدا الدولية — سنة رابعة (93 ساعة معتمدة)، تخرج متوقع أغسطس 2027</li>
+                  <li>معدل تراكمي +3.6 (تم التحقق في يوليو 2026) · قائمة العميد: خريف 2024 وربيع 2025</li>
+                  <li>مقررات مدمجة: C و ++C للأنظمة المدمجة، برمجة الأنظمة المدمجة؛ تصميم المنطق وتحليل الدوائر (صيف 2026)</li>
+                </>
+              ) : (
+                <>
+                  <li>B.S. Computer Engineering, Florida International University — senior (93 credits), expected August 2027</li>
+                  <li>GPA 3.6+ (verified July 2026) · Dean's List: Fall 2024, Spring 2025</li>
+                  <li>Embedded coursework: C and C++ for Embedded Systems, Programming Embedded Systems; Logic Design and Circuit Analysis (Summer 2026)</li>
+                </>
+              )
+            }
           </ul>
-        </>
-      ) : (
-        <>
-          <h1>نبذة</h1>
+        </div>
+        <div class="fact-block corner-marks">
+          <p class="anno">{ar ? "اللغات" : "LANGUAGES"}</p>
+          <p>{t(locale, "hero.langs")}</p>
+        </div>
+      </aside>
+    </div>
+
+    <section class="experience" aria-labelledby="exp-h">
+      <h2 id="exp-h">{ar ? "الخبرة" : "Experience"}</h2>
+      <div class="roles">
+        <article class="role">
+          <h3>{ar ? "أخصائي أنظمة رقمية وأتمتة — English Home Libya" : "Digital Systems & Automation Specialist — English Home Libya"}</h3>
+          <p class="when mono muted">{ar ? "2023 – حتى الآن · عن بُعد" : "2023 – Present · Remote"}</p>
           <p>
-            نشأت بين ليبيا وتركيا، وأدرس اليوم هندسة الحاسوب في جامعة فلوريدا
-            الدولية في ميامي. أعمل بالعربية والإنجليزية والتركية — والأنظمة
-            التي أبنيها كذلك: محرك مطابقة المنتجات خلف منصة خدمة العملاء التي
-            أشغّلها يطابق فعليًا كتالوجًا واحدًا عبر هذه اللغات الثلاث.
+            {
+              ar
+                ? "أدير الجانب الرقمي لنشاط تجزئة يخدم عملاء في ليبيا: مراسلات العملاء بالعربية والإنجليزية، وكتالوجات المنتجات، والنطاقات والبريد الرسمي، ومنصة خدمة العملاء المستضافة ذاتيًا الموثقة في دراسة الحالة الرئيسية. متطلبات المنصة جاءت مباشرة من عامين من أداء هذا العمل يدويًا."
+                : "I run the digital side of a retail business serving customers in Libya: customer messaging in Arabic and English, product catalogs, domain/DNS and branded email, and the self-hosted customer-service platform documented in the flagship case study. The platform's requirements came directly from two years of doing that work by hand."
+            }
           </p>
+        </article>
+        <article class="role">
+          <h3>{ar ? "مساعد تدريس ثانٍ — مختبر الرياضيات بجامعة FIU" : "Learning Assistant II — FIU Mastery Math Lab"}</h3>
+          <p class="when mono muted">{ar ? "أغسطس 2024 – حتى الآن · نحو 20 ساعة أسبوعيًا" : "August 2024 – Present · ~20 hours/week"}</p>
           <p>
-            بدأ مساري من روبوتات micro:bit، ثم أتمتةٍ تجريبية محكومة بضوابط
-            صارمة لصالح نشاط تجاري حقيقي، وصولًا إلى ما أعمل عليه الآن: تشغيل
-            منصة إنتاجية مستضافة ذاتيًا لـ English Home Libya، وبناء أنظمة
-            مدمجة أتحقق منها على عتاد حقيقي — لعبة أركيد على Raspberry Pi Pico
-            صدر لها إصلاح موثَّق لعيب لم يظهر إلا على الشاشة الفعلية، وجهاز
-            صوتي مبني يدويًا بمسار التقاط صوت مخصص عبر PIO.
+            {
+              ar
+                ? "أدعم طلاب الجبر وما قبل التفاضل وحساب المثلثات عبر دروس مصغرة وتمارين موجهة ودروس فردية — تمرين يومي على التواصل التقني وحل المشكلات تعاونيًا وشرح المفاهيم الرياضية لطلاب من خلفيات متنوعة."
+                : "I support Algebra, Precalculus, and Trigonometry students through mini-lessons, guided practice, and one-on-one tutoring — daily practice in technical communication, collaborative problem solving, and explaining mathematical ideas to students from very different backgrounds."
+            }
           </p>
-          <h2>الخبرة</h2>
-          <h3 style="margin-block-end:0.2rem;">أخصائي أنظمة رقمية وأتمتة — English Home Libya</h3>
-          <p style="color:var(--ink-muted); margin-block-start:0;">2023 – حتى الآن · عن بُعد</p>
-          <p>
-            أدير الجانب الرقمي لنشاط تجزئة يخدم عملاء في ليبيا: مراسلات
-            العملاء بالعربية والإنجليزية، وكتالوجات المنتجات، والنطاقات
-            والبريد الرسمي، ومنصة خدمة العملاء المستضافة ذاتيًا الموثقة في
-            دراسة الحالة الرئيسية. متطلبات المنصة جاءت مباشرة من عامين من
-            أداء هذا العمل يدويًا.
-          </p>
-          <h3 style="margin-block-end:0.2rem;">مساعد تدريس ثانٍ — مختبر الرياضيات بجامعة FIU</h3>
-          <p style="color:var(--ink-muted); margin-block-start:0;">أغسطس 2024 – حتى الآن · نحو 20 ساعة أسبوعيًا</p>
-          <p>
-            أدعم طلاب الجبر وما قبل التفاضل وحساب المثلثات عبر دروس مصغرة
-            وتمارين موجهة ودروس فردية — تمرين يومي على التواصل التقني وحل
-            المشكلات تعاونيًا وشرح المفاهيم الرياضية لطلاب من خلفيات متنوعة.
-          </p>
-          <h2>التعليم</h2>
-          <ul>
-            <li>بكالوريوس هندسة الحاسوب، جامعة فلوريدا الدولية — سنة رابعة (93 ساعة معتمدة)، تخرج متوقع أغسطس 2027</li>
-            <li>معدل تراكمي +3.6 (تم التحقق في يوليو 2026) · قائمة العميد: خريف 2024 وربيع 2025</li>
-            <li>مقررات الأنظمة المدمجة: برمجة C و ++C للأنظمة المدمجة، برمجة الأنظمة المدمجة؛ تصميم المنطق وتحليل الدوائر (صيف 2026)</li>
-          </ul>
-        </>
-      )
-    }
+        </article>
+      </div>
+    </section>
+
+    <section class="journey-band" aria-labelledby="journey-h">
+      <h2 id="journey-h">{t(locale, "journey.title")}</h2>
+      <Journey locale={locale} />
+    </section>
   </div>
 </Base>
+
+<style>
+  .about {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  :lang(ar) .anno {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .head h1 {
+    font-size: var(--text-section);
+    margin-block: var(--space-3) var(--space-6);
+  }
+
+  .grid-2 {
+    display: grid;
+    gap: var(--space-6);
+  }
+  @media (min-width: 64em) {
+    .grid-2 {
+      grid-template-columns: 7fr 5fr;
+      column-gap: var(--space-8);
+      align-items: start;
+    }
+  }
+
+  .facts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  .fact-block {
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    padding: var(--space-5);
+  }
+  .fact-block .anno {
+    margin-block-end: var(--space-3);
+  }
+  .fact-block ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    font-size: var(--text-small);
+  }
+
+  .experience {
+    margin-block-start: var(--space-8);
+  }
+  .experience h2 {
+    font-size: var(--text-sub);
+    margin-block-end: var(--space-5);
+  }
+  .roles {
+    display: grid;
+    gap: var(--space-6);
+  }
+  @media (min-width: 64em) {
+    .roles {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-8);
+    }
+  }
+  .role h3 {
+    font-size: var(--text-body-lg);
+    margin-block-end: var(--space-2);
+  }
+  .role .when {
+    font-size: var(--text-annotation);
+    margin-block-end: var(--space-3);
+  }
+  .role p {
+    max-inline-size: 58ch;
+  }
+
+  .journey-band {
+    margin-block-start: var(--space-8);
+    border-block-start: 1px solid var(--color-rule);
+    padding-block-start: var(--space-7);
+  }
+  .journey-band h2 {
+    font-size: var(--text-sub);
+    margin-block-end: var(--space-5);
+  }
+</style>

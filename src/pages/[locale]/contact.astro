@@ -1,11 +1,13 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Icon from "../../components/global/Icon.astro";
 import { type Locale, t } from "../../lib/i18n";
 
 export function getStaticPaths() {
   return [{ params: { locale: "en" } }, { params: { locale: "ar" } }];
 }
 const locale = Astro.params.locale as Locale;
+const ar = locale === "ar";
 
 // Owner-approved public contact set (2026-07): email, LinkedIn, GitHub. No phone.
 const email = "tmtmd24@gmail.com";
@@ -13,33 +15,159 @@ const linkedin = "https://www.linkedin.com/in/mohamed-elbahlool-1373002bb/";
 const github = "https://github.com/lla7wel";
 ---
 
-<Base locale={locale} title={t(locale, "contact.title")}>
-  <div class="measure">
-    <h1>{t(locale, "contact.title")}</h1>
-    <p style="font-size:var(--step-1);">{t(locale, "contact.primary")}</p>
-    <p style="color:var(--ink-muted); max-inline-size:38rem;">{t(locale, "contact.open")}</p>
+<Base locale={locale} title={t(locale, "contact.title")} routeLabel="CONTACT">
+  <div class="canvas contact">
+    <p class="anno" data-tone="signal">{ar ? "تواصل" : "CONTACT"}</p>
+    <h1>{t(locale, "contact.close")}</h1>
+    <p class="lead">{t(locale, "contact.primary")}</p>
+    <p class="muted open">{t(locale, "contact.open")}</p>
 
-    <dl class="meta-grid" style="margin-block-start:2rem;">
-      <div>
-        <dt>{locale === "ar" ? "البريد الإلكتروني" : "Email"}</dt>
-        <dd><a class="ltr-island" href={`mailto:${email}`}>{email}</a></dd>
+    <div class="channels">
+      <div class="channel email corner-marks">
+        <p class="anno">{t(locale, "contact.email")}</p>
+        <div class="row">
+          <a class="addr mono" href={`mailto:${email}`}>{email}</a>
+          <button
+            type="button"
+            class="copy"
+            data-copy-email={email}
+          >
+            <Icon name="copy" />
+            {t(locale, "contact.copyEmail")}
+          </button>
+        </div>
+        <p class="status" data-copy-status aria-live="polite"></p>
+        <p class="muted hint">{t(locale, "contact.hint")}</p>
       </div>
-      <div>
-        <dt>LinkedIn</dt>
-        <dd><a class="ltr-island" href={linkedin}>linkedin.com/in/mohamed-elbahlool</a></dd>
-      </div>
-      <div>
-        <dt>GitHub</dt>
-        <dd><a class="ltr-island" href={github}>github.com/lla7wel</a></dd>
-      </div>
-    </dl>
 
-    <p style="color:var(--ink-muted); font-size:var(--step--1);">
-      {
-        locale === "ar"
-          ? "أفضل طريقة للتواصل هي البريد الإلكتروني، مع سطر موضوع واضح."
-          : "Email is the best channel — a clear subject line helps."
-      }
-    </p>
+      <div class="channel corner-marks">
+        <p class="anno">LinkedIn</p>
+        <a class="ext" href={linkedin}>
+          <Icon name="linkedin" />
+          <span class="ltr-island">linkedin.com/in/mohamed-elbahlool</span>
+          <span class="visually-hidden">— {t(locale, "cs.externalLink")}</span>
+        </a>
+      </div>
+
+      <div class="channel corner-marks">
+        <p class="anno">GitHub</p>
+        <a class="ext" href={github}>
+          <Icon name="github" />
+          <span class="ltr-island">github.com/lla7wel</span>
+          <span class="visually-hidden">— {t(locale, "cs.externalLink")}</span>
+        </a>
+      </div>
+    </div>
   </div>
 </Base>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>("[data-copy-email]");
+  const status = document.querySelector<HTMLElement>("[data-copy-status]");
+  btn?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(btn.dataset.copyEmail ?? "");
+      if (status) {
+        status.textContent = document.documentElement.lang === "ar" ? "تم نسخ عنوان البريد" : "Email address copied";
+        setTimeout(() => {
+          status.textContent = "";
+        }, 4000);
+      }
+    } catch {
+      /* clipboard unavailable; the mailto link still works */
+    }
+  });
+</script>
+
+<style>
+  .contact {
+    padding-block: var(--space-8);
+    max-inline-size: var(--wide-max);
+  }
+  :lang(ar) .anno {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  h1 {
+    font-size: var(--text-section);
+    max-inline-size: 24ch;
+    margin-block: var(--space-3) var(--space-5);
+  }
+  .lead {
+    font-size: var(--text-body-lg);
+    max-inline-size: 50ch;
+  }
+  .open {
+    max-inline-size: 60ch;
+    margin-block: var(--space-2) var(--space-7);
+  }
+
+  .channels {
+    display: grid;
+    gap: var(--space-5);
+  }
+  @media (min-width: 64em) {
+    .channels {
+      grid-template-columns: 2fr 1fr 1fr;
+      align-items: start;
+    }
+  }
+  .channel {
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .addr {
+    font-size: var(--text-body-lg);
+    font-weight: 500;
+    text-decoration-color: var(--color-rule-strong);
+  }
+  .copy {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: 44px;
+    padding-inline: var(--space-3);
+    border: 1px solid var(--color-rule-strong);
+    border-radius: var(--radius-control);
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--color-ink);
+    background: var(--color-surface-raised);
+    transition: border-color var(--dur-control) var(--ease-standard);
+  }
+  .copy:hover {
+    border-color: var(--color-signal);
+  }
+  .status {
+    min-block-size: 1.4em;
+    font-size: var(--text-small);
+    color: var(--color-signal);
+    font-weight: 500;
+  }
+  .hint {
+    font-size: var(--text-small);
+  }
+  .ext {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-decoration: none;
+    font-weight: 500;
+    min-block-size: 44px;
+  }
+  .ext:hover {
+    color: var(--color-signal);
+  }
+</style>

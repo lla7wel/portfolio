@@ -2,32 +2,175 @@
 import Base from "../../../layouts/Base.astro";
 import { getCollection } from "astro:content";
 import { type Locale, t, localePath } from "../../../lib/i18n";
+import { projectVisuals } from "../../../data/projectVisuals";
+import Icon from "../../../components/global/Icon.astro";
 
 export function getStaticPaths() {
   return [{ params: { locale: "en" } }, { params: { locale: "ar" } }];
 }
 
 const locale = Astro.params.locale as Locale;
+const ar = locale === "ar";
 const notes = (await getCollection("notes", (n) => n.data.locale === locale)).sort(
-  (a, b) => b.data.published.valueOf() - a.data.published.valueOf()
+  (a, b) => b.data.published.valueOf() - a.data.published.valueOf(),
 );
+const projects = await getCollection("projects", (p) => p.data.locale === locale);
+const projectTitle = (key?: string) =>
+  projects.find((p) => p.data.key === key)?.data.title;
 ---
 
-<Base locale={locale} title={t(locale, "notes.title")}>
-  <div class="measure">
-    <h1>{t(locale, "notes.title")}</h1>
-    <div style="display:grid; gap:1rem;">
+<Base locale={locale} title={t(locale, "notes.title")} routeLabel="LOG">
+  <div class="canvas">
+    <header class="notes-head">
+      <p class="anno" data-tone="signal">{ar ? "سجل هندسي" : "ENGINEERING LOG"}</p>
+      <h1>{t(locale, "notes.title")}</h1>
+      <p class="lead muted">{t(locale, "notes.sub")}</p>
+    </header>
+
+    <ol class="log" role="list">
       {
-        notes.map((n) => (
-          <a class="card" href={localePath(locale, `notes/${n.data.key}/`)}>
-            <h3 style="margin:0 0 0.3rem;">{n.data.title}</h3>
-            <p>{n.data.description}</p>
-            <time datetime={n.data.published.toISOString().slice(0, 10)} style="color:var(--ink-muted); font-size:var(--step--1);">
-              {n.data.published.toLocaleDateString(locale === "ar" ? "ar" : "en-US", { year: "numeric", month: "long" })}
-            </time>
-          </a>
-        ))
+        notes.map((n) => {
+          const vis = n.data.project ? projectVisuals[n.data.project] : undefined;
+          return (
+            <li class="entry" data-project={n.data.project}>
+              <div class="rail" aria-hidden="true">
+                <span class="node" />
+              </div>
+              <div class="meta">
+                <time datetime={n.data.published.toISOString().slice(0, 10)} class="mono">
+                  {n.data.published.toLocaleDateString(ar ? "ar" : "en-US", {
+                    year: "numeric",
+                    month: "long",
+                  })}
+                </time>
+                {vis && (
+                  <span class="fig-label">{vis.code}</span>
+                )}
+              </div>
+              <div class="body">
+                <h2>
+                  <a href={localePath(locale, `notes/${n.data.key}/`)}>{n.data.title}</a>
+                </h2>
+                <p class="muted">{n.data.description}</p>
+                {n.data.project && projectTitle(n.data.project) && (
+                  <p class="assoc">
+                    <span class="muted">{t(locale, "notes.fromProject")}:</span>{" "}
+                    <a href={localePath(locale, `work/${n.data.project}/`)}>
+                      {projectTitle(n.data.project)}
+                    </a>
+                  </p>
+                )}
+                <p class="read">
+                  <a href={localePath(locale, `notes/${n.data.key}/`)} aria-hidden="true" tabindex="-1">
+                    {ar ? "اقرأ المقالة" : "Read the note"} <Icon name="arrow" class="icon sm" />
+                  </a>
+                </p>
+              </div>
+            </li>
+          );
+        })
       }
-    </div>
+    </ol>
   </div>
 </Base>
+
+<style>
+  .notes-head {
+    padding-block: var(--space-7) var(--space-6);
+  }
+  .notes-head h1 {
+    font-size: var(--text-section);
+    margin-block: var(--space-3) var(--space-4);
+  }
+  .notes-head .lead {
+    max-inline-size: 52ch;
+  }
+  :lang(ar) .anno {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .log {
+    display: flex;
+    flex-direction: column;
+    max-inline-size: var(--wide-max);
+    padding-block-end: var(--space-8);
+  }
+  .entry {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.5rem 11rem 1fr;
+    gap: var(--space-4);
+    padding-block: var(--space-6);
+    border-block-end: 1px solid var(--color-rule);
+  }
+  @media (max-width: 44.99em) {
+    .entry {
+      grid-template-columns: 1.5rem 1fr;
+    }
+    .meta {
+      grid-column: 2;
+    }
+    .body {
+      grid-column: 2;
+    }
+  }
+  .rail {
+    position: relative;
+    grid-row: 1 / span 2;
+  }
+  .rail::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 5px;
+    inline-size: 1px;
+    background: var(--color-rule);
+  }
+  .node {
+    position: absolute;
+    inset-block-start: 0.6rem;
+    inset-inline-start: 1px;
+    inline-size: 9px;
+    block-size: 9px;
+    border-radius: 50%;
+    background: var(--accent, var(--color-signal));
+    border: 2px solid var(--color-canvas);
+  }
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-size: var(--text-small);
+    color: var(--color-ink-muted);
+  }
+  .body h2 {
+    font-size: var(--text-sub);
+    margin-block-end: var(--space-2);
+  }
+  .body h2 a {
+    text-decoration: none;
+  }
+  .body h2 a:hover {
+    color: var(--accent-ink, var(--color-signal));
+  }
+  .body p {
+    max-inline-size: 62ch;
+  }
+  .assoc {
+    font-size: var(--text-small);
+    margin-block-start: var(--space-2);
+  }
+  .read {
+    margin-block-start: var(--space-3);
+  }
+  .read a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--accent-ink, var(--color-signal));
+  }
+</style>

@@ -1,17 +1,67 @@
 ---
 import Base from "../layouts/Base.astro";
 import { t } from "../lib/i18n";
-// 404 renders in English with an Arabic line — static hosts serve one 404.
+// 404 renders in English with an Arabic block — static hosts serve one 404.
+// Lightweight by design: no project media, no interactive modules.
 ---
 
 <Base locale="en" title={t("en", "notFound.title")}>
-  <div class="measure">
-    <h1>{t("en", "notFound.title")}</h1>
-    <p>{t("en", "notFound.body")}</p>
-    <p lang="ar" dir="rtl">{t("ar", "notFound.body")}</p>
-    <p>
-      <a href="/en/">{t("en", "notFound.home")}</a> ·
-      <a href="/ar/" lang="ar" dir="rtl">{t("ar", "notFound.home")}</a>
+  <div class="canvas nf">
+    <p class="code mono" aria-hidden="true">
+      404 · {t("en", "notFound.code")}
     </p>
+    <h1>{t("en", "notFound.title")}</h1>
+    <p class="muted">{t("en", "notFound.body")}</p>
+    <p class="muted" lang="ar" dir="rtl">{t("ar", "notFound.body")}</p>
+
+    <div class="diag mono" aria-hidden="true">
+      <span>ROUTE&nbsp;&nbsp;— not found</span>
+      <span>LOCALE — /en/ · /ar/</span>
+      <span>STATE&nbsp;&nbsp;— recoverable</span>
+    </div>
+
+    <div class="links">
+      <a class="btn" data-variant="primary" href="/en/">{t("en", "notFound.home")}</a>
+      <a class="btn" href="/en/work/">{t("en", "notFound.work")}</a>
+      <a class="btn" href="/ar/" lang="ar" dir="rtl">{t("ar", "notFound.home")}</a>
+    </div>
   </div>
 </Base>
+
+<style>
+  .nf {
+    padding-block: var(--space-9);
+    max-inline-size: var(--wide-max);
+  }
+  .code {
+    color: var(--color-danger);
+    font-size: var(--text-small);
+    letter-spacing: 0.1em;
+    margin-block-end: var(--space-4);
+  }
+  h1 {
+    font-size: var(--text-section);
+    margin-block-end: var(--space-4);
+  }
+  .nf p {
+    max-inline-size: 52ch;
+  }
+  .diag {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    padding: var(--space-4) var(--space-5);
+    font-size: var(--text-annotation);
+    color: var(--color-ink-muted);
+    max-inline-size: 24rem;
+    margin-block: var(--space-6);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

@@ -1,7 +1,9 @@
 ---
 import Base from "../../../layouts/Base.astro";
 import { getCollection, render } from "astro:content";
-import { type Locale } from "../../../lib/i18n";
+import { type Locale, t, localePath } from "../../../lib/i18n";
+import { projectVisuals } from "../../../data/projectVisuals";
+import Icon from "../../../components/global/Icon.astro";
 
 export async function getStaticPaths() {
   const notes = await getCollection("notes");
@@ -13,26 +15,113 @@ export async function getStaticPaths() {
 
 const { note } = Astro.props;
 const locale = note.data.locale as Locale;
+const ar = locale === "ar";
 const { Content } = await render(note);
+const vis = note.data.project ? projectVisuals[note.data.project] : undefined;
+const projects = await getCollection("projects", (p) => p.data.locale === locale);
+const project = projects.find((p) => p.data.key === note.data.project);
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  headline: note.data.title,
-  datePublished: note.data.published.toISOString().slice(0, 10),
-  author: { "@type": "Person", name: "Mohamed Khalid Elbahlool" },
-  inLanguage: locale,
-};
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: note.data.title,
+    description: note.data.description,
+    datePublished: note.data.published.toISOString().slice(0, 10),
+    author: { "@type": "Person", name: "Mohamed Khalid Elbahlool" },
+    inLanguage: locale,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: t(locale, "notes.title"),
+        item: new URL(localePath(locale, "notes/"), Astro.site).toString(),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: note.data.title,
+        item: new URL(localePath(locale, `notes/${note.data.key}/`), Astro.site).toString(),
+      },
+    ],
+  },
+];
 ---
 
-<Base locale={locale} title={note.data.title} description={note.data.description} jsonLd={jsonLd}>
-  <article class="measure">
-    <h1>{note.data.title}</h1>
-    <p style="color:var(--ink-muted);">
-      <time datetime={note.data.published.toISOString().slice(0, 10)}>
-        {note.data.published.toLocaleDateString(locale === "ar" ? "ar" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
-      </time>
-    </p>
-    <Content />
+<Base
+  locale={locale}
+  title={note.data.title}
+  description={note.data.description}
+  jsonLd={jsonLd}
+  routeLabel={vis ? `LOG · ${vis.code}` : "LOG"}
+>
+  <article class="note measure" data-project={note.data.project}>
+    <header>
+      <p class="meta">
+        <time datetime={note.data.published.toISOString().slice(0, 10)} class="mono muted">
+          {
+            note.data.published.toLocaleDateString(ar ? "ar" : "en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
+          }
+        </time>
+        {vis && <span class="fig-label">{vis.code}</span>}
+      </p>
+      <h1>{note.data.title}</h1>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {
+      project && (
+        <aside class="back callout" aria-label={t(locale, "notes.fromProject")}>
+          <p class="anno">{t(locale, "notes.fromProject")}</p>
+          <a href={localePath(locale, `work/${project.data.key}/`)}>
+            {project.data.title} <Icon name="arrow" class="icon sm" />
+          </a>
+        </aside>
+      )
+    }
   </article>
 </Base>
+
+<style>
+  .note {
+    padding-block: var(--space-7);
+  }
+  .meta {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    margin-block-end: var(--space-4);
+    font-size: var(--text-small);
+  }
+  h1 {
+    font-size: var(--text-section);
+    margin-block-end: var(--space-6);
+    max-inline-size: 22ch;
+  }
+  .back {
+    margin-block-start: var(--space-7);
+  }
+  .back a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 600;
+    font-size: var(--text-body-lg);
+  }
+  :lang(ar) .back .anno {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+</style>
