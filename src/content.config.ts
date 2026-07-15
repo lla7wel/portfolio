@@ -37,6 +37,14 @@ const projects = defineCollection({
       .array(z.object({ label: z.string(), href: z.string().url() }))
       .default([]),
     claims: z.array(z.string()).default([]), // claim IDs used on this page
+    /** Recruiter summary: problem → contribution → result (localized). */
+    summary: z
+      .object({
+        problem: z.string(),
+        contribution: z.string(),
+        result: z.string(),
+      })
+      .optional(),
     translationStatus: z.enum(["reviewed", "draft", "machine"]).default("draft"),
   }),
 });
