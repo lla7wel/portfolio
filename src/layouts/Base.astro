@@ -21,7 +21,10 @@ const dir = dirFor(locale);
 const pageTitle = title ? `${title} — ${t(locale, "hero.name")}` : t(locale, "site.title");
 const pageDescription = description ?? t(locale, "site.description");
 const pathname = Astro.url.pathname;
-const altPath = switchLocalePath(locale, pathname);
+// The 404 page renders at arbitrary URLs; send its locale switch home.
+const altPath = pathname.startsWith("/404")
+  ? (locale === "ar" ? "/en/" : "/ar/")
+  : switchLocalePath(locale, pathname);
 const enUrl = new URL(locale === "en" ? pathname : altPath, Astro.site);
 const arUrl = new URL(locale === "ar" ? pathname : altPath, Astro.site);
 const canonical = new URL(pathname, Astro.site);

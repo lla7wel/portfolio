@@ -47,7 +47,7 @@ export const ui = {
     "contact.primary": "Open to engineering internships and entry-level roles.",
     "contact.secondary": "Also open to collaboration and selected projects.",
     "contact.open":
-      "Open to engineering internships, entry-level engineering roles, open-source collaboration, research or technical collaboration, and selected freelance engineering work.",
+      "Also open to open-source collaboration, research or technical collaboration, and selected freelance engineering work.",
     "footer.rights": "All project claims link to their evidence.",
     "notes.title": "Engineering notes",
     "about.title": "About",
@@ -95,7 +95,7 @@ export const ui = {
     "contact.primary": "متاح لفرص التدريب الهندسي والوظائف المبتدئة.",
     "contact.secondary": "ومنفتح أيضًا على التعاون والمشاريع المختارة.",
     "contact.open":
-      "متاح لفرص التدريب الهندسي، والوظائف الهندسية المبتدئة، والتعاون في المصادر المفتوحة، والتعاون البحثي أو التقني، وأعمال هندسية مستقلة مختارة.",
+      "ومنفتح أيضًا على التعاون في المصادر المفتوحة، والتعاون البحثي أو التقني، وأعمال هندسية مستقلة مختارة.",
     "footer.rights": "كل ادعاء في المشاريع مرتبط بدليله.",
     "notes.title": "مقالات هندسية",
     "about.title": "نبذة",
