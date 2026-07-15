@@ -1,0 +1,203 @@
+---
+/* Flagship 02 — NOVA RAID. Hardware photograph next to the pixel-true
+   harness render: the honest pre-fix/post-fix comparison. Retro styling
+   stays inside this section. */
+import { Image } from "astro:assets";
+import { type Locale, t, localePath } from "../../lib/i18n";
+import Icon from "../global/Icon.astro";
+import ArtifactLabel from "../content/ArtifactLabel.astro";
+import hardwareSplash from "../../assets/nova-raid/hardware-splash.jpg";
+import splashRender from "../../assets/nova-raid/01-splash.png";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  outcome: string;
+  role: string;
+}
+const { locale, title, outcome, role } = Astro.props;
+const ar = locale === "ar";
+---
+
+<article class="flagship-nova" data-project="nova-raid">
+  <div class="head">
+    <p class="fig-label">EMB-01</p>
+    <h3><a href={localePath(locale, "work/nova-raid/")}>{title}</a></h3>
+    <p class="status-tag">{t(locale, "status.released")}</p>
+  </div>
+
+  <div class="compare">
+    <figure class="shot hardware corner-marks">
+      <Image
+        src={hardwareSplash}
+        alt={ar
+          ? "لعبة NOVA RAID على لوحة Pico الفعلية — تظهر ألوان ما قبل الإصلاح المعكوسة"
+          : "NOVA RAID splash screen on the physical Pico board, showing the inverted pre-fix colors"}
+        width={1100}
+        sizes="(min-width: 64em) 44rem, 100vw"
+        format="avif"
+        quality={60}
+        loading="lazy"
+      />
+      <figcaption>
+        <ArtifactLabel locale={locale} kind="photo" />
+        <span>
+          {
+            ar
+              ? "أول تشغيل على العتاد — v1.0.0 بألوان معكوسة (الخلل الذي لم تكتشفه المحاكاة)"
+              : "First run on hardware — v1.0.0 with inverted colors, the defect no simulator caught"
+          }
+        </span>
+      </figcaption>
+    </figure>
+
+    <figure class="shot render corner-marks">
+      <Image
+        src={splashRender}
+        alt={ar
+          ? "إطار شاشة البداية كما يعرضه المحرك — التقاط دقيق بالبكسل من منصة الاختبار المكتبية"
+          : "Splash frame as the engine draws it — pixel-true capture from the desktop host harness"}
+        width={480}
+        format="png"
+        loading="lazy"
+        class="pixel"
+      />
+      <figcaption>
+        <ArtifactLabel locale={locale} kind="render" />
+        <span>
+          {
+            ar
+              ? "التفسير الصحيح للألوان — إصلاح v1.0.1 أرسل أمر INVON عند التهيئة"
+              : "The intended colors — the v1.0.1 fix sent INVON during panel init"
+          }
+        </span>
+      </figcaption>
+    </figure>
+
+    <div class="copy">
+      <p class="outcome">{outcome}</p>
+      <p class="pipeline mono" aria-hidden="true">
+        core 0 · sim+render → framebuffer ⇄ core 1 · DMA/SPI → TFT
+      </p>
+      <p class="visually-hidden">
+        {
+          ar
+            ? "خط العرض: النواة صفر تحاكي وترسم في إطار العزل، والنواة الأولى تبثه عبر DMA و SPI إلى الشاشة."
+            : "Render pipeline: core zero simulates and draws into the framebuffer while core one streams it over DMA and SPI to the TFT panel."
+        }
+      </p>
+      <dl class="mini-meta">
+        <div>
+          <dt>{t(locale, "cs.role")}</dt>
+          <dd>{role}</dd>
+        </div>
+        <div>
+          <dt>{ar ? "الفارق التقني" : "Technical distinction"}</dt>
+          <dd>
+            {
+              ar
+                ? "نفس شيفرة اللعبة تُترجم على الحاسوب المكتبي عبر طبقة HAL — فتُختبر كل حالة في CI مع كل دفعة."
+                : "The identical game sources compile on a desktop through a small HAL — so CI drives every game state on every push."
+            }
+          </dd>
+        </div>
+      </dl>
+      <a class="btn" href={localePath(locale, "work/nova-raid/")}>
+        {t(locale, "work.viewCase")}
+        <Icon name="arrow" />
+      </a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .flagship-nova {
+    border-block-start: 1px solid var(--color-rule);
+    padding-block: var(--space-7);
+  }
+  .head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-block-end: var(--space-5);
+  }
+  .head h3 {
+    font-size: var(--text-sub);
+    margin-inline-end: auto;
+  }
+  .head h3 a {
+    text-decoration: none;
+  }
+  .head h3 a:hover {
+    color: var(--accent-ink, var(--accent));
+  }
+
+  .compare {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .compare > :global(*) {
+    min-inline-size: 0;
+  }
+  @media (min-width: 64em) {
+    .compare {
+      grid-template-columns: 5fr 3fr 4fr;
+      align-items: start;
+    }
+  }
+
+  .shot {
+    margin: 0;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-media);
+    overflow: hidden;
+    background: var(--color-surface-raised);
+  }
+  .shot :global(img) {
+    inline-size: 100%;
+    block-size: auto;
+  }
+  .render :global(img.pixel) {
+    image-rendering: pixelated;
+  }
+  .shot figcaption {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-annotation);
+  }
+
+  .outcome {
+    font-size: var(--text-body-lg);
+    text-wrap: pretty;
+  }
+  .pipeline {
+    font-size: var(--text-annotation);
+    color: var(--accent-ink, var(--accent));
+    margin-block: var(--space-4);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .mini-meta {
+    display: grid;
+    gap: var(--space-4);
+    margin-block: var(--space-4) var(--space-5);
+    border-inline-start: 2px solid var(--accent-2);
+    padding-inline-start: var(--space-4);
+  }
+  .mini-meta dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-ink-muted);
+  }
+  :lang(ar) .mini-meta dt {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .mini-meta dd {
+    margin: 0;
+    font-size: var(--text-small);
+  }
+</style>

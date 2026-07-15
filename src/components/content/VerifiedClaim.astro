@@ -1,0 +1,38 @@
+---
+/* Structured metric bound to the claim registry. Renders the wording it is
+   given (already registry-approved in content), but fails the build if the
+   backing claim is missing, unconfirmed, or expired — so stale numbers can
+   never ship silently. */
+import { requireClaim } from "../../lib/claims";
+
+interface Props {
+  id: string;
+  /** Visible value/statement (must follow the claim's safeWording). */
+  value: string;
+  /** Short label under/next to the value. */
+  label?: string;
+}
+const { id, value, label } = Astro.props;
+const claim = requireClaim(id);
+---
+
+<span class="verified-claim" data-claim-id={claim.id} title={`Verified ${claim.lastVerified}`}>
+  <span class="value">{value}</span>
+  {label && <span class="label">{label}</span>}
+</span>
+
+<style>
+  .verified-claim {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .value {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .label {
+    font-size: var(--text-small);
+    color: var(--color-ink-muted);
+  }
+</style>

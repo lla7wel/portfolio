@@ -1,0 +1,209 @@
+---
+/* Flagship 01 — English Home platform. Wide editorial/product composition:
+   seeded bilingual conversation + infrastructure path. Catalog cyan accent;
+   coral reserved for the human-handoff state. */
+import { type Locale, t, localePath } from "../../lib/i18n";
+import Icon from "../global/Icon.astro";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  outcome: string;
+  role: string;
+}
+const { locale, title, outcome, role } = Astro.props;
+const ar = locale === "ar";
+---
+
+<article class="flagship-eh" data-project="english-home-platform">
+  <div class="head">
+    <p class="fig-label">SYS-01</p>
+    <h3><a href={localePath(locale, "work/english-home-platform/")}>{title}</a></h3>
+    <p class="status-tag">{t(locale, "status.production")}</p>
+  </div>
+
+  <div class="body">
+    <div class="copy">
+      <p class="outcome">{outcome}</p>
+      <dl class="mini-meta">
+        <div>
+          <dt>{t(locale, "cs.role")}</dt>
+          <dd>{role}</dd>
+        </div>
+        <div>
+          <dt>{ar ? "الفارق التقني" : "Technical distinction"}</dt>
+          <dd>
+            {
+              ar
+                ? "أسعار تُقرأ من الكتالوج الحي فقط — ولا يُخمَّن منتج أبدًا: المجموعة الفارغة تعني «لا يوجد»، لا أقرب تخمين."
+                : "Prices are read only from the live catalog and a product is never guessed: an empty candidate pool returns none, not the least-bad match."
+            }
+          </dd>
+        </div>
+      </dl>
+      <a class="btn" href={localePath(locale, "work/english-home-platform/")}>
+        {t(locale, "work.viewCase")}
+        <Icon name="arrow" />
+      </a>
+    </div>
+
+    <div class="demo corner-marks">
+      <p class="artifact-label" data-kind="seeded">{t(locale, "artifact.seeded")}</p>
+      <div class="chat" dir="rtl" lang="ar">
+        <p class="msg in"><span>بكم هاي؟ 📷</span></p>
+        <p class="msg attach" aria-hidden="true"><span>صورة منتج</span></p>
+        <p class="msg out">
+          <span>
+            وسادة «ديمو-٣٤١» — القياس ٤٥×٤٥ سم، السعر من الكتالوج المباشر.
+          </span>
+        </p>
+        <p class="msg handoff" dir={ar ? "rtl" : "ltr"} lang={locale}>
+          <span>{ar ? "تحويل إلى موظف بشري — طلب شراء" : "Handed to a human — purchase intent"}</span>
+        </p>
+      </div>
+      <p class="pipeline mono" aria-hidden="true">
+        webhook → batch → catalog → match → sanitize → deliver → handoff
+      </p>
+      <p class="visually-hidden">
+        {
+          ar
+            ? "تسلسل المعالجة: استقبال الرسالة، تجميع الدفعات، البحث في الكتالوج، مطابقة المنتج، تعقيم الرد، تسليم موثوق، ثم تحويل بشري عند الحاجة."
+            : "Processing sequence: webhook receipt, burst batching, catalog lookup, product matching, output sanitizing, confirmed delivery, then human handoff when needed."
+        }
+      </p>
+    </div>
+  </div>
+</article>
+
+<style>
+  .flagship-eh {
+    border-block-start: 1px solid var(--color-rule);
+    padding-block: var(--space-7);
+  }
+  .head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-block-end: var(--space-5);
+  }
+  .head h3 {
+    font-size: var(--text-sub);
+    margin-inline-end: auto;
+  }
+  .head h3 a {
+    text-decoration: none;
+  }
+  .head h3 a:hover {
+    color: var(--accent);
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-6);
+  }
+  .body > :global(*) {
+    min-inline-size: 0;
+  }
+  @media (min-width: 64em) {
+    .body {
+      grid-template-columns: 5fr 7fr;
+      align-items: center;
+    }
+  }
+
+  .outcome {
+    font-size: var(--text-body-lg);
+    max-inline-size: 34ch;
+    text-wrap: pretty;
+  }
+  .mini-meta {
+    display: grid;
+    gap: var(--space-4);
+    margin-block: var(--space-5);
+    border-inline-start: 2px solid var(--accent);
+    padding-inline-start: var(--space-4);
+  }
+  .mini-meta dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-ink-muted);
+  }
+  :lang(ar) .mini-meta dt {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .mini-meta dd {
+    margin: 0;
+    font-size: var(--text-small);
+  }
+
+  .demo {
+    background:
+      radial-gradient(100% 80% at 20% 0%, color-mix(in oklab, var(--accent) 8%, transparent), transparent 55%),
+      var(--color-surface-raised);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-media);
+    padding: var(--space-5);
+    box-shadow: var(--shadow-raised);
+  }
+  .chat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-block: var(--space-4);
+  }
+  .msg {
+    display: flex;
+  }
+  .msg span {
+    max-inline-size: 75%;
+    padding: var(--space-3) var(--space-4);
+    border-radius: 12px;
+    font-size: var(--text-small);
+    line-height: 1.6;
+  }
+  .msg.in span {
+    background: var(--color-surface);
+    border: 1px solid var(--color-rule);
+    border-start-start-radius: 4px;
+  }
+  .msg.attach span {
+    background: var(--color-surface);
+    border: 1px dashed var(--color-rule-strong);
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+  }
+  .msg.out {
+    justify-content: flex-end;
+  }
+  .msg.out span {
+    background: color-mix(in oklab, var(--accent) 14%, var(--color-surface-raised));
+    border: 1px solid color-mix(in oklab, var(--accent) 40%, var(--color-rule));
+    border-start-end-radius: 4px;
+  }
+  .msg.handoff {
+    justify-content: center;
+  }
+  .msg.handoff span {
+    background: color-mix(in oklab, var(--accent-2) 12%, var(--color-surface-raised));
+    border: 1px solid color-mix(in oklab, var(--accent-2) 45%, var(--color-rule));
+    color: var(--color-ink);
+    font-weight: 500;
+    font-size: var(--text-annotation);
+    letter-spacing: 0.02em;
+  }
+  .pipeline {
+    font-size: var(--text-annotation);
+    color: var(--color-ink-muted);
+    letter-spacing: 0.04em;
+    border-block-start: 1px dashed var(--color-rule);
+    padding-block-start: var(--space-3);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+</style>

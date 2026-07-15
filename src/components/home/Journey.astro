@@ -1,0 +1,70 @@
+---
+/* Restrained journey diagram: a coordinate-style route line, no globe.
+   Only verified narrative — no invented dates. */
+import { type Locale, t } from "../../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const ar = locale === "ar";
+
+const stops = [
+  { code: "32.9N 13.2E", en: "Libya", ar: "ليبيا", x: 90 },
+  { code: "41.0N 29.0E", en: "Turkey", ar: "تركيا", x: 320 },
+  { code: "25.8N 80.2W", en: "Miami", ar: "ميامي", x: 550 },
+];
+---
+
+<div class="journey">
+  <svg viewBox="0 0 640 120" role="img" aria-labelledby="journey-title" class="route ltr-island">
+    <title id="journey-title">{ar ? "المسار: ليبيا ثم تركيا ثم ميامي" : "Route: Libya, then Turkey, then Miami"}</title>
+    <path d="M 90 70 C 170 40, 240 40, 320 70 C 400 100, 470 100, 550 70" class="line" fill="none" />
+    {
+      stops.map((s) => (
+        <g>
+          <circle cx={s.x} cy="70" r="5" class="stop" />
+          <text x={s.x} y="52" text-anchor="middle" class="place">{ar ? s.ar : s.en}</text>
+          <text x={s.x} y="98" text-anchor="middle" class="coord">{s.code}</text>
+        </g>
+      ))
+    }
+  </svg>
+  <p class="muted sub">{t(locale, "journey.sub")}</p>
+</div>
+
+<style>
+  .journey {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .route {
+    inline-size: 100%;
+    max-inline-size: 40rem;
+    block-size: auto;
+  }
+  .line {
+    stroke: var(--color-rule-strong);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 6;
+  }
+  .stop {
+    fill: var(--color-signal);
+  }
+  .place {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 600;
+    fill: var(--color-ink);
+  }
+  .coord {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    fill: var(--color-ink-muted);
+  }
+  .sub {
+    max-inline-size: 44ch;
+  }
+</style>

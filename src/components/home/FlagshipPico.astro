@@ -1,0 +1,210 @@
+---
+/* Flagship 03 — Pico voice terminal. The most visually ambitious flagship:
+   large hardware photograph with a layered microphone-to-display signal
+   strip in phosphor green / copper. */
+import { Image } from "astro:assets";
+import { type Locale, t, localePath } from "../../lib/i18n";
+import Icon from "../global/Icon.astro";
+import ArtifactLabel from "../content/ArtifactLabel.astro";
+import picoHero from "../../assets/pico/hero.jpg";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  outcome: string;
+  role: string;
+}
+const { locale, title, outcome, role } = Astro.props;
+const ar = locale === "ar";
+
+const steps = [
+  { code: "MIC", en: "SPH0645 I2S microphone", ar: "ميكروفون SPH0645 I2S" },
+  { code: "PIO", en: "8-instruction PIO capture", ar: "التقاط PIO بثماني تعليمات" },
+  { code: "DMA", en: "DMA ring buffer", ar: "عازل حلقي عبر DMA" },
+  { code: "WSS", en: "one TLS WebSocket", ar: "قناة WebSocket واحدة عبر TLS" },
+  { code: "SRV", en: "self-hosted control plane", ar: "منصة تحكم مستضافة ذاتيًا" },
+  { code: "TFT", en: "reply on the 4″ display", ar: "الرد على شاشة ٤ بوصات" },
+] as const;
+---
+
+<article class="flagship-pico" data-project="pico-voice-terminal">
+  <div class="head">
+    <p class="fig-label">EMB-02</p>
+    <h3><a href={localePath(locale, "work/pico-voice-terminal/")}>{title}</a></h3>
+    <p class="status-tag">{t(locale, "status.released")}</p>
+  </div>
+
+  <div class="stage">
+    <figure class="photo corner-marks">
+      <Image
+        src={picoHero}
+        alt={ar
+          ? "الجهاز الصوتي الموصول يدويًا على لوحة تجارب: شاشة TFT مقاس 4 بوصات، ميكروفون I2S، و Pico W"
+          : "The hand-wired voice terminal on a breadboard: 4-inch TFT display, I2S microphone, and Pico W"}
+        width={1400}
+        sizes="(min-width: 64em) 56rem, 100vw"
+        format="avif"
+        quality={62}
+        loading="lazy"
+      />
+      <figcaption>
+        <ArtifactLabel locale={locale} kind="photo" />
+        <span>{ar ? "الجهاز أثناء التشغيل" : "The assembled terminal, running"}</span>
+      </figcaption>
+    </figure>
+
+    <div class="side">
+      <p class="outcome">{outcome}</p>
+      <ol class="signal-strip" aria-label={ar ? "مسار الإشارة من الصوت إلى الشاشة" : "Signal path from voice to display"}>
+        {
+          steps.map((s, i) => (
+            <li>
+              <span class="code mono">{s.code}</span>
+              <span class="label">{ar ? s.ar : s.en}</span>
+              {i < steps.length - 1 && <span class="link-line" aria-hidden="true" />}
+            </li>
+          ))
+        }
+      </ol>
+      <dl class="mini-meta">
+        <div>
+          <dt>{t(locale, "cs.role")}</dt>
+          <dd>{role}</dd>
+        </div>
+        <div>
+          <dt>{ar ? "الفارق التقني" : "Technical distinction"}</dt>
+          <dd>
+            {
+              ar
+                ? "ترتيب أرجل الميكروفون جعل مستقبل I2S القياسي غير قابل للاستخدام — فكان الحل برنامج PIO مُجمَّع يدويًا من ثماني تعليمات."
+                : "The microphone's pin arrangement made the stock I2S receiver unusable — the fix is a hand-assembled eight-instruction PIO program."
+            }
+          </dd>
+        </div>
+      </dl>
+      <a class="btn" href={localePath(locale, "work/pico-voice-terminal/")}>
+        {t(locale, "work.viewCase")}
+        <Icon name="arrow" />
+      </a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .flagship-pico {
+    border-block-start: 1px solid var(--color-rule);
+    padding-block: var(--space-7);
+  }
+  .head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-block-end: var(--space-5);
+  }
+  .head h3 {
+    font-size: var(--text-sub);
+    margin-inline-end: auto;
+  }
+  .head h3 a {
+    text-decoration: none;
+  }
+  .head h3 a:hover {
+    color: var(--accent-ink, var(--accent));
+  }
+
+  .stage {
+    display: grid;
+    gap: var(--space-6);
+  }
+  .stage > :global(*) {
+    min-inline-size: 0;
+  }
+  @media (min-width: 64em) {
+    .stage {
+      grid-template-columns: 8fr 4fr;
+      align-items: start;
+    }
+  }
+
+  .photo {
+    margin: 0;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-media);
+    overflow: hidden;
+    background:
+      radial-gradient(90% 70% at 50% 20%, color-mix(in oklab, var(--accent) 10%, transparent), transparent 65%),
+      var(--color-surface-raised);
+    box-shadow: var(--shadow-raised);
+  }
+  .photo :global(img) {
+    inline-size: 100%;
+    block-size: auto;
+  }
+  .photo figcaption {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-annotation);
+  }
+
+  .outcome {
+    font-size: var(--text-body-lg);
+    text-wrap: pretty;
+  }
+
+  .signal-strip {
+    list-style: none;
+    padding: 0;
+    margin-block: var(--space-5);
+    display: flex;
+    flex-direction: column;
+  }
+  .signal-strip li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding-block: var(--space-2);
+  }
+  .signal-strip .code {
+    color: var(--accent-ink, var(--accent));
+    font-size: var(--text-annotation);
+    letter-spacing: 0.1em;
+  }
+  .signal-strip .label {
+    font-size: var(--text-small);
+  }
+  .link-line {
+    position: absolute;
+    inset-inline-start: 1.05rem;
+    inset-block-start: 2rem;
+    block-size: calc(100% - 1.4rem);
+    inline-size: 1px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent-2));
+    opacity: 0.6;
+  }
+
+  .mini-meta {
+    display: grid;
+    gap: var(--space-4);
+    margin-block-end: var(--space-5);
+    border-inline-start: 2px solid var(--accent-2);
+    padding-inline-start: var(--space-4);
+  }
+  .mini-meta dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-ink-muted);
+  }
+  :lang(ar) .mini-meta dt {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .mini-meta dd {
+    margin: 0;
+    font-size: var(--text-small);
+  }
+</style>

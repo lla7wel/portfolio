@@ -1,0 +1,45 @@
+---
+/* Evidence mosaic: children are <Figure>s. Variant controls the rhythm so
+   galleries don't collapse into identical boxes. */
+interface Props {
+  /** "pair" = two columns; "mosaic" = 2/3 + 1/3 alternating; "stack" = single column. */
+  variant?: "pair" | "mosaic" | "stack";
+  class?: string;
+}
+const { variant = "pair", class: className } = Astro.props;
+---
+
+<div class:list={["evidence-gallery", className]} data-variant={variant}>
+  <slot />
+</div>
+
+<style>
+  .evidence-gallery {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4) var(--space-5);
+    align-items: start;
+    margin-block: var(--space-6);
+  }
+  .evidence-gallery > :global(figure) {
+    margin-block: 0;
+  }
+
+  @media (min-width: 45em) {
+    .evidence-gallery[data-variant="pair"] {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .evidence-gallery[data-variant="mosaic"] {
+      grid-template-columns: repeat(6, 1fr);
+    }
+    .evidence-gallery[data-variant="mosaic"] > :global(figure) {
+      grid-column: span 3;
+    }
+    .evidence-gallery[data-variant="mosaic"] > :global(figure:nth-child(3n + 1)) {
+      grid-column: span 4;
+    }
+    .evidence-gallery[data-variant="mosaic"] > :global(figure:nth-child(3n + 2)) {
+      grid-column: span 2;
+    }
+  }
+</style>

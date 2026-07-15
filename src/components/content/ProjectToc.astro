@@ -1,0 +1,154 @@
+---
+/* Case-study section navigation.
+   Desktop: sticky sidebar with a moving marker (not color-only current state).
+   Mobile: a compact "On this page" disclosure. */
+import { type Locale, t } from "../../lib/i18n";
+import Icon from "../global/Icon.astro";
+
+interface Props {
+  locale: Locale;
+  sections: { id: string; label: string }[];
+}
+const { locale, sections } = Astro.props;
+---
+
+<nav class="project-toc" aria-label={t(locale, "cs.onThisPage")} data-project-toc>
+  <details class="mobile-toc">
+    <summary>
+      <Icon name="info" />
+      {t(locale, "cs.onThisPage")}
+    </summary>
+    <ol role="list">
+      {
+        sections.map((s) => (
+          <li>
+            <a href={`#${s.id}`}>{s.label}</a>
+          </li>
+        ))
+      }
+    </ol>
+  </details>
+
+  <div class="desktop-toc">
+    <p class="anno">{t(locale, "cs.onThisPage")}</p>
+    <ol role="list">
+      {
+        sections.map((s) => (
+          <li>
+            <a href={`#${s.id}`} data-toc-link={s.id}>
+              <span class="marker" aria-hidden="true" />
+              {s.label}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</nav>
+
+<script>
+  import { initProjectToc } from "../../scripts/project-toc";
+  initProjectToc();
+</script>
+
+<style>
+  .mobile-toc {
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    margin-block-end: var(--space-6);
+  }
+  .mobile-toc summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: 48px;
+    padding-inline: var(--space-4);
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+  }
+  .mobile-toc summary::-webkit-details-marker {
+    display: none;
+  }
+  .mobile-toc summary::after {
+    content: "+";
+    margin-inline-start: auto;
+    font-family: var(--font-mono);
+    color: var(--color-ink-muted);
+  }
+  .mobile-toc[open] summary::after {
+    content: "−";
+  }
+  .mobile-toc ol {
+    padding: 0 var(--space-4) var(--space-4);
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-toc a {
+    display: flex;
+    align-items: center;
+    min-block-size: 44px;
+    text-decoration: none;
+    color: var(--color-ink-muted);
+    border-block-start: 1px solid var(--color-rule);
+    font-size: var(--text-small);
+  }
+
+  .desktop-toc {
+    display: none;
+  }
+
+  @media (min-width: 64em) {
+    .mobile-toc {
+      display: none;
+    }
+    .desktop-toc {
+      display: block;
+      position: sticky;
+      inset-block-start: var(--space-6);
+    }
+    .desktop-toc .anno {
+      margin-block-end: var(--space-3);
+    }
+    :lang(ar) .desktop-toc .anno {
+      font-family: var(--font-sans);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .desktop-toc ol {
+      display: flex;
+      flex-direction: column;
+      border-inline-start: 1px solid var(--color-rule);
+    }
+    .desktop-toc a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding-block: var(--space-2);
+      padding-inline-start: var(--space-4);
+      text-decoration: none;
+      color: var(--color-ink-muted);
+      font-size: var(--text-small);
+      transition: color var(--dur-control) var(--ease-standard);
+    }
+    .desktop-toc a:hover {
+      color: var(--color-ink);
+    }
+    .desktop-toc .marker {
+      position: absolute;
+      inset-inline-start: -1px;
+      inset-block: 6px;
+      inline-size: 2px;
+      background: transparent;
+    }
+    .desktop-toc a[aria-current="true"] {
+      color: var(--color-ink);
+      font-weight: 600;
+    }
+    .desktop-toc a[aria-current="true"] .marker {
+      background: var(--accent, var(--color-signal));
+    }
+  }
+</style>

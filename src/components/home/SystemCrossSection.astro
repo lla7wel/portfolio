@@ -1,0 +1,272 @@
+---
+/* Hero visual: an original, labeled cross-section of selected systems.
+   Explicitly illustrative — real project vocabulary, but NOT one connected
+   architecture. Semantic SVG with a text equivalent; one signal path
+   animates at a time, only after the visual is visible, user-pausable. */
+import { type Locale, t } from "../../lib/i18n";
+import Icon from "../global/Icon.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const ar = locale === "ar";
+
+const stages = [
+  { code: "PHY", en: "Physical input — I2S microphone · DHT11 sensor · switches", ar: "مدخل فيزيائي — ميكروفون I2S · مستشعر DHT11 · مفاتيح" },
+  { code: "MCU", en: "Microcontroller — RP2040 dual-core · bare-metal C", ar: "متحكم دقيق — RP2040 ثنائي النواة · لغة C" },
+  { code: "DMA", en: "PIO capture · DMA ring buffer · double-buffered framebuffer", ar: "التقاط PIO · عازل حلقي DMA · إطار مزدوج العزل" },
+  { code: "RTL", en: "FPGA logic — VHDL ripple-carry · exhaustive testbench", ar: "منطق FPGA — ناقل سلسلي VHDL · اختبار شامل" },
+  { code: "NET", en: "Network — long-lived TLS WebSocket · Meta webhooks", ar: "الشبكة — WebSocket دائم عبر TLS · Meta webhooks" },
+  { code: "SRV", en: "Self-hosted backend — FastAPI · Postgres · Docker Compose", ar: "خادم مستضاف ذاتيًا — FastAPI · Postgres · Docker Compose" },
+  { code: "UI", en: "Catalog & admin interface — bilingual, RTL-first", ar: "واجهة الكتالوج والإدارة — ثنائية اللغة، RTL أولًا" },
+  { code: "OPS", en: "Human handoff — a person takes over the moment it matters", ar: "تسليم بشري — يتولى إنسان المحادثة لحظة الحاجة" },
+] as const;
+
+const BAND_H = 52;
+const GAP = 12;
+const W = 640;
+const H = stages.length * (BAND_H + GAP) + 28;
+// Signal rail: one clean vertical run along the bands' leading edge
+// (mirrored for RTL so it sits at the reading start in both locales).
+const nodeX = (_i: number) => (ar ? 570 : 70);
+const bandY = (i: number) => 14 + i * (BAND_H + GAP);
+const nodeY = (i: number) => bandY(i) + BAND_H / 2;
+
+// Signal path: vertical zigzag through the stage nodes.
+const pathD = stages
+  .map((_, i) => `${i === 0 ? "M" : "L"} ${nodeX(i)} ${nodeY(i)}`)
+  .join(" ");
+---
+
+<div class="cross-section" data-cross-section>
+  <p class="anno frame-note">{t(locale, "hero.crossSection")}</p>
+
+  <svg
+    viewBox={`0 0 ${W} ${H}`}
+    role="img"
+    aria-labelledby="xs-title xs-desc"
+    class="board"
+  >
+    <title id="xs-title">{ar ? "مقطع توضيحي لأنظمة مختارة" : "Illustrative cross-section of selected systems"}</title>
+    <desc id="xs-desc">
+      {ar
+        ? "ثماني طبقات من مدخل فيزيائي إلى تسليم بشري، مأخوذة من مشاريع مختلفة."
+        : "Eight layers from physical input to human handoff, drawn from different projects."}
+    </desc>
+
+    {/* Layer bands */}
+    {
+      stages.map((s, i) => (
+        <g class="band" data-stage={i}>
+          <rect
+            x="60"
+            y={bandY(i)}
+            width="520"
+            height={BAND_H}
+            rx="6"
+            class="band-rect"
+          />
+          {/* text-anchor="start" works in both directions: the line grows
+              along the inline direction from the same logical edge. */}
+          <text x={ar ? 556 : 84} y={nodeY(i) - 4} class="band-code" text-anchor="start">
+            {s.code}
+          </text>
+          <text x={ar ? 556 : 84} y={nodeY(i) + 14} class="band-label" text-anchor="start">
+            {ar ? s.ar : s.en}
+          </text>
+          {/* pin ticks on the outer edge */}
+          {[0, 1, 2].map((p) => (
+            <line
+              x1={ar ? 60 : 580}
+              x2={ar ? 52 : 588}
+              y1={bandY(i) + 14 + p * 12}
+              y2={bandY(i) + 14 + p * 12}
+              class="pin"
+            />
+          ))}
+        </g>
+      ))
+    }
+
+    {/* Signal path + traveling pulse */}
+    <path d={pathD} class="signal-track" fill="none" />
+    <path d={pathD} class="signal-live" fill="none" data-signal-path />
+    {stages.map((_, i) => <circle cx={nodeX(i)} cy={nodeY(i)} r="5" class="node" data-node={i} />)}
+  </svg>
+
+  <div class="controls">
+    <button type="button" class="play" data-signal-toggle aria-pressed="true">
+      <span class="when-playing"><Icon name="pause" /></span>
+      <span class="when-paused"><Icon name="play" /></span>
+      <span class="label-playing">{t(locale, "diagram.pause")}</span>
+      <span class="label-paused">{t(locale, "diagram.animate")}</span>
+    </button>
+  </div>
+
+  {/* Text equivalent for assistive tech and no-JS/no-SVG contexts */}
+  <ol class="visually-hidden">
+    {stages.map((s) => <li>{ar ? s.ar : s.en}</li>)}
+  </ol>
+</div>
+
+<script>
+  // One signal traversal at a time, starting when visible; pausable; honors
+  // reduced motion (static highlighted path, no traversal).
+  const root = document.querySelector<HTMLElement>("[data-cross-section]");
+  if (root) {
+    const path = root.querySelector<SVGPathElement>("[data-signal-path]");
+    const toggle = root.querySelector<HTMLButtonElement>("[data-signal-toggle]");
+    const nodes = [...root.querySelectorAll<SVGCircleElement>("[data-node]")];
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (path && !reduced) {
+      const len = path.getTotalLength();
+      path.style.strokeDasharray = `${len}`;
+      path.style.strokeDashoffset = `${len}`;
+      let anim: Animation | null = null;
+
+      const start = () => {
+        anim = path.animate(
+          [{ strokeDashoffset: `${len}` }, { strokeDashoffset: "0" }],
+          { duration: 5200, iterations: Infinity, easing: "linear" },
+        );
+        // Nodes light up as the pulse passes.
+        nodes.forEach((n, i) => {
+          n.animate(
+            [
+              { opacity: 0.35, offset: 0 },
+              { opacity: 0.35, offset: Math.max(0, i / nodes.length - 0.02) },
+              { opacity: 1, offset: i / nodes.length + 0.02 },
+              { opacity: 1, offset: 1 },
+            ],
+            { duration: 5200, iterations: Infinity },
+          );
+        });
+      };
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting && !anim) start();
+            anim?.[e.isIntersecting && toggle?.getAttribute("aria-pressed") === "true" ? "play" : "pause"]();
+            root
+              .getAnimations({ subtree: true })
+              .forEach((a) =>
+                e.isIntersecting && toggle?.getAttribute("aria-pressed") === "true"
+                  ? a.play()
+                  : a.pause(),
+              );
+          }
+        },
+        { threshold: 0.25 },
+      );
+      io.observe(root);
+
+      toggle?.addEventListener("click", () => {
+        const playing = toggle.getAttribute("aria-pressed") === "true";
+        toggle.setAttribute("aria-pressed", String(!playing));
+        root
+          .getAnimations({ subtree: true })
+          .forEach((a) => (playing ? a.pause() : a.play()));
+      });
+
+      // Pause everything when the page is hidden.
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) root.getAnimations({ subtree: true }).forEach((a) => a.pause());
+        else if (toggle?.getAttribute("aria-pressed") === "true")
+          root.getAnimations({ subtree: true }).forEach((a) => a.play());
+      });
+    } else if (path) {
+      // Reduced motion: show the full path statically.
+      path.style.strokeDashoffset = "0";
+      toggle?.setAttribute("hidden", "");
+    }
+  }
+</script>
+
+<style>
+  .cross-section {
+    position: relative;
+    background:
+      radial-gradient(120% 90% at 70% 0%, color-mix(in oklab, var(--color-signal) 7%, transparent), transparent 60%),
+      var(--color-surface);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-media);
+    padding: var(--space-4) var(--space-4) var(--space-2);
+    box-shadow: var(--shadow-raised);
+  }
+  .frame-note {
+    margin-block-end: var(--space-2);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  :lang(ar) .frame-note {
+    font-family: var(--font-sans);
+  }
+  .board {
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .band-rect {
+    fill: var(--color-surface-raised);
+    stroke: var(--color-rule);
+  }
+  .band-code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    fill: var(--color-signal);
+  }
+  .band-label {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    fill: var(--color-ink-muted);
+  }
+  .pin {
+    stroke: var(--color-rule-strong);
+    stroke-width: 1.5;
+  }
+  .signal-track {
+    stroke: var(--color-rule);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 5;
+  }
+  .signal-live {
+    stroke: var(--color-signal);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .node {
+    fill: var(--color-signal);
+    opacity: 0.35;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: flex-end;
+    padding-block: var(--space-2);
+  }
+  .play {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: 44px;
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-control);
+    border: 1px solid var(--color-rule);
+    color: var(--color-ink-muted);
+    font-size: var(--text-small);
+  }
+  .play:hover {
+    color: var(--color-ink);
+    border-color: var(--color-rule-strong);
+  }
+  .play[aria-pressed="true"] .when-paused,
+  .play[aria-pressed="true"] .label-paused,
+  .play[aria-pressed="false"] .when-playing,
+  .play[aria-pressed="false"] .label-playing {
+    display: none;
+  }
+</style>

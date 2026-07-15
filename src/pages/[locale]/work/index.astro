@@ -1,79 +1,337 @@
 ---
+import { Image } from "astro:assets";
 import Base from "../../../layouts/Base.astro";
-import ProjectCard from "../../../components/ProjectCard.astro";
 import { getCollection } from "astro:content";
-import { type Locale, t } from "../../../lib/i18n";
+import { type Locale, t, localePath } from "../../../lib/i18n";
+import { projectVisuals } from "../../../data/projectVisuals";
+import Icon from "../../../components/global/Icon.astro";
 
 export function getStaticPaths() {
   return [{ params: { locale: "en" } }, { params: { locale: "ar" } }];
 }
 
 const locale = Astro.params.locale as Locale;
+const ar = locale === "ar";
 const projects = (await getCollection("projects", (p) => p.data.locale === locale))
   .sort((a, b) => a.data.order - b.data.order);
 const flagships = projects.filter((p) => p.data.tier === "flagship");
 const supporting = projects.filter((p) => p.data.tier === "supporting");
 
-// Archive entries (plan §13): dated text list, no cards, no padding.
-const archive =
-  locale === "ar"
-    ? [
-        "2024 — روبوتات micro:bit / Maqueen: تتبع الخط وتفادي العوائق",
-        "2024 — Micro Chat: اتصال لاسلكي بين أجهزة micro:bit",
-        "2025 — بناء نسخة سابقة من موقع Mersal International (استُبدلت لاحقًا بموقع الشركة الحالي)",
-        "2025 — Kaziony: تصميم أولي لخدمة توصيل (مفهوم منتج)",
-        "2026 — نماذج تصميم ملحقات تنقّل (CAD/Blender)",
-      ]
-    : [
-        "2024 — micro:bit / Maqueen robotics: line following & obstacle detection",
-        "2024 — Micro Chat: micro:bit radio communication",
-        "2025 — built an earlier version of the Mersal International website, since replaced by the company's current site",
-        "2025 — Kaziony: delivery-service product concept",
-        "2026 — mobility-accessory design mockups (CAD/Blender)",
-      ];
+const layerCols = [
+  { key: "hardware", en: "Hardware", ar: "عتاد" },
+  { key: "firmware", en: "Firmware", ar: "برمجيات ثابتة" },
+  { key: "fpga", en: "FPGA", ar: "FPGA" },
+  { key: "backend", en: "Backend", ar: "خلفية" },
+  { key: "interface", en: "Interface", ar: "واجهة" },
+  { key: "validation", en: "Validation", ar: "تحقق" },
+] as const;
+
+// Archive entries: dated text list, no cards.
+const archive = ar
+  ? [
+      "2024 — روبوتات micro:bit / Maqueen: تتبع الخط وتفادي العوائق",
+      "2024 — Micro Chat: اتصال لاسلكي بين أجهزة micro:bit",
+      "2025 — بناء نسخة سابقة من موقع Mersal International (استُبدلت لاحقًا بموقع الشركة الحالي)",
+      "2025 — Kaziony: تصميم أولي لخدمة توصيل (مفهوم منتج)",
+      "2026 — نماذج تصميم ملحقات تنقّل (CAD/Blender)",
+    ]
+  : [
+      "2024 — micro:bit / Maqueen robotics: line following & obstacle detection",
+      "2024 — Micro Chat: micro:bit radio communication",
+      "2025 — built an earlier version of the Mersal International website, since replaced by the company's current site",
+      "2025 — Kaziony: delivery-service product concept",
+      "2026 — mobility-accessory design mockups (CAD/Blender)",
+    ];
 ---
 
-<Base locale={locale} title={t(locale, "nav.work")}>
-  <div class="measure">
-    <h1>{t(locale, "work.all")}</h1>
+<Base locale={locale} title={t(locale, "nav.work")} routeLabel="INDEX">
+  <div class="canvas">
+    <header class="work-head">
+      <p class="anno" data-tone="signal">{ar ? "فهرس الأنظمة" : "SYSTEM INDEX"}</p>
+      <h1>{t(locale, "work.all")}</h1>
+      <p class="lead muted">{t(locale, "work.intro")}</p>
+    </header>
 
-    <h2>{t(locale, "work.flagship")}</h2>
-    <div style="display:grid; gap:1rem;">
-      {
-        flagships.map((p) => (
-          <ProjectCard
-            locale={locale}
-            slug={p.data.key}
-            title={p.data.title}
-            outcome={p.data.outcome}
-            status={p.data.status}
-            stack={p.data.stack}
-            headingLevel="h3"
-          />
-        ))
-      }
-    </div>
+    <section aria-labelledby="flagship-h" class="tier">
+      <h2 id="flagship-h" class="tier-title">{t(locale, "work.flagship")}</h2>
+      <div class="flagship-list">
+        {
+          flagships.map((p) => {
+            const vis = projectVisuals[p.data.key];
+            return (
+              <a
+                class="flagship-entry corner-marks"
+                href={localePath(locale, `work/${p.data.key}/`)}
+                data-project={p.data.key}
+              >
+                <div class="media">
+                  {vis?.hero ? (
+                    <Image
+                      src={vis.hero}
+                      alt=""
+                      width={900}
+                      sizes="(min-width: 64em) 30rem, 100vw"
+                      format="avif"
+                      quality={55}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <img src={vis?.heroSvg} alt="" width="960" height="560" loading="lazy" />
+                  )}
+                </div>
+                <div class="body">
+                  <p class="topline">
+                    <span class="fig-label">{vis?.code}</span>
+                    <span class="status-tag">{t(locale, `status.${p.data.status}`)}</span>
+                  </p>
+                  <h3>{p.data.title}</h3>
+                  <p class="outcome muted">{p.data.outcome}</p>
+                  <p class="meta">
+                    <span class="muted">{p.data.role}</span>
+                  </p>
+                  <p class="cta">
+                    {t(locale, "work.viewCase")}
+                    <Icon name="arrow" class="icon sm" />
+                  </p>
+                </div>
+              </a>
+            );
+          })
+        }
+      </div>
+    </section>
 
-    <h2>{t(locale, "work.supporting")}</h2>
-    <div style="display:grid; gap:1rem; grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));">
-      {
-        supporting.map((p) => (
-          <ProjectCard
-            locale={locale}
-            slug={p.data.key}
-            title={p.data.title}
-            outcome={p.data.outcome}
-            status={p.data.status}
-            stack={p.data.stack}
-            headingLevel="h3"
-          />
-        ))
-      }
-    </div>
+    <section aria-labelledby="supporting-h" class="tier">
+      <h2 id="supporting-h" class="tier-title">{t(locale, "work.supporting")}</h2>
+      <div class="supporting-list">
+        {
+          supporting.map((p) => {
+            const vis = projectVisuals[p.data.key];
+            return (
+              <a
+                class="supporting-row"
+                href={localePath(locale, `work/${p.data.key}/`)}
+                data-project={p.data.key}
+              >
+                <span class="fig-label">{vis?.code}</span>
+                <div class="body">
+                  <h3>{p.data.title}</h3>
+                  <p class="muted">{p.data.outcome}</p>
+                </div>
+                <span class="status-tag">{t(locale, `status.${p.data.status}`)}</span>
+              </a>
+            );
+          })
+        }
+      </div>
+    </section>
 
-    <h2>{t(locale, "work.archive")}</h2>
-    <ul style="color:var(--ink-muted);">
-      {archive.map((a) => <li>{a}</li>)}
-    </ul>
+    <section aria-labelledby="coverage-h" class="tier">
+      <h2 id="coverage-h" class="tier-title">{t(locale, "work.coverage")}</h2>
+      <p class="muted matrix-cap">{t(locale, "work.coverageCaption")}</p>
+      <div class="table-scroll">
+        <table class="matrix">
+          <thead>
+            <tr>
+              <th scope="col">{ar ? "المشروع" : "Project"}</th>
+              {layerCols.map((c) => <th scope="col">{ar ? c.ar : c.en}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {
+              projects.map((p) => {
+                const vis = projectVisuals[p.data.key];
+                return (
+                  <tr>
+                    <th scope="row">
+                      <a href={localePath(locale, `work/${p.data.key}/`)}>{p.data.title}</a>
+                    </th>
+                    {layerCols.map((c) => (
+                      <td class={vis?.layers[c.key] ? "yes" : "no"}>
+                        {vis?.layers[c.key] ? (
+                          <>
+                            <span aria-hidden="true">●</span>
+                            <span class="visually-hidden">{ar ? "نعم" : "yes"}</span>
+                          </>
+                        ) : (
+                          <span class="visually-hidden">{ar ? "لا" : "no"}</span>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="archive-h" class="tier">
+      <h2 id="archive-h" class="tier-title">{t(locale, "work.archive")}</h2>
+      <ul class="archive muted">
+        {archive.map((a) => <li>{a}</li>)}
+      </ul>
+    </section>
   </div>
 </Base>
+
+<style>
+  .work-head {
+    padding-block: var(--space-7) var(--space-6);
+    border-block-end: 1px solid var(--color-rule);
+  }
+  .work-head h1 {
+    font-size: var(--text-section);
+    margin-block: var(--space-3) var(--space-4);
+  }
+  .work-head .lead {
+    max-inline-size: 60ch;
+  }
+  :lang(ar) .anno {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .tier {
+    padding-block: var(--space-7);
+    border-block-end: 1px solid var(--color-rule);
+  }
+  .tier:last-child {
+    border-block-end: none;
+  }
+  .tier-title {
+    font-size: var(--text-sub);
+    margin-block-end: var(--space-5);
+  }
+
+  .flagship-list {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .flagship-entry {
+    display: grid;
+    text-decoration: none;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-media);
+    overflow: hidden;
+    background: var(--color-surface);
+    transition: border-color var(--dur-control) var(--ease-standard);
+  }
+  .flagship-entry:hover {
+    border-color: var(--accent, var(--color-rule-strong));
+  }
+  @media (min-width: 45em) {
+    .flagship-entry {
+      grid-template-columns: 5fr 7fr;
+    }
+    .flagship-entry:nth-child(even) {
+      grid-template-columns: 7fr 5fr;
+    }
+    .flagship-entry:nth-child(even) .media {
+      order: 2;
+    }
+  }
+  .flagship-entry .media {
+    background: var(--color-surface-raised);
+    border-inline-end: 1px solid var(--color-rule);
+    min-block-size: 100%;
+  }
+  .flagship-entry .media :global(img) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    aspect-ratio: 16 / 10;
+  }
+  .flagship-entry .body {
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .topline {
+    display: flex;
+    gap: var(--space-4);
+    align-items: baseline;
+  }
+  .flagship-entry h3 {
+    font-size: var(--text-sub);
+    color: var(--color-ink);
+  }
+  .outcome {
+    font-size: var(--text-small);
+    max-inline-size: 52ch;
+  }
+  .meta {
+    font-size: var(--text-annotation);
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 600;
+    color: var(--accent-ink, var(--color-signal));
+    margin-block-start: auto;
+  }
+
+  .supporting-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .supporting-row {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr auto;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding-block: var(--space-4);
+    border-block-end: 1px solid var(--color-rule);
+    text-decoration: none;
+  }
+  .supporting-row:last-child {
+    border-block-end: none;
+  }
+  .supporting-row h3 {
+    font-size: var(--text-body-lg);
+    color: var(--color-ink);
+    margin-block-end: var(--space-1);
+  }
+  .supporting-row:hover h3 {
+    color: var(--accent-ink, var(--color-signal));
+  }
+  .supporting-row p {
+    font-size: var(--text-small);
+    max-inline-size: 64ch;
+  }
+  @media (max-width: 44.99em) {
+    .supporting-row {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+
+  .matrix-cap {
+    font-size: var(--text-small);
+    margin-block-end: var(--space-4);
+    max-inline-size: 60ch;
+  }
+  .matrix td {
+    text-align: center;
+  }
+  .matrix td.yes {
+    color: var(--color-signal);
+  }
+  .matrix th[scope="row"] {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 500;
+  }
+
+  .archive {
+    padding-inline-start: 1.2em;
+  }
+  .archive li {
+    margin-block: var(--space-2);
+  }
+</style>

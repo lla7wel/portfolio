@@ -1,0 +1,160 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { type Locale, t } from "../../lib/i18n";
+import ArtifactLabel from "./ArtifactLabel.astro";
+import type { ArtifactKind } from "../../lib/artifacts";
+import Icon from "../global/Icon.astro";
+
+interface Props {
+  locale: Locale;
+  /** Imported image (processed by astro:assets) or a public-path string (SVG diagrams). */
+  src: ImageMetadata | string;
+  alt: string;
+  caption?: string;
+  /** Figure code, e.g. "01.2" — rendered as FIG 01.2 in Plex Mono. */
+  code?: string;
+  kind?: ArtifactKind;
+  /** Link to the artifact's source (repo file, release, live page). */
+  sourceHref?: string;
+  /** Wide figures escape the prose column on desktop. */
+  wide?: boolean;
+  /** Enable full-size inspection (anchor fallback; JS upgrades to lightbox). */
+  expandable?: boolean;
+  /** Rendered width hint for astro:assets. */
+  width?: number;
+  /** Explicit dimensions for public-path (string) sources. */
+  height?: number;
+  sizes?: string;
+  loading?: "lazy" | "eager";
+  /** Never mirror technical artifacts in RTL (default: keep LTR). */
+  class?: string;
+}
+
+const {
+  locale,
+  src,
+  alt,
+  caption,
+  code,
+  kind,
+  sourceHref,
+  wide = false,
+  expandable = true,
+  width,
+  height,
+  sizes = "(min-width: 64em) 60rem, 100vw",
+  loading = "lazy",
+  class: className,
+} = Astro.props;
+
+const isMeta = typeof src !== "string";
+const fullHref = isMeta ? (src as ImageMetadata).src : (src as string);
+---
+
+<figure class:list={["figure", wide && "figure-wide", className]}>
+  <div class="frame corner-marks">
+    {
+      isMeta ? (
+        <Image
+          src={src as ImageMetadata}
+          alt={alt}
+          width={width ?? Math.min((src as ImageMetadata).width, 1600)}
+          sizes={sizes}
+          loading={loading}
+          format="avif"
+          quality={62}
+          data-full={fullHref}
+        />
+      ) : (
+        <img
+          src={src as string}
+          alt={alt}
+          width={width}
+          height={height}
+          loading={loading}
+          data-full={fullHref}
+        />
+      )
+    }
+    {
+      expandable && (
+        <a
+          class="expand"
+          href={fullHref}
+          target="_blank"
+          rel="noopener"
+          data-lightbox-trigger
+          data-alt={alt}
+        >
+          <Icon name="expand" />
+          <span class="visually-hidden">
+            {t(locale, "fig.expand")}: {alt}
+          </span>
+        </a>
+      )
+    }
+  </div>
+  {
+    (caption || code || kind) && (
+      <figcaption>
+        {code && <span class="fig-label">{t(locale, "fig.figure")} {code}</span>}
+        {kind && <ArtifactLabel locale={locale} kind={kind} />}
+        {caption && <span class="cap">{caption}</span>}
+        {sourceHref && (
+          <a class="src" href={sourceHref}>
+            {t(locale, "fig.source")}
+            <span class="visually-hidden"> — {t(locale, "cs.externalLink")}</span>
+          </a>
+        )}
+      </figcaption>
+    )
+  }
+</figure>
+
+<style>
+  .figure {
+    margin-block: var(--space-6);
+    margin-inline: 0;
+  }
+  .frame {
+    position: relative;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-media);
+    background: var(--color-surface);
+    overflow: hidden;
+  }
+  .frame :global(img) {
+    inline-size: 100%;
+    block-size: auto;
+  }
+  .expand {
+    position: absolute;
+    inset-block-end: var(--space-2);
+    inset-inline-end: var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 40px;
+    block-size: 40px;
+    border-radius: var(--radius-control);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-rule);
+    color: var(--color-ink);
+    opacity: 0.9;
+    transition: opacity var(--dur-feedback) var(--ease-standard);
+  }
+  .expand:hover,
+  .expand:focus-visible {
+    opacity: 1;
+  }
+  .src {
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .cap {
+    flex: 1 1 20rem;
+  }
+</style>

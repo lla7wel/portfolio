@@ -1,6 +1,14 @@
 ---
 import Base from "../../layouts/Base.astro";
-import ProjectCard from "../../components/ProjectCard.astro";
+import SystemCrossSection from "../../components/home/SystemCrossSection.astro";
+import FlagshipEnglishHome from "../../components/home/FlagshipEnglishHome.astro";
+import FlagshipNova from "../../components/home/FlagshipNova.astro";
+import FlagshipPico from "../../components/home/FlagshipPico.astro";
+import SupportingSystems from "../../components/home/SupportingSystems.astro";
+import CapabilitiesStack from "../../components/home/CapabilitiesStack.astro";
+import Journey from "../../components/home/Journey.astro";
+import VerifiedClaim from "../../components/content/VerifiedClaim.astro";
+import Icon from "../../components/global/Icon.astro";
 import { getCollection } from "astro:content";
 import { type Locale, t, localePath } from "../../lib/i18n";
 
@@ -9,15 +17,21 @@ export function getStaticPaths() {
 }
 
 const locale = Astro.params.locale as Locale;
+const ar = locale === "ar";
 const projects = (await getCollection("projects", (p) => p.data.locale === locale))
   .sort((a, b) => a.data.order - b.data.order);
-const flagships = projects.filter((p) => p.data.tier === "flagship");
-const supporting = projects.filter((p) => p.data.tier === "supporting");
-
-const capabilities =
-  locale === "ar"
-    ? ["الأنظمة المدمجة والبرمجيات الثابتة", "المنطق الرقمي و FPGA", "الأنظمة الخلفية وخطوط البيانات", "السحابة والاستضافة الذاتية", "المنتجات والعمليات التشغيلية"]
-    : ["Embedded systems & firmware", "Digital logic & FPGA", "Backend & data pipelines", "Cloud & self-hosting", "Product & operations"];
+const byKey = Object.fromEntries(projects.map((p) => [p.data.key, p.data]));
+const eh = byKey["english-home-platform"];
+const nova = byKey["nova-raid"];
+const pico = byKey["pico-voice-terminal"];
+const supporting = projects
+  .filter((p) => p.data.tier === "supporting")
+  .map((p) => ({
+    key: p.data.key,
+    title: p.data.title,
+    outcome: p.data.outcome,
+    status: p.data.status,
+  }));
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -25,65 +39,231 @@ const jsonLd = {
   mainEntity: {
     "@type": "Person",
     name: "Mohamed Khalid Elbahlool",
+    jobTitle: "Computer Engineering student",
     alumniOf: { "@type": "CollegeOrUniversity", name: "Florida International University" },
+    address: { "@type": "PostalAddress", addressLocality: "Miami", addressRegion: "FL" },
     knowsLanguage: ["en", "ar", "tr"],
-    sameAs: ["https://github.com/lla7wel"],
+    email: "mailto:tmtmd24@gmail.com",
+    sameAs: [
+      "https://github.com/lla7wel",
+      "https://www.linkedin.com/in/mohamed-elbahlool-1373002bb/",
+    ],
+    url: Astro.site?.toString(),
   },
 };
 ---
 
 <Base locale={locale} jsonLd={jsonLd}>
-  <section class="measure" aria-labelledby="hero-heading">
-    <p style="color:var(--ink-muted); margin-block-end:0.25rem;">{t(locale, "hero.sub")}</p>
-    <h1 id="hero-heading" style="margin-block:0.25rem 1rem;">{t(locale, "hero.name")}</h1>
-    <p style="font-size:var(--step-1); max-inline-size: 38rem;">{t(locale, "hero.line")}</p>
-    <p style="color:var(--ink-muted); max-inline-size: 38rem;">{t(locale, "hero.proof")}</p>
-    <p style="color:var(--ink-muted);">{t(locale, "hero.langs")}</p>
-    <p style="display:flex; gap:1rem; flex-wrap:wrap; margin-block-start:1.5rem;">
-      <a class="chip" data-kind="status" href={localePath(locale, "contact/")}>{t(locale, "cta.contact")}</a>
-      <a class="chip" href="https://github.com/lla7wel">{t(locale, "cta.github")}</a>
-    </p>
-  </section>
-
-  <section class="measure" aria-labelledby="selected-heading" style="margin-block-start:3rem;">
-    <h2 id="selected-heading" style="margin-block-start:0;">{t(locale, "work.selected")}</h2>
-    <div style="display:grid; gap:1rem;">
-      {
-        flagships.map((p) => (
-          <ProjectCard
-            locale={locale}
-            slug={p.data.key}
-            title={p.data.title}
-            outcome={p.data.outcome}
-            status={p.data.status}
-            stack={p.data.stack}
-          />
-        ))
-      }
+  {/* 1 — Hero */}
+  <section class="hero canvas" aria-labelledby="hero-heading">
+    <div class="hero-copy">
+      <p class="kicker anno" data-tone="signal">{t(locale, "hero.sub")}</p>
+      <h1 id="hero-heading">{t(locale, "hero.name")}</h1>
+      <p class="positioning">{t(locale, "hero.line")}</p>
+      <p class="langs mono">{t(locale, "hero.langs")}</p>
+      <div class="ctas">
+        <a class="btn" data-variant="primary" href={localePath(locale, "work/")}>
+          {t(locale, "hero.explore")}
+          <Icon name="arrow" />
+        </a>
+        <a class="btn" href={localePath(locale, "contact/")}>{t(locale, "hero.contact")}</a>
+      </div>
     </div>
-    <p style="margin-block-start:1rem;">
-      <a href={localePath(locale, "work/")}>{t(locale, "work.all")} →</a>
-    </p>
+    <div class="hero-visual">
+      <SystemCrossSection locale={locale} />
+    </div>
+
+    <ul class="proof-strip" role="list" aria-label={ar ? "أدلة موجزة" : "Proof at a glance"}>
+      <li>
+        <VerifiedClaim
+          id="B1"
+          value={ar ? "قيد التشغيل الفعلي" : "In production"}
+          label={ar ? "منصة مستضافة ذاتيًا لـ English Home Libya" : "self-hosted platform for English Home Libya"}
+        />
+      </li>
+      <li>
+        <VerifiedClaim
+          id="B3"
+          value={ar ? "أكثر من 4,700" : "4,700+"}
+          label={ar ? "منتج في الكتالوج (يوليو 2026)" : "catalog products (as of July 2026)"}
+        />
+      </li>
+      <li>
+        <VerifiedClaim
+          id="C1"
+          value="v1.0.1"
+          label={ar ? "خلل اكتُشف على العتاد الحقيقي وأُصلح في اليوم نفسه" : "defect found on real hardware, fixed same day"}
+        />
+      </li>
+      <li>
+        <VerifiedClaim
+          id="F1"
+          value="512"
+          label={ar ? "متجه اختبار شامل يعمل في CI" : "exhaustive test vectors, green in CI"}
+        />
+      </li>
+    </ul>
   </section>
 
-  <section class="measure" aria-label={locale === "ar" ? "المجالات" : "Capabilities"} style="margin-block-start:3rem;">
-    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-      {capabilities.map((c) => <span class="chip">{c}</span>)}
+  {/* 2 — Flagship systems */}
+  <section class="canvas section" aria-labelledby="flagship-heading">
+    <div class="section-head">
+      <p class="anno" data-tone="signal">01 · {ar ? "الأنظمة" : "SYSTEMS"}</p>
+      <h2 id="flagship-heading">{t(locale, "work.flagship")}</h2>
+    </div>
+    <FlagshipEnglishHome locale={locale} title={eh.title} outcome={eh.outcome} role={eh.role} />
+    <FlagshipNova locale={locale} title={nova.title} outcome={nova.outcome} role={nova.role} />
+    <FlagshipPico locale={locale} title={pico.title} outcome={pico.outcome} role={pico.role} />
+  </section>
+
+  {/* 3 — Supporting systems */}
+  <section class="canvas section" aria-labelledby="supporting-heading">
+    <div class="section-head">
+      <p class="anno" data-tone="signal">02 · {ar ? "الأدلة" : "EVIDENCE"}</p>
+      <h2 id="supporting-heading">{t(locale, "work.supporting")}</h2>
+    </div>
+    <SupportingSystems locale={locale} projects={supporting} />
+  </section>
+
+  {/* 4 — Capabilities */}
+  <section class="band section" aria-labelledby="capabilities-heading">
+    <div class="canvas">
+      <div class="section-head">
+        <p class="anno" data-tone="signal">03 · {ar ? "النطاق" : "RANGE"}</p>
+        <h2 id="capabilities-heading">{t(locale, "capabilities.title")}</h2>
+        <p class="muted">{t(locale, "capabilities.sub")}</p>
+      </div>
+      <CapabilitiesStack locale={locale} />
     </div>
   </section>
 
-  <section class="measure" style="margin-block-start:3rem;">
-    <p style="color:var(--ink-muted); max-inline-size:38rem;">
-      {
-        locale === "ar"
-          ? "من ليبيا إلى تركيا إلى ميامي — أبني أنظمة تعمل بثلاث لغات، من الإشارة الفيزيائية حتى واجهة العميل."
-          : "From Libya to Turkey to Miami — I build systems that work in three languages, from the physical signal to the customer-facing interface."
-      }
-      <a href={localePath(locale, "about/")}>{t(locale, "nav.about")} →</a>
+  {/* 5 — Journey */}
+  <section class="canvas section" aria-labelledby="journey-heading">
+    <div class="section-head">
+      <p class="anno" data-tone="signal">04 · {ar ? "المسار" : "PATH"}</p>
+      <h2 id="journey-heading">{t(locale, "journey.title")}</h2>
+    </div>
+    <Journey locale={locale} />
+    <p class="about-link">
+      <a href={localePath(locale, "about/")}>{t(locale, "nav.about")} <Icon name="arrow" /></a>
     </p>
+  </section>
+
+  {/* 6 — Contact close */}
+  <section class="canvas section contact-close" aria-labelledby="close-heading">
+    <p class="anno" data-tone="signal">05 · {ar ? "تواصل" : "CONTACT"}</p>
+    <h2 id="close-heading">{t(locale, "contact.close")}</h2>
+    <p class="muted roles">{t(locale, "contact.primary")} {t(locale, "contact.open")}</p>
+    <div class="ctas">
+      <a class="btn" data-variant="primary" href={localePath(locale, "contact/")}>
+        {t(locale, "cta.contact")}
+        <Icon name="arrow" />
+      </a>
+      <a class="btn" href="https://github.com/lla7wel">
+        <Icon name="github" />
+        GitHub
+        <span class="visually-hidden">— {t(locale, "cs.externalLink")}</span>
+      </a>
+    </div>
   </section>
 </Base>
 
 <script is:inline define:vars={{ locale }}>
-  localStorage.setItem("locale", locale);
+  try {
+    localStorage.setItem("locale", locale);
+  } catch (e) {}
 </script>
+
+<style define:vars={{}}>
+  .hero {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-7) var(--space-8);
+  }
+  @media (min-width: 64em) {
+    .hero {
+      grid-template-columns: 5fr 7fr;
+      align-items: center;
+      column-gap: var(--space-8);
+      padding-block: var(--space-8) var(--space-9);
+    }
+  }
+
+  .kicker {
+    margin-block-end: var(--space-4);
+    letter-spacing: 0.04em;
+  }
+  :lang(ar) .kicker {
+    font-family: var(--font-sans);
+    text-transform: none;
+  }
+  h1 {
+    font-size: var(--text-title);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    margin-block-end: var(--space-5);
+  }
+  :lang(ar) h1 {
+    letter-spacing: 0;
+  }
+  .positioning {
+    font-size: var(--text-body-lg);
+    max-inline-size: 36ch;
+    text-wrap: pretty;
+    margin-block-end: var(--space-4);
+  }
+  .langs {
+    font-size: var(--text-small);
+    color: var(--color-ink-muted);
+    margin-block-end: var(--space-6);
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .proof-strip {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5) var(--space-6);
+    border-block-start: 1px solid var(--color-rule);
+    padding-block-start: var(--space-5);
+    margin-block-start: var(--space-4);
+  }
+  @media (min-width: 64em) {
+    .proof-strip {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .proof-strip li {
+    font-size: var(--text-small);
+  }
+
+  .section-head .anno {
+    letter-spacing: 0.1em;
+  }
+  :lang(ar) .section-head .anno {
+    font-family: var(--font-sans);
+    letter-spacing: 0;
+  }
+
+  .about-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 500;
+    margin-block-start: var(--space-4);
+  }
+
+  .contact-close h2 {
+    font-size: var(--text-section);
+    max-inline-size: 24ch;
+    margin-block: var(--space-3) var(--space-4);
+  }
+  .contact-close .roles {
+    max-inline-size: 60ch;
+    margin-block-end: var(--space-6);
+  }
+</style>

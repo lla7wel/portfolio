@@ -1,0 +1,63 @@
+---
+/* One per page (CaseStudy layout adds it). Figures' expand anchors are
+   upgraded by src/scripts/lightbox.ts; without JS they open the full-size
+   asset directly. */
+import { type Locale, t } from "../../lib/i18n";
+import Icon from "../global/Icon.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<dialog class="lightbox" id="figure-lightbox" aria-label={t(locale, "fig.expand")}>
+  <button type="button" class="close" data-lightbox-close>
+    <Icon name="close" />
+    <span class="visually-hidden">{t(locale, "fig.close")}</span>
+  </button>
+  <img alt="" />
+</dialog>
+
+<script>
+  import { initLightbox } from "../../scripts/lightbox";
+  initLightbox();
+</script>
+
+<style>
+  .lightbox {
+    border: none;
+    padding: var(--space-4);
+    background: transparent;
+    max-inline-size: min(96vw, 100rem);
+    max-block-size: 96dvh;
+    margin: auto;
+  }
+  .lightbox::backdrop {
+    background: rgba(5, 8, 9, 0.82);
+  }
+  .lightbox img {
+    max-inline-size: 100%;
+    max-block-size: calc(96dvh - 2 * var(--space-4));
+    inline-size: auto;
+    block-size: auto;
+    margin-inline: auto;
+    border-radius: var(--radius-media);
+    background: var(--color-surface);
+  }
+  .close {
+    position: fixed;
+    inset-block-start: var(--space-4);
+    inset-inline-end: var(--space-4);
+    inline-size: 44px;
+    block-size: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-control);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-rule-strong);
+    color: var(--color-ink);
+    z-index: 2;
+  }
+</style>

@@ -1,0 +1,150 @@
+---
+/* End-to-end systems stack: each capability layer links to the projects
+   that demonstrate it. Semantic links, no JS required. */
+import { type Locale, t, localePath } from "../../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const ar = locale === "ar";
+
+const p = (slug: string) => localePath(locale, `work/${slug}/`);
+const layers = [
+  {
+    key: "cap.physical" as const,
+    detail: ar
+      ? "ميكروفونات I2S، مستشعرات حرارة وضوء، أزرار ومراوح وشاشات موصولة يدويًا"
+      : "I2S microphones, temperature and light sensors, hand-wired buttons, fans, and displays",
+    projects: [
+      { slug: "pico-voice-terminal", label: "Pico" },
+      { slug: "smart-home-controller", label: ar ? "المتحكم المنزلي" : "Smart Home" },
+      { slug: "nova-raid", label: "NOVA RAID" },
+    ],
+  },
+  {
+    key: "cap.firmware" as const,
+    detail: ar
+      ? "C خام على RP2040 — PIO وDMA ونقطة ثابتة وذاكرة فلاش وHAL قابلة للاختبار"
+      : "Bare-metal C on RP2040 — PIO, DMA, fixed-point math, flash persistence, testable HALs",
+    projects: [
+      { slug: "nova-raid", label: "NOVA RAID" },
+      { slug: "pico-voice-terminal", label: "Pico" },
+      { slug: "smart-home-controller", label: ar ? "المتحكم المنزلي" : "Smart Home" },
+    ],
+  },
+  {
+    key: "cap.logic" as const,
+    detail: ar
+      ? "VHDL مع اختبارات ذاتية التحقق شاملة لكامل فضاء المدخلات وقيود Basys 3"
+      : "VHDL with exhaustive self-checking testbenches and Basys 3 constraints",
+    projects: [{ slug: "fpga-digital-logic", label: "FPGA" }],
+  },
+  {
+    key: "cap.network" as const,
+    detail: ar
+      ? "WebSocket طويل العمر عبر TLS، وwebhooks، وPostgres، وDocker Compose على خادم ذاتي الاستضافة"
+      : "Long-lived TLS WebSockets, webhooks, Postgres, and Docker Compose on a self-managed VPS",
+    projects: [
+      { slug: "english-home-platform", label: "English Home" },
+      { slug: "pico-voice-terminal", label: "Pico" },
+    ],
+  },
+  {
+    key: "cap.interface" as const,
+    detail: ar
+      ? "واجهات إدارة ثنائية اللغة RTL أولًا، وموقع أعمال ثنائي اللغة، وواجهة عرض على TFT"
+      : "Bilingual RTL-first admin consoles, a bilingual business site, and on-device TFT interfaces",
+    projects: [
+      { slug: "english-home-platform", label: "English Home" },
+      { slug: "miramar", label: ar ? "ميرامار" : "Miramar" },
+      { slug: "nova-raid", label: "NOVA RAID" },
+    ],
+  },
+  {
+    key: "cap.validation" as const,
+    detail: ar
+      ? "اختبارات CI خضراء، ومنصات اختبار مكتبية، واختبار تكامل دون اتصال، وقصص تتبع أعطال على العتاد"
+      : "Green CI suites, desktop host harnesses, offline integration tests, and on-hardware debugging stories",
+    projects: [
+      { slug: "nova-raid", label: "NOVA RAID" },
+      { slug: "pico-voice-terminal", label: "Pico" },
+      { slug: "fpga-digital-logic", label: "FPGA" },
+      { slug: "miramar", label: ar ? "ميرامار" : "Miramar" },
+    ],
+  },
+];
+---
+
+<ol class="stack" role="list">
+  {
+    layers.map((layer, i) => (
+      <li class="layer">
+        <span class="idx mono" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+        <div class="body">
+          <h3>{t(locale, layer.key)}</h3>
+          <p class="muted">{layer.detail}</p>
+        </div>
+        <ul class="proof" role="list" aria-label={ar ? "المشاريع المثبتة" : "Demonstrated by"}>
+          {layer.projects.map((proj) => (
+            <li>
+              <a href={p(proj.slug)}>{proj.label}</a>
+            </li>
+          ))}
+        </ul>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .stack {
+    display: flex;
+    flex-direction: column;
+    border-block-start: 1px solid var(--color-rule);
+  }
+  .layer {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--space-2) var(--space-4);
+    padding-block: var(--space-5);
+    border-block-end: 1px solid var(--color-rule);
+  }
+  @media (min-width: 64em) {
+    .layer {
+      grid-template-columns: 3rem 5fr 4fr;
+      align-items: baseline;
+    }
+  }
+  .idx {
+    color: var(--color-signal);
+    font-size: var(--text-small);
+  }
+  .body h3 {
+    font-size: var(--text-body-lg);
+    margin-block-end: var(--space-1);
+  }
+  .body p {
+    font-size: var(--text-small);
+    max-inline-size: 52ch;
+  }
+  .proof {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    grid-column: 2;
+    align-content: start;
+  }
+  @media (min-width: 64em) {
+    .proof {
+      grid-column: 3;
+      justify-content: flex-end;
+    }
+  }
+  .proof a {
+    font-size: var(--text-small);
+    font-weight: 500;
+    text-decoration-color: var(--color-rule-strong);
+    white-space: nowrap;
+  }
+</style>

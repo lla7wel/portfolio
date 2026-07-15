@@ -1,0 +1,242 @@
+---
+/* Supporting systems: varied evidence mosaic — FPGA waveform, Smart Home
+   physical build + state fragment, Miramar responsive frames. Different
+   spans and media ratios, consistent reading order. */
+import { Image } from "astro:assets";
+import { type Locale, t, localePath } from "../../lib/i18n";
+import ArtifactLabel from "../content/ArtifactLabel.astro";
+import waveform from "../../assets/fpga/waveform-collapsed.png";
+import smartHome from "../../assets/smart-home/full-system.jpg";
+import miramarDesktop from "../../assets/miramar/home-desktop.png";
+import miramarMobile from "../../assets/miramar/home-mobile.png";
+
+interface Props {
+  locale: Locale;
+  projects: { key: string; title: string; outcome: string; status: string }[];
+}
+const { locale, projects } = Astro.props;
+const ar = locale === "ar";
+const byKey = Object.fromEntries(projects.map((p) => [p.key, p]));
+const fpga = byKey["fpga-digital-logic"];
+const smart = byKey["smart-home-controller"];
+const miramar = byKey["miramar"];
+
+const smartStates = [
+  { code: "AUTO", en: "temp → fan curve", ar: "حرارة ← منحنى مروحة" },
+  { code: "MANUAL", en: "button override", ar: "تحكم يدوي" },
+  { code: "SLEEP", en: "LCD off, logging on", ar: "شاشة مطفأة، تسجيل مستمر" },
+  { code: "ALARM", en: "35 °C cutoff + buzzer", ar: "قطع عند ٣٥° + صافرة" },
+];
+---
+
+<div class="supporting grid">
+  {/* FPGA — waveform evidence, wide */}
+  <article class="cell fpga corner-marks" data-project="fpga-digital-logic">
+    <div class="cell-head">
+      <span class="fig-label">RTL-01</span>
+      <h3><a href={localePath(locale, "work/fpga-digital-logic/")}>{fpga.title}</a></h3>
+      <span class="status-tag">{t(locale, "status.coursework")}</span>
+    </div>
+    <figure>
+      <div class="media ltr-island">
+        <Image
+          src={waveform}
+          alt={ar
+            ? "موجات محاكاة سلوكية من Vivado للجامع ذي النقل السلسلي ذي 4 بتات"
+            : "Vivado behavioral simulation waveform of the 4-bit ripple-carry adder"}
+          width={1400}
+          sizes="(min-width: 64em) 48rem, 100vw"
+          format="webp"
+          quality={82}
+          loading="lazy"
+        />
+      </div>
+      <figcaption>
+        <ArtifactLabel locale={locale} kind="waveform" />
+        <span>{fpga.outcome}</span>
+      </figcaption>
+    </figure>
+  </article>
+
+  {/* Smart Home — physical build + state machine fragment */}
+  <article class="cell smart corner-marks" data-project="smart-home-controller">
+    <div class="cell-head">
+      <span class="fig-label">EMB-03</span>
+      <h3><a href={localePath(locale, "work/smart-home-controller/")}>{smart.title}</a></h3>
+      <span class="status-tag">{t(locale, "status.team")}</span>
+    </div>
+    <figure>
+      <div class="media">
+        <Image
+          src={smartHome}
+          alt={ar
+            ? "المتحكم المنزلي الكامل: Arduino UNO ولوحة تجارب ومستشعر DHT11 وشاشة LCD ومروحة"
+            : "The complete smart-home controller: Arduino UNO, breadboard, DHT11 sensor, LCD, and fan"}
+          width={1000}
+          sizes="(min-width: 64em) 30rem, 100vw"
+          format="avif"
+          quality={62}
+          loading="lazy"
+        />
+      </div>
+      <figcaption>
+        <ArtifactLabel locale={locale} kind="photo" />
+        <span>{smart.outcome}</span>
+      </figcaption>
+    </figure>
+    <ul class="states" role="list">
+      {
+        smartStates.map((s) => (
+          <li>
+            <span class="mono code">{s.code}</span>
+            <span>{ar ? s.ar : s.en}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </article>
+
+  {/* Miramar — responsive presentation */}
+  <article class="cell miramar corner-marks" data-project="miramar">
+    <div class="cell-head">
+      <span class="fig-label">WEB-01</span>
+      <h3><a href={localePath(locale, "work/miramar/")}>{miramar.title}</a></h3>
+      <span class="status-tag">{t(locale, "status.live")}</span>
+    </div>
+    <figure>
+      <div class="frames ltr-island">
+        <div class="frame-desktop media">
+          <Image
+            src={miramarDesktop}
+            alt={ar ? "الصفحة الرئيسية لموقع ميرامار على سطح المكتب" : "Miramar home page, desktop layout"}
+            width={1000}
+            sizes="(min-width: 64em) 34rem, 100vw"
+            format="webp"
+            quality={80}
+            loading="lazy"
+          />
+        </div>
+        <div class="frame-mobile media">
+          <Image
+            src={miramarMobile}
+            alt={ar ? "الصفحة الرئيسية لموقع ميرامار على الهاتف" : "Miramar home page, mobile layout"}
+            width={300}
+            format="webp"
+            quality={80}
+            loading="lazy"
+          />
+        </div>
+      </div>
+      <figcaption>
+        <ArtifactLabel locale={locale} kind="screenshot" />
+        <span>{miramar.outcome}</span>
+      </figcaption>
+    </figure>
+  </article>
+</div>
+
+<style>
+  .supporting {
+    row-gap: var(--space-6);
+  }
+  .cell {
+    grid-column: span 4;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-media);
+    background: var(--color-surface);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  @media (min-width: 45em) {
+    .cell {
+      grid-column: span 6;
+    }
+  }
+  @media (min-width: 64em) {
+    .fpga {
+      grid-column: span 7;
+    }
+    .smart {
+      grid-column: span 5;
+      grid-row: span 2;
+    }
+    .miramar {
+      grid-column: span 7;
+    }
+  }
+
+  .cell-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .cell-head h3 {
+    font-size: var(--text-body-lg);
+    margin-inline-end: auto;
+  }
+  .cell-head h3 a {
+    text-decoration: none;
+  }
+  .cell-head h3 a:hover {
+    color: var(--accent-ink, var(--accent));
+  }
+
+  figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .media {
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--color-surface-raised);
+  }
+  .media :global(img) {
+    inline-size: 100%;
+    block-size: auto;
+  }
+  figcaption {
+    font-size: var(--text-annotation);
+  }
+
+  .states {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2) var(--space-4);
+    border-block-start: 1px dashed var(--color-rule);
+    padding-block-start: var(--space-3);
+    font-size: var(--text-annotation);
+  }
+  .states li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .states .code {
+    color: var(--accent-ink, var(--accent));
+    font-size: var(--text-annotation);
+    letter-spacing: 0.08em;
+  }
+  .states li:last-child .code {
+    color: var(--accent-3, var(--color-danger));
+  }
+
+  .frames {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-3);
+  }
+  .frame-desktop {
+    flex: 1;
+  }
+  .frame-mobile {
+    inline-size: 22%;
+    flex-shrink: 0;
+  }
+</style>

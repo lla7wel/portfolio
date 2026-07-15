@@ -1,0 +1,23 @@
+---
+import { type Locale, t, type UiKey } from "../../lib/i18n";
+import type { ArtifactKind } from "../../lib/artifacts";
+
+interface Props {
+  locale: Locale;
+  kind: ArtifactKind;
+}
+const { locale, kind } = Astro.props;
+const key = `artifact.${kind}` as UiKey;
+const dot: Record<ArtifactKind, string> = {
+  photo: "photo",
+  screenshot: "diagram",
+  render: "render",
+  renderIllustrative: "render",
+  simulation: "simulation",
+  diagram: "diagram",
+  seeded: "seeded",
+  waveform: "simulation",
+};
+---
+
+<span class="artifact-label" data-kind={dot[kind]}>{t(locale, key)}</span>
