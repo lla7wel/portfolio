@@ -1,0 +1,60 @@
+---
+key: smart-home-controller
+locale: en
+title: "Smart-home appliance controller"
+outcome: "An Arduino climate/appliance controller with sensor-driven fan control, a four-mode state machine, and an over-temperature safety cutoff — built as a two-person university team."
+tier: supporting
+order: 4
+status: team
+role: "Team member (with Paola Dorado Galicia) — design, firmware, testing; documentation, schematics & repo maintainer"
+timeframe: "Spring 2026 · FIU EEL 4730"
+stack: ["C++", "Arduino UNO", "DHT11", "PWM", "State machine"]
+links:
+  - label: "Repository"
+    href: "https://github.com/lla7wel/smart-home-appliance-controller"
+  - label: "Video demo"
+    href: "https://youtu.be/NAKaDOO0xM4"
+  - label: "Teammate's repository"
+    href: "https://github.com/Paola-DG/Smart-Home-Appliance-Controller"
+claims: ["E1"]
+translationStatus: reviewed
+---
+
+## What it does
+
+DHT11 temperature/humidity and an LDR light divider feed a four-mode state
+machine (AUTO / MANUAL / SLEEP / ALARM). AUTO maps temperature bands to fan
+speed through a PN2222 low-side PWM driver with a flyback diode; at 35 °C an
+ALARM override cuts the fan and sounds the buzzer. An LCD1602 shows state;
+everything logs over UART.
+
+## Credit, precisely
+
+This was a **team project** for EEL 4730 (Programming Embedded Systems) at
+FIU, built with Paola Dorado Galicia. The repository preserves the team's
+original commit history — the original firmware commits are hers — and adds
+my later documentation, reorganization, and schematics on top. Both of us
+are credited for design, firmware, and testing, as the project was actually
+done.
+
+## Why it's here
+
+It demonstrates the unglamorous fundamentals on real hardware: ADC sampling,
+PWM actuation, debounced GPIO, a single-wire sensor protocol, UART logging,
+and a state machine — with eight build photos across its modes, a schematic
+in three formats, and a video walkthrough. The README's limitations section
+is candid: a blocking main loop that can miss button presses, coarse ±2 °C
+sensor resolution, compile-time thresholds, uncalibrated LDR values.
+
+## Gallery
+
+<div class="figure-grid">
+<figure>
+  <img src="/images/smart-home/full-system.jpg" alt="Complete smart-home controller assembly: Arduino UNO, breadboard, DHT11, LCD display, fan and wiring" width="1400" height="1091" loading="lazy" />
+  <figcaption>Hardware photograph — the complete assembly.</figcaption>
+</figure>
+<figure>
+  <img src="/images/smart-home/wiring-diagram.svg" alt="Wiring schematic for the appliance controller: sensors, PN2222 fan driver, LCD, LEDs, buzzer and buttons" loading="lazy" />
+  <figcaption>Diagram — wiring schematic (from the repository).</figcaption>
+</figure>
+</div>

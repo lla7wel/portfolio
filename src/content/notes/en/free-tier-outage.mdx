@@ -1,0 +1,41 @@
+---
+key: free-tier-outage
+locale: en
+title: "When the free tier turns off your business"
+description: "A hosted database provider paused the project, and a real retail operation lost its customer-service platform. The migration to one self-managed VPS, and what 'production' means at €5 a month."
+published: 2026-07-14
+project: english-home-platform
+claims: ["B1", "B5", "B7"]
+translationStatus: reviewed
+---
+
+The customer-service platform I run for a retail franchise originally kept
+its data in a hosted free-tier database. One day the provider paused the
+project — its right, per the terms — and the platform went down with it.
+A real business's customer messages stopped being answered.
+
+## The decision
+
+The lesson wasn't "pay for the next tier up." It was that the operation's
+availability shouldn't depend on a third party's dormancy policy at all.
+The replacement is deliberately boring: one self-managed VPS running
+Postgres 16, the Next.js app, and Caddy under Docker Compose, with nightly
+`pg_dump` backups shipped off the box, a written deployment runbook, and
+fourteen ordered SQL migrations that carry the schema from the old world to
+the new one — including the migration that strips the old provider's
+row-level-security shims.
+
+## What "production" means at this scale
+
+Not Kubernetes and not five nines. It means: the system answers real
+customers, a human can take over instantly, nothing gets marked delivered
+unless the API confirmed it, a slow AI response can't clobber a newer
+conversation state, and when the box dies, yesterday's data restores from a
+backup that was actually tested. Every one of those guards maps to
+something that went wrong once.
+
+## What I'd generalize
+
+- Free tiers are for experiments. The moment a workflow has users who didn't choose your stack, its storage needs an owner with an SLA — even if the owner is you.
+- A €5 VPS with backups, a runbook, and compose files is a legitimate production posture for a single-business platform. The discipline, not the bill, is the point.
+- Keep the migration history. Fourteen numbered SQL files are the most honest changelog a platform can have.

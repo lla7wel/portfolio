@@ -1,0 +1,38 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getCollection, render } from "astro:content";
+import { type Locale } from "../../../lib/i18n";
+
+export async function getStaticPaths() {
+  const notes = await getCollection("notes");
+  return notes.map((n) => ({
+    params: { locale: n.data.locale, slug: n.data.key },
+    props: { note: n },
+  }));
+}
+
+const { note } = Astro.props;
+const locale = note.data.locale as Locale;
+const { Content } = await render(note);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: note.data.title,
+  datePublished: note.data.published.toISOString().slice(0, 10),
+  author: { "@type": "Person", name: "Mohamed Khalid Elbahlool" },
+  inLanguage: locale,
+};
+---
+
+<Base locale={locale} title={note.data.title} description={note.data.description} jsonLd={jsonLd}>
+  <article class="measure">
+    <h1>{note.data.title}</h1>
+    <p style="color:var(--ink-muted);">
+      <time datetime={note.data.published.toISOString().slice(0, 10)}>
+        {note.data.published.toLocaleDateString(locale === "ar" ? "ar" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
+      </time>
+    </p>
+    <Content />
+  </article>
+</Base>

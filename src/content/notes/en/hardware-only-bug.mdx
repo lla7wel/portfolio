@@ -1,0 +1,46 @@
+---
+key: hardware-only-bug
+locale: en
+title: "The bug that only existed on real hardware"
+description: "NOVA RAID shipped CI-green and harness-verified. The first boot on a physical board displayed a color negative. What desktop harnesses can and cannot prove."
+published: 2026-07-14
+project: nova-raid
+claims: ["C1", "C2"]
+translationStatus: reviewed
+---
+
+NOVA RAID v1.0.0 had every safety net a solo firmware project can
+reasonably have: a hardware-abstraction layer that lets the identical game
+sources compile on a desktop, a host harness that drives the game through
+every state on every push, and a green CI badge to show for it. The UF2 was
+released with a candid note: *validated by CI and the host harness; not yet
+run on physical hardware.*
+
+The first boot on the physical board rendered the entire game as a color
+negative — white background, inverted sprites.
+
+## Why the harness couldn't catch it
+
+The host harness renders pixel-true frames from the same drawing code the
+device runs. That's exactly why it couldn't see this bug: the defect wasn't
+in the drawing code. The 52Pi kit's ST7796S panel operates in inverted
+mode, and the display init sequence never sent the `INVON` command — the
+vendor's own demo does. Every pixel the firmware produced was correct; the
+panel just interpreted all of them in reverse.
+
+This is the class of bug that lives in the seam between your code and the
+physical part: init sequences, panel variants, undocumented mode bits.
+No amount of host-side coverage reaches it, because the host has no panel.
+
+## The fix, and what stayed in the open
+
+v1.0.1 sent `INVON` during init — a one-line fix, released the same day,
+with the root cause written into the release note. The pre-fix hardware
+photos stayed in the repository on purpose. "Verified on hardware" is only
+a meaningful claim if it includes what the first verification found.
+
+## What I'd generalize
+
+- A desktop harness buys you *logic* confidence, cheaply and on every push. Keep it.
+- It buys you zero *bring-up* confidence. Budget a real first-boot pass for every display, sensor, and bus — and expect it to find something.
+- Release the pre-fix evidence. It costs nothing and it's the difference between "trust me" and "check for yourself."

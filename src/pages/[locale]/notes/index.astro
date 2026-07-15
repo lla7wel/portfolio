@@ -1,0 +1,33 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import { type Locale, t, localePath } from "../../../lib/i18n";
+
+export function getStaticPaths() {
+  return [{ params: { locale: "en" } }, { params: { locale: "ar" } }];
+}
+
+const locale = Astro.params.locale as Locale;
+const notes = (await getCollection("notes", (n) => n.data.locale === locale)).sort(
+  (a, b) => b.data.published.valueOf() - a.data.published.valueOf()
+);
+---
+
+<Base locale={locale} title={t(locale, "notes.title")}>
+  <div class="measure">
+    <h1>{t(locale, "notes.title")}</h1>
+    <div style="display:grid; gap:1rem;">
+      {
+        notes.map((n) => (
+          <a class="card" href={localePath(locale, `notes/${n.data.key}/`)}>
+            <h3 style="margin:0 0 0.3rem;">{n.data.title}</h3>
+            <p>{n.data.description}</p>
+            <time datetime={n.data.published.toISOString().slice(0, 10)} style="color:var(--ink-muted); font-size:var(--step--1);">
+              {n.data.published.toLocaleDateString(locale === "ar" ? "ar" : "en-US", { year: "numeric", month: "long" })}
+            </time>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</Base>

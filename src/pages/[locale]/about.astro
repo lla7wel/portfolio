@@ -1,0 +1,105 @@
+---
+import Base from "../../layouts/Base.astro";
+import { type Locale, t } from "../../lib/i18n";
+
+export function getStaticPaths() {
+  return [{ params: { locale: "en" } }, { params: { locale: "ar" } }];
+}
+const locale = Astro.params.locale as Locale;
+---
+
+<Base locale={locale} title={t(locale, "about.title")}>
+  <div class="measure">
+    {
+      locale === "en" ? (
+        <>
+          <h1>About</h1>
+          <p>
+            I grew up between Libya and Turkey and now study Computer
+            Engineering at Florida International University in Miami. I work in
+            Arabic, English, and Turkish — and the systems I build do too: the
+            product-matching engine behind the customer-service platform I
+            operate literally reconciles a catalog across those three
+            languages.
+          </p>
+          <p>
+            My path has run from micro:bit robots, to a carefully guarded
+            dry-run automation for a real retail business, to where I am now:
+            operating a self-hosted production platform for English Home
+            Libya, and building embedded systems that I verify on real
+            hardware — a Raspberry Pi Pico arcade game with a released fix for
+            a defect that only appeared on the physical panel, and a
+            hand-wired voice terminal with a custom PIO audio-capture path.
+          </p>
+          <h2>Experience</h2>
+          <h3 style="margin-block-end:0.2rem;">Digital Systems &amp; Automation Specialist — English Home Libya</h3>
+          <p style="color:var(--ink-muted); margin-block-start:0;">2023 – Present · Remote</p>
+          <p>
+            I run the digital side of a retail business serving customers in
+            Libya: customer messaging in Arabic and English, product catalogs,
+            domain/DNS and branded email, and the self-hosted customer-service
+            platform documented in the flagship case study. The platform's
+            requirements came directly from two years of doing that work by
+            hand.
+          </p>
+          <h3 style="margin-block-end:0.2rem;">Learning Assistant II — FIU Mastery Math Lab</h3>
+          <p style="color:var(--ink-muted); margin-block-start:0;">August 2024 – Present · ~20 hours/week</p>
+          <p>
+            I support Algebra, Precalculus, and Trigonometry students through
+            mini-lessons, guided practice, and one-on-one tutoring — daily
+            practice in technical communication, collaborative problem
+            solving, and explaining mathematical ideas to students from very
+            different backgrounds.
+          </p>
+          <h2>Education</h2>
+          <ul>
+            <li>B.S. Computer Engineering, Florida International University — senior (93 credits), expected August 2027</li>
+            <li>GPA 3.6+ (verified July 2026) · Dean's List: Fall 2024, Spring 2025</li>
+            <li>Embedded coursework: C and C++ for Embedded Systems, Programming Embedded Systems; Logic Design and Circuit Analysis (Summer 2026)</li>
+          </ul>
+        </>
+      ) : (
+        <>
+          <h1>نبذة</h1>
+          <p>
+            نشأت بين ليبيا وتركيا، وأدرس اليوم هندسة الحاسوب في جامعة فلوريدا
+            الدولية في ميامي. أعمل بالعربية والإنجليزية والتركية — والأنظمة
+            التي أبنيها كذلك: محرك مطابقة المنتجات خلف منصة خدمة العملاء التي
+            أشغّلها يطابق فعليًا كتالوجًا واحدًا عبر هذه اللغات الثلاث.
+          </p>
+          <p>
+            بدأ مساري من روبوتات micro:bit، ثم أتمتةٍ تجريبية محكومة بضوابط
+            صارمة لصالح نشاط تجاري حقيقي، وصولًا إلى ما أعمل عليه الآن: تشغيل
+            منصة إنتاجية مستضافة ذاتيًا لـ English Home Libya، وبناء أنظمة
+            مدمجة أتحقق منها على عتاد حقيقي — لعبة أركيد على Raspberry Pi Pico
+            صدر لها إصلاح موثَّق لعيب لم يظهر إلا على الشاشة الفعلية، وجهاز
+            صوتي مبني يدويًا بمسار التقاط صوت مخصص عبر PIO.
+          </p>
+          <h2>الخبرة</h2>
+          <h3 style="margin-block-end:0.2rem;">أخصائي أنظمة رقمية وأتمتة — English Home Libya</h3>
+          <p style="color:var(--ink-muted); margin-block-start:0;">2023 – حتى الآن · عن بُعد</p>
+          <p>
+            أدير الجانب الرقمي لنشاط تجزئة يخدم عملاء في ليبيا: مراسلات
+            العملاء بالعربية والإنجليزية، وكتالوجات المنتجات، والنطاقات
+            والبريد الرسمي، ومنصة خدمة العملاء المستضافة ذاتيًا الموثقة في
+            دراسة الحالة الرئيسية. متطلبات المنصة جاءت مباشرة من عامين من
+            أداء هذا العمل يدويًا.
+          </p>
+          <h3 style="margin-block-end:0.2rem;">مساعد تدريس ثانٍ — مختبر الرياضيات بجامعة FIU</h3>
+          <p style="color:var(--ink-muted); margin-block-start:0;">أغسطس 2024 – حتى الآن · نحو 20 ساعة أسبوعيًا</p>
+          <p>
+            أدعم طلاب الجبر وما قبل التفاضل وحساب المثلثات عبر دروس مصغرة
+            وتمارين موجهة ودروس فردية — تمرين يومي على التواصل التقني وحل
+            المشكلات تعاونيًا وشرح المفاهيم الرياضية لطلاب من خلفيات متنوعة.
+          </p>
+          <h2>التعليم</h2>
+          <ul>
+            <li>بكالوريوس هندسة الحاسوب، جامعة فلوريدا الدولية — سنة رابعة (93 ساعة معتمدة)، تخرج متوقع أغسطس 2027</li>
+            <li>معدل تراكمي +3.6 (تم التحقق في يوليو 2026) · قائمة العميد: خريف 2024 وربيع 2025</li>
+            <li>مقررات الأنظمة المدمجة: برمجة C و ++C للأنظمة المدمجة، برمجة الأنظمة المدمجة؛ تصميم المنطق وتحليل الدوائر (صيف 2026)</li>
+          </ul>
+        </>
+      )
+    }
+  </div>
+</Base>

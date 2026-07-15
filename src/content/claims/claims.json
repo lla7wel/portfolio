@@ -1,0 +1,171 @@
+[
+  {
+    "id": "A1",
+    "claim": "B.S. Computer Engineering student, Florida International University, Miami",
+    "source": "FIU unofficial record, printed 2026-03-31",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "A2",
+    "claim": "Cumulative GPA 3.65",
+    "source": "FIU unofficial record, printed 2026-03-31",
+    "status": "confirmed",
+    "safeWording": "GPA 3.6+",
+    "lastVerified": "2026-07-14",
+    "expires": "2026-09-01"
+  },
+  {
+    "id": "A3",
+    "claim": "Dean's List Fall 2024 and Spring 2025",
+    "source": "FIU unofficial record (Dean's List markers)",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "A5",
+    "claim": "Honors College member",
+    "source": "2025 résumés only; absent from transcript",
+    "status": "unsupported",
+    "lastVerified": "2026-07-14",
+    "safeWording": "REMOVED — owner confirmed not Honors College; never publish"
+  },
+  {
+    "id": "A7",
+    "claim": "Expected graduation August 2027",
+    "source": "Owner-confirmed 2026-07-14",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "B1",
+    "claim": "Customer-service platform built and operated for the English Home Libya franchise",
+    "source": "github.com/lla7wel/Customer-Service-Agent (25 commits, 14 migrations, deploy runbook)",
+    "status": "confirmed",
+    "safeWording": "Built and operated for English Home Libya, a retail business serving customers in Libya (owner-approved naming)",
+    "lastVerified": "2026-07-14",
+    "expires": "2027-01-14"
+  },
+  {
+    "id": "B2",
+    "claim": "Public Facebook page ~61,000 followers; Instagram ~27,000 followers",
+    "source": "Public search-indexed page counts, captured 2026-07-14",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14",
+    "expires": "2027-01-14",
+    "safeWording": "public page counts, July 2026 — never convert to 'reach'"
+  },
+  {
+    "id": "B3",
+    "claim": "Catalog of ≈4,700 products",
+    "source": "Customer-Service-Agent / matcher READMEs (4,700) vs scraper (~4,800)",
+    "status": "confirmed",
+    "safeWording": "more than 4,700 products (as of July 2026)",
+    "lastVerified": "2026-07-14",
+    "expires": "2027-01-14"
+  },
+  {
+    "id": "B5",
+    "claim": "Migrated the platform from a paused free-tier database host to a self-hosted VPS (Docker Compose, Caddy, Postgres, nightly backups)",
+    "source": "Customer-Service-Agent CHANGELOG, migration 0013, deploy/",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "B7",
+    "claim": "Safety mechanisms: burst batching, supersede guard, send-time ai_enabled re-check, output sanitizer, honest delivery states, human handoff",
+    "source": "Customer-Service-Agent README + named source files",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "C1",
+    "claim": "NOVA RAID validated on real hardware; display-inversion defect found on first hardware run and fixed in v1.0.1 (missing INVON init)",
+    "source": "nova-raid v1.0.1 release note, fix commit, 5 owner hardware photos",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "C2",
+    "claim": "Dual-core 25 fps pipeline, SPI @ 62.5 MHz + double-buffered DMA, 24.8 fixed-point math, HAL + desktop host harness, CI green, UF2 releases",
+    "source": "nova-raid README, source, 11 passing CI runs, releases",
+    "status": "confirmed",
+    "safeWording": "Frame-budget figures are design calculations, not on-hardware measurements",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "D1",
+    "claim": "Hand-wired Pico W voice terminal: ST7796 TFT, SPH0645 I2S mic via custom 8-instruction PIO program + DMA ring buffer, single long-lived TLS WebSocket",
+    "source": "Pico-AI-Agentic-System README/docs, firmware sources, 4 device photos, wiring SVG",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "D2",
+    "claim": "Typically responds within a couple of seconds (observed, not benchmarked)",
+    "source": "Owner-approved softened wording 2026-07-14",
+    "status": "confirmed",
+    "safeWording": "observed figure, not a controlled measurement",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "D3",
+    "claim": "Control plane verified by a fully offline integration test (auth, provisioning, voice turn, tool gating, secret-masking); CI green",
+    "source": "voice-agent-control-plane tests/test_integration.py + passing Actions run",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "E1",
+    "claim": "Smart-home appliance controller is an FIU EEL 4730 team project with Paola Dorado Galicia; original firmware history is hers; Mohamed is team-credited for design/firmware/testing and is the repo documentarian/maintainer",
+    "source": "smart-home-appliance-controller README + commit history",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "F1",
+    "claim": "Ripple-carry adder: exhaustive 512-vector self-checking GHDL testbenches in CI (green); Vivado waveforms; Basys 3 pin constraints; on-board bring-up author-attested (no board photo in repo)",
+    "source": "fpga-ripple-carry-adder repo + passing CI run",
+    "status": "confirmed",
+    "safeWording": "Verified exhaustively in simulation; programmed on a Basys 3 (author-attested)",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "G1",
+    "claim": "Miramar site live at tr-miramar.com (same deployment as miramartr.vercel.app); Next.js 16, EN/TR, R3F scene with static fallback, Playwright suite",
+    "source": "miramartr repo + live HTTP checks",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14",
+    "expires": "2027-01-14"
+  },
+  {
+    "id": "H1",
+    "claim": "Trilingual AR/EN/TR; Learning Assistant II, FIU Mastery Math Lab (Aug 2024-present, ~20 h/wk, Algebra/Precalc/Trig); Digital Systems & Automation Specialist, English Home Libya (2023-present)",
+    "source": "Owner-confirmed 2026-07-14",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "H2",
+    "claim": "Public contact: tmtmd24@gmail.com, LinkedIn (mohamed-elbahlool-1373002bb), GitHub (lla7wel). Phone NEVER published.",
+    "source": "Owner-approved 2026-07-14",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "id": "A6b",
+    "claim": "Senior standing, 93 earned credits",
+    "source": "Owner-confirmed 2026-07-14",
+    "status": "confirmed",
+    "lastVerified": "2026-07-14",
+    "expires": "2027-01-14"
+  },
+  {
+    "id": "B4",
+    "claim": "Image catalog exceeded 11 GB during the documented catalog build",
+    "source": "Scraper repo description ('11GB image database'); owner-approved historical wording 2026-07-14",
+    "status": "confirmed",
+    "safeWording": "exceeding 11 GB during the documented catalog build — do not imply current live size",
+    "lastVerified": "2026-07-14"
+  }
+]

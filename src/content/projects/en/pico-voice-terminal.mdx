@@ -1,0 +1,88 @@
+---
+key: pico-voice-terminal
+locale: en
+title: "Pico W voice terminal & control plane"
+outcome: "A hand-wired push-to-talk voice assistant: custom PIO audio capture on the device, streaming speech recognition and permission-gated tools in a self-hosted backend."
+tier: flagship
+order: 3
+status: released
+role: "Solo — hardware build, firmware, backend"
+timeframe: "2026"
+stack: ["RP2040", "PIO + DMA", "C", "Python", "FastAPI", "WebSocket", "SQLite"]
+links:
+  - label: "Device repository"
+    href: "https://github.com/lla7wel/Pico-AI-Agentic-System"
+  - label: "Control plane (standalone)"
+    href: "https://github.com/lla7wel/voice-agent-control-plane"
+claims: ["D1", "D3"]
+translationStatus: reviewed
+---
+
+## What it is
+
+A Raspberry Pi Pico W wired by hand on a breadboard — 4″ ST7796 TFT, SPH0645
+I2S microphone, push-to-talk button, RGB LED, buzzer — acting as a thin
+terminal: it captures audio, streams it, and draws replies. All intelligence
+lives in a self-hosted FastAPI control plane.
+
+## The part the stock library couldn't do
+
+The SPH0645's pin arrangement made the standard I2S receiver unusable on
+this build. The fix is an eight-instruction, hand-assembled PIO program that
+generates the bit and word clocks and samples the data line, with DMA
+streaming samples into a static ring buffer. Audio leaves the device as
+16 kHz mono PCM over a single long-lived TLS WebSocket — the handshake
+happens once at boot, and the transcript is already final when the button is
+released, because recognition streams while you speak. In use it typically
+responds within a couple of seconds — an observed figure, not a controlled
+benchmark.
+
+## The control plane
+
+Published as its own product: any client speaking a 20-line WebSocket
+protocol is a device. It handles provisioning (auth tokens shown exactly
+once, rotate/revoke), presence, streaming STT, a provider-agnostic LLM loop
+with permission-gated tools (integrations ship disabled until explicitly
+authorized), runtime configuration with secret masking, history and logs,
+and a vanilla-JS admin console. A simulated-device example means the whole
+system runs and verifies with zero hardware.
+
+## Verification
+
+The full pipeline — startup, login, settings, device provisioning, a
+complete voice turn over the WebSocket, persistence, presence, tool gating,
+logs — runs as one offline integration test with STT/LLM stubbed: no API
+keys, no network. The test also asserts the security properties (secrets
+never echoed back, device tokens never listed, gated tools inert without
+authorization, password change invalidates old sessions). CI runs it on
+every push. Firmware-side validation was manual, with documented bring-up
+procedures for the two riskiest pieces: the PIO receiver and TLS.
+
+## Evidence
+
+Four photos of the device running, a wiring diagram, three admin-console
+screenshots, protocol documentation with sequence diagrams, and the passing
+CI run. Build close-up photos are on the capture list and will be added.
+
+## Gallery
+
+<div class="figure-grid">
+<figure>
+  <img src="/images/pico/hero.jpg" alt="Hand-wired Pico W voice terminal on a breadboard with 4-inch TFT display showing the interface" width="1600" height="900" loading="lazy" />
+  <figcaption>Hardware photograph — the assembled terminal running.</figcaption>
+</figure>
+<figure>
+  <img src="/images/pico/screen-ready.jpg" alt="The terminal's TFT display showing the ready state" width="1600" height="900" loading="lazy" />
+  <figcaption>Hardware photograph — ready state on the device display.</figcaption>
+</figure>
+</div>
+
+<figure>
+  <img src="/images/pico/wiring-diagram.svg" alt="Wiring diagram: Pico W connections to ST7796 TFT, SPH0645 I2S microphone, buttons, RGB LED and buzzer" loading="lazy" />
+  <figcaption>Diagram — device wiring (from the repository).</figcaption>
+</figure>
+
+<figure>
+  <img src="/images/pico/console-overview.png" alt="Control-plane admin console overview page listing devices and activity" width="1440" height="860" loading="lazy" />
+  <figcaption>Screenshot — control-plane admin console (from the repository's documentation).</figcaption>
+</figure>

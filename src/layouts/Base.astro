@@ -1,0 +1,132 @@
+---
+import "../styles/global.css";
+import {
+  type Locale,
+  t,
+  dirFor,
+  localePath,
+  switchLocalePath,
+} from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+  title?: string;
+  description?: string;
+  /** JSON-LD object(s) to embed, already truth-checked against the claim registry. */
+  jsonLd?: object | object[];
+}
+
+const { locale, title, description, jsonLd } = Astro.props;
+const dir = dirFor(locale);
+const pageTitle = title ? `${title} — ${t(locale, "hero.name")}` : t(locale, "site.title");
+const pageDescription = description ?? t(locale, "site.description");
+const pathname = Astro.url.pathname;
+const altPath = switchLocalePath(locale, pathname);
+const enUrl = new URL(locale === "en" ? pathname : altPath, Astro.site);
+const arUrl = new URL(locale === "ar" ? pathname : altPath, Astro.site);
+const canonical = new URL(pathname, Astro.site);
+
+const nav = [
+  { href: localePath(locale, ""), key: "nav.home" as const },
+  { href: localePath(locale, "work/"), key: "nav.work" as const },
+  { href: localePath(locale, "about/"), key: "nav.about" as const },
+  { href: localePath(locale, "notes/"), key: "nav.notes" as const },
+  { href: localePath(locale, "contact/"), key: "nav.contact" as const },
+];
+---
+
+<!doctype html>
+<html lang={locale} dir={dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="ar" href={arUrl} />
+    <link rel="alternate" hreflang="x-default" href={enUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={locale === "ar" ? "ar" : "en_US"} />
+    <meta name="generator" content={Astro.generator} />
+    {
+      jsonLd && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(jsonLd)}
+        />
+      )
+    }
+    <script is:inline>
+      // Theme: honor stored choice; default follows system. Runs pre-paint.
+      const stored = localStorage.getItem("theme");
+      if (stored === "dark" || stored === "light") {
+        document.documentElement.dataset.theme = stored;
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t(locale, "nav.skip")}</a>
+    <header>
+      <nav
+        aria-label={locale === "ar" ? "التنقل الرئيسي" : "Main navigation"}
+        class="wide"
+        style="max-inline-size: var(--wide-max); margin-inline:auto; padding-inline: var(--space-gutter); display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem 1.25rem; padding-block:1rem; border-block-end:1px solid var(--line);"
+      >
+        <a
+          href={localePath(locale, "")}
+          style="font-weight:600; text-decoration:none; margin-inline-end:auto;"
+          >{t(locale, "hero.name")}</a
+        >
+        {
+          nav.slice(1).map((item) => (
+            <a
+              href={item.href}
+              aria-current={pathname === item.href ? "page" : undefined}
+            >
+              {t(locale, item.key)}
+            </a>
+          ))
+        }
+        <a href={altPath} lang={locale === "ar" ? "en" : "ar"} dir={locale === "ar" ? "ltr" : "rtl"} rel="alternate">
+          {t(locale, "nav.switchLocale")}
+        </a>
+        <button
+          id="theme-toggle"
+          type="button"
+          class="chip"
+          aria-pressed="false"
+          aria-label={locale === "ar" ? "تبديل السمة الداكنة" : "Toggle dark theme"}
+          style="cursor:pointer;"
+        >◐</button>
+      </nav>
+    </header>
+    <main id="main" style="padding-block: 2.5rem 4rem;">
+      <slot />
+    </main>
+    <footer
+      style="border-block-start:1px solid var(--line); padding-block:1.5rem; margin-block-start:2rem;"
+    >
+      <div class="measure" style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:space-between; color:var(--ink-muted); font-size:var(--step--1);">
+        <span>© {new Date().getFullYear()} {t(locale, "hero.name")}</span>
+        <span>{t(locale, "footer.rights")}</span>
+        <a href="https://github.com/lla7wel">GitHub</a>
+      </div>
+    </footer>
+    <script>
+      const btn = document.getElementById("theme-toggle");
+      btn?.addEventListener("click", () => {
+        const root = document.documentElement;
+        const systemDark = matchMedia("(prefers-color-scheme: dark)").matches;
+        const current =
+          root.dataset.theme ?? (systemDark ? "dark" : "light");
+        const next = current === "dark" ? "light" : "dark";
+        root.dataset.theme = next;
+        localStorage.setItem("theme", next);
+        btn.setAttribute("aria-pressed", String(next === "dark"));
+      });
+    </script>
+  </body>
+</html>

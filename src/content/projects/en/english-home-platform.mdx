@@ -1,0 +1,98 @@
+---
+key: english-home-platform
+locale: en
+title: "Retail customer-service platform"
+outcome: "A self-hosted platform that runs Facebook customer service for English Home Libya in Libyan Arabic — catalog-true prices, photo-based product recognition, and human handoff."
+tier: flagship
+order: 1
+status: production
+role: "Solo — architecture, implementation, deployment, operations"
+timeframe: "2025 – present"
+stack: ["TypeScript", "Next.js", "PostgreSQL", "Kysely", "Docker Compose", "Caddy", "Gemini API", "Meta Graph API"]
+links:
+  - label: "Platform repository"
+    href: "https://github.com/lla7wel/Customer-Service-Agent"
+  - label: "Catalog scraper"
+    href: "https://github.com/lla7wel/english-home-catalog-scraper"
+  - label: "Trilingual matcher"
+    href: "https://github.com/lla7wel/trilingual-catalog-matcher"
+  - label: "Visual matcher"
+    href: "https://github.com/lla7wel/visual-product-matcher"
+claims: ["B1", "B3", "B5", "B7"]
+translationStatus: reviewed
+---
+
+## The problem
+
+Built and operated for English Home Libya, a retail business serving
+customers in Libya. Its Facebook page — a public audience of roughly 61,000
+followers (public page count, July 2026) — receives a constant stream of
+product questions in Libyan Arabic, most of them "how much is this?" with a
+photo attached. Answering them means knowing exactly which of more than
+4,700 catalog products (as of July 2026) is in the picture, and never
+inventing a price. As the business's Digital Systems & Automation
+Specialist, I had spent two years handling those messages myself, which is
+where the requirements came from.
+
+## The system
+
+Customers message the page; the platform batches bursts of messages, works
+out what's being asked, identifies the product (by code, by text in three
+languages, or from a photo), answers with prices read only from the live
+catalog, and hands the conversation to a human the moment intent moves to
+orders, refunds, or complaints. A bilingual, RTL-first admin console covers
+inbox, analytics, campaigns, image review, and runtime AI controls.
+
+The pipeline is fed by two subsystems published as standalone repositories:
+a resumable catalog scraper (real Chrome over CDP) that assembled an image
+catalog exceeding 11 GB during the documented catalog build, and a deterministic
+trilingual matcher that decides which scraped Turkish product is the same
+physical item as a priced Arabic/English catalog entry — only high-confidence
+matches attach automatically; everything else queues for human review. Photo
+recognition follows the same "never guess" rule: an empty candidate pool
+returns *none*, not the least-bad product, and human-confirmed corrections
+teach the matcher.
+
+## Decisions that came from real incidents
+
+Each of these guards exists because something actually went wrong once:
+
+- **Burst batching** — customers send five short messages, not one long one; a five-second newest-wins window prevents five separate replies.
+- **Supersede guard** — a slow model response can't overwrite a newer conversation state at delivery time.
+- **Send-time re-check** — if a human takes over mid-generation, the AI reply is dropped, not sent.
+- **Output sanitizer** — tool syntax can never leak into a customer message.
+- **Honest delivery** — a message is only marked delivered when the API confirms it.
+
+## From free tier to owned infrastructure
+
+The platform originally leaned on a hosted free-tier database — until the
+provider paused the project and took the system down with it. I migrated
+everything to a single self-managed VPS: Postgres 16, the Next.js app, and
+Caddy under Docker Compose, with nightly `pg_dump` backups and a written
+deployment runbook. The repository preserves that migration as fourteen
+ordered SQL migrations.
+
+## Verification and limits
+
+Pure-logic behavior (sanitizer, policy, hashing) is covered by assertion
+scripts; the extracted visual matcher runs its six-test suite in CI. What I
+*don't* claim: uptime numbers or traffic statistics — the repository contains
+no benchmarks, and this page doesn't invent any. Operational metrics will be
+published when they can be sourced.
+
+## Credits
+
+Solo project, built with modern tooling. It runs on Gemini and Meta's Graph
+API; everything else — including the matching engines — is in the linked
+repositories.
+
+## Gallery
+
+<figure>
+  <img src="/images/csa/architecture.svg" alt="Platform architecture: Caddy in front of the Next.js admin app and Postgres, integrations core connecting Meta webhooks and Gemini" loading="lazy" />
+  <figcaption>Diagram — deployment architecture (from the repository; placeholder domains).</figcaption>
+</figure>
+<figure>
+  <img src="/images/csa/message-flow.svg" alt="Message flow: webhook, burst batching, catalog tools, sanitizer, delivery guard, human handoff" loading="lazy" />
+  <figcaption>Diagram — customer-message flow through the safety guards (from the repository).</figcaption>
+</figure>

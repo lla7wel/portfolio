@@ -1,0 +1,21 @@
+---
+// Root: redirect to the default locale. A stored preference (set by the
+// language switcher) wins over the default on the client.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mohamed Elbahlool</title>
+    <meta http-equiv="refresh" content="0; url=/en/" />
+    <link rel="canonical" href="/en/" />
+    <script is:inline>
+      const pref = localStorage.getItem("locale");
+      location.replace(pref === "ar" ? "/ar/" : "/en/");
+    </script>
+  </head>
+  <body>
+    <p><a href="/en/">English</a> · <a href="/ar/" lang="ar" dir="rtl">العربية</a></p>
+  </body>
+</html>

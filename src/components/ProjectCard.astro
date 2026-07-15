@@ -1,0 +1,29 @@
+---
+import { type Locale, t, localePath } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+  slug: string;
+  title: string;
+  outcome: string;
+  status: "production" | "released" | "team" | "live" | "coursework";
+  stack: string[];
+  headingLevel?: "h2" | "h3";
+}
+
+const { locale, slug, title, outcome, status, stack, headingLevel = "h3" } =
+  Astro.props;
+const Heading = headingLevel;
+const statusKey = `status.${status}` as const;
+---
+
+<a class="card" href={localePath(locale, `work/${slug}/`)}>
+  <div style="display:flex; align-items:baseline; gap:0.75rem; flex-wrap:wrap;">
+    <Heading style="margin:0;">{title}</Heading>
+    <span class="chip" data-kind="status">{t(locale, statusKey)}</span>
+  </div>
+  <p>{outcome}</p>
+  <div style="display:flex; gap:0.4rem; flex-wrap:wrap;" aria-label={locale === "ar" ? "التقنيات" : "Technologies"}>
+    {stack.slice(0, 6).map((s) => <span class="chip ltr-island">{s}</span>)}
+  </div>
+</a>

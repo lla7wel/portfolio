@@ -1,0 +1,54 @@
+---
+key: fpga-digital-logic
+locale: en
+title: "Verified digital logic on FPGA"
+outcome: "Small VHDL designs treated like real releases: exhaustive self-checking testbenches, CI simulation with GHDL, Vivado waveforms, and Basys 3 pin constraints."
+tier: supporting
+order: 6
+status: coursework
+role: "Solo"
+timeframe: "Summer 2026 · alongside FIU Logic Design I"
+stack: ["VHDL", "GHDL", "Vivado", "Basys 3 (Artix-7)", "GitHub Actions"]
+links:
+  - label: "Ripple-carry adder"
+    href: "https://github.com/lla7wel/fpga-ripple-carry-adder"
+  - label: "Basys 3 decoders"
+    href: "https://github.com/lla7wel/basys3-decoders"
+claims: ["F1"]
+translationStatus: reviewed
+---
+
+## The point
+
+Classroom digital logic usually ends at a waveform screenshot. These two
+repositories take the same material to open-source standard: every design
+carries self-checking testbenches that sweep the **entire input space** —
+512 combinations for the 4-bit ripple-carry adder, 36 vectors across the
+two decoders — plus constraints files mapping to real Basys 3 switches,
+LEDs, and seven-segment digits.
+
+## Verification, stated exactly
+
+The adder's testbenches replay the lab's recorded vectors and the full
+exhaustive sweep under GHDL in CI on every push (no Vivado license needed);
+the repo includes genuine Vivado behavioral-simulation waveform captures.
+The full adder was synthesized, implemented, and programmed onto a Basys 3
+with all eight truth-table rows checked on switches and LEDs — that
+on-board step is author-attested; board photos are on the capture list.
+
+## Current status
+
+The decoders repository is being brought up to the same CI standard as the
+adder. Both are companion work to Logic Design I, currently in progress —
+labeled as coursework-extended, because that's what it is.
+
+## Gallery
+
+<figure>
+  <img src="/images/fpga/waveform-collapsed.png" alt="Vivado behavioral simulation waveform of the 4-bit ripple-carry adder over ten stimulus vectors" width="1800" height="983" loading="lazy" />
+  <figcaption>Simulation output — Vivado behavioral waveform for the 4-bit adder (not an on-hardware capture).</figcaption>
+</figure>
+<figure>
+  <img src="/images/fpga/ripple-carry-chain.svg" alt="Schematic of the ripple-carry chain built from four full adders" loading="lazy" />
+  <figcaption>Diagram — ripple-carry chain (from the repository).</figcaption>
+</figure>

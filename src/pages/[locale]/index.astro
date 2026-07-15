@@ -1,0 +1,89 @@
+---
+import Base from "../../layouts/Base.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import { getCollection } from "astro:content";
+import { type Locale, t, localePath } from "../../lib/i18n";
+
+export function getStaticPaths() {
+  return [{ params: { locale: "en" } }, { params: { locale: "ar" } }];
+}
+
+const locale = Astro.params.locale as Locale;
+const projects = (await getCollection("projects", (p) => p.data.locale === locale))
+  .sort((a, b) => a.data.order - b.data.order);
+const flagships = projects.filter((p) => p.data.tier === "flagship");
+const supporting = projects.filter((p) => p.data.tier === "supporting");
+
+const capabilities =
+  locale === "ar"
+    ? ["الأنظمة المدمجة والبرمجيات الثابتة", "المنطق الرقمي و FPGA", "الأنظمة الخلفية وخطوط البيانات", "السحابة والاستضافة الذاتية", "المنتجات والعمليات التشغيلية"]
+    : ["Embedded systems & firmware", "Digital logic & FPGA", "Backend & data pipelines", "Cloud & self-hosting", "Product & operations"];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  mainEntity: {
+    "@type": "Person",
+    name: "Mohamed Khalid Elbahlool",
+    alumniOf: { "@type": "CollegeOrUniversity", name: "Florida International University" },
+    knowsLanguage: ["en", "ar", "tr"],
+    sameAs: ["https://github.com/lla7wel"],
+  },
+};
+---
+
+<Base locale={locale} jsonLd={jsonLd}>
+  <section class="measure" aria-labelledby="hero-heading">
+    <p style="color:var(--ink-muted); margin-block-end:0.25rem;">{t(locale, "hero.sub")}</p>
+    <h1 id="hero-heading" style="margin-block:0.25rem 1rem;">{t(locale, "hero.name")}</h1>
+    <p style="font-size:var(--step-1); max-inline-size: 38rem;">{t(locale, "hero.line")}</p>
+    <p style="color:var(--ink-muted); max-inline-size: 38rem;">{t(locale, "hero.proof")}</p>
+    <p style="color:var(--ink-muted);">{t(locale, "hero.langs")}</p>
+    <p style="display:flex; gap:1rem; flex-wrap:wrap; margin-block-start:1.5rem;">
+      <a class="chip" data-kind="status" href={localePath(locale, "contact/")}>{t(locale, "cta.contact")}</a>
+      <a class="chip" href="https://github.com/lla7wel">{t(locale, "cta.github")}</a>
+    </p>
+  </section>
+
+  <section class="measure" aria-labelledby="selected-heading" style="margin-block-start:3rem;">
+    <h2 id="selected-heading" style="margin-block-start:0;">{t(locale, "work.selected")}</h2>
+    <div style="display:grid; gap:1rem;">
+      {
+        flagships.map((p) => (
+          <ProjectCard
+            locale={locale}
+            slug={p.data.key}
+            title={p.data.title}
+            outcome={p.data.outcome}
+            status={p.data.status}
+            stack={p.data.stack}
+          />
+        ))
+      }
+    </div>
+    <p style="margin-block-start:1rem;">
+      <a href={localePath(locale, "work/")}>{t(locale, "work.all")} →</a>
+    </p>
+  </section>
+
+  <section class="measure" aria-label={locale === "ar" ? "المجالات" : "Capabilities"} style="margin-block-start:3rem;">
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+      {capabilities.map((c) => <span class="chip">{c}</span>)}
+    </div>
+  </section>
+
+  <section class="measure" style="margin-block-start:3rem;">
+    <p style="color:var(--ink-muted); max-inline-size:38rem;">
+      {
+        locale === "ar"
+          ? "من ليبيا إلى تركيا إلى ميامي — أبني أنظمة تعمل بثلاث لغات، من الإشارة الفيزيائية حتى واجهة العميل."
+          : "From Libya to Turkey to Miami — I build systems that work in three languages, from the physical signal to the customer-facing interface."
+      }
+      <a href={localePath(locale, "about/")}>{t(locale, "nav.about")} →</a>
+    </p>
+  </section>
+</Base>
+
+<script is:inline define:vars={{ locale }}>
+  localStorage.setItem("locale", locale);
+</script>

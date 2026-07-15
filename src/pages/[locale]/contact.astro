@@ -1,0 +1,45 @@
+---
+import Base from "../../layouts/Base.astro";
+import { type Locale, t } from "../../lib/i18n";
+
+export function getStaticPaths() {
+  return [{ params: { locale: "en" } }, { params: { locale: "ar" } }];
+}
+const locale = Astro.params.locale as Locale;
+
+// Owner-approved public contact set (2026-07): email, LinkedIn, GitHub. No phone.
+const email = "tmtmd24@gmail.com";
+const linkedin = "https://www.linkedin.com/in/mohamed-elbahlool-1373002bb/";
+const github = "https://github.com/lla7wel";
+---
+
+<Base locale={locale} title={t(locale, "contact.title")}>
+  <div class="measure">
+    <h1>{t(locale, "contact.title")}</h1>
+    <p style="font-size:var(--step-1);">{t(locale, "contact.primary")}</p>
+    <p style="color:var(--ink-muted); max-inline-size:38rem;">{t(locale, "contact.open")}</p>
+
+    <dl class="meta-grid" style="margin-block-start:2rem;">
+      <div>
+        <dt>{locale === "ar" ? "البريد الإلكتروني" : "Email"}</dt>
+        <dd><a class="ltr-island" href={`mailto:${email}`}>{email}</a></dd>
+      </div>
+      <div>
+        <dt>LinkedIn</dt>
+        <dd><a class="ltr-island" href={linkedin}>linkedin.com/in/mohamed-elbahlool</a></dd>
+      </div>
+      <div>
+        <dt>GitHub</dt>
+        <dd><a class="ltr-island" href={github}>github.com/lla7wel</a></dd>
+      </div>
+    </dl>
+
+    <p style="color:var(--ink-muted); font-size:var(--step--1);">
+      {
+        locale === "ar"
+          ? "أفضل طريقة للتواصل هي البريد الإلكتروني، مع سطر موضوع واضح."
+          : "Email is the best channel — a clear subject line helps."
+      }
+    </p>
+  </div>
+</Base>

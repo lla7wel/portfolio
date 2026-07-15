@@ -1,0 +1,84 @@
+---
+key: nova-raid
+locale: en
+title: "NOVA RAID — bare-metal Pico W arcade game"
+outcome: "A complete retro space shooter in bare-metal C, released as a drag-and-drop UF2 — and fixed after its first run on real hardware exposed a defect no simulator caught."
+tier: flagship
+order: 2
+status: released
+role: "Solo — design, firmware, release engineering"
+timeframe: "2026"
+stack: ["C", "RP2040", "Pico SDK", "SPI + DMA", "PIO", "GitHub Actions"]
+links:
+  - label: "Repository"
+    href: "https://github.com/lla7wel/nova-raid"
+  - label: "Project page & UF2 download"
+    href: "https://lla7wel.github.io/nova-raid/"
+claims: ["C1", "C2"]
+translationStatus: reviewed
+---
+
+## The constraint that shaped everything
+
+The ST7796S panel takes roughly 39 ms to receive a full 480×320 frame over
+SPI at 62.5 MHz — by itself more than a 25 fps frame budget. The design
+answer: core 0 simulates and renders a 240×160 framebuffer at a fixed
+timestep while core 1 pixel-doubles each line and streams it with
+double-buffered DMA, so the panel transfer overlaps the next frame's
+simulation instead of blocking it. (These are design calculations from the
+datasheet and clock math, not on-hardware benchmarks — the distinction
+matters.)
+
+## Engineering under a Cortex-M0+
+
+No FPU: all movement uses 24.8 fixed-point math and a 64-entry sine table.
+High scores persist in the last 4 KiB flash sector, written with the second
+core locked out and interrupts disabled, validated by a magic number. Game
+code touches hardware only through a small HAL — which means the identical
+sources compile on a desktop, where a host harness drives the game through
+every state (splash → menu → waves → boss → pause → death → initials → hall
+of fame → diagnostics) on every push in CI.
+
+## The bug that only existed on real hardware
+
+v1.0.0 shipped CI-green and harness-verified. The first boot on the physical
+board displayed a color negative — white background, inverted sprites. The
+kit's panel runs in inverted mode, and the init sequence never sent `INVON`.
+v1.0.1 fixed it the same day, with the root cause written into the release
+note. The repository keeps both releases and the pre-fix hardware photos:
+the honest version of "verified on hardware" includes what the first
+verification found.
+
+## Evidence
+
+Ten gallery frames captured pixel-true by the host harness (labeled as
+renders, not photographs), five photos of the game running on the physical
+board, SVG block diagram/schematic/controls diagrams, eleven green CI runs,
+and two tagged releases with UF2 artifacts. All game code, sprite art, and
+sound sequences are original; third-party components (Pico SDK, a PIO
+program from pico-examples, a public-domain font) are credited in the
+README.
+
+## Limits
+
+25 fps by design, single-channel buzzer audio, the kit's touch panel is
+intentionally unused, and other board lots may need one-line config flips
+for joystick orientation.
+
+## Gallery
+
+<div class="figure-grid">
+<figure>
+  <img src="/images/nova-raid/hardware-gameplay.jpg" alt="NOVA RAID gameplay running on the physical Pico Breadboard Kit with joystick and buttons visible" width="900" height="1600" loading="lazy" />
+  <figcaption>Hardware photograph — gameplay on the physical EP-0172 board (v1.0.0, pre-fix colors).</figcaption>
+</figure>
+<figure>
+  <img src="/images/nova-raid/splash-render.png" alt="NOVA RAID splash screen with title logo and starfield" width="480" height="320" loading="lazy" />
+  <figcaption>Render — splash frame captured pixel-true by the desktop host harness, not a photograph.</figcaption>
+</figure>
+</div>
+
+<figure>
+  <img src="/images/nova-raid/block-diagram.svg" alt="Block diagram: core 0 simulation and rendering, core 1 pixel doubling and DMA SPI streaming to the ST7796S panel" loading="lazy" />
+  <figcaption>Diagram — dual-core rendering and display pipeline (from the repository).</figcaption>
+</figure>

@@ -1,0 +1,60 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getCollection, render } from "astro:content";
+import { type Locale, t } from "../../../lib/i18n";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((p) => ({
+    params: { locale: p.data.locale, slug: p.data.key },
+    props: { project: p },
+  }));
+}
+
+const { project } = Astro.props;
+const locale = project.data.locale as Locale;
+const { Content } = await render(project);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  name: project.data.title,
+  author: { "@type": "Person", name: "Mohamed Khalid Elbahlool" },
+  codeRepository: project.data.links.find((l) => l.href.includes("github.com"))?.href,
+};
+---
+
+<Base locale={locale} title={project.data.title} description={project.data.outcome} jsonLd={jsonLd}>
+  <article class="measure">
+    <header>
+      <div style="display:flex; align-items:baseline; gap:0.75rem; flex-wrap:wrap;">
+        <h1 style="margin-block-end:0;">{project.data.title}</h1>
+        <span class="chip" data-kind="status">{t(locale, `status.${project.data.status}`)}</span>
+      </div>
+      <p style="font-size:var(--step-1); color:var(--ink-muted);">{project.data.outcome}</p>
+
+      <dl class="meta-grid">
+        <div>
+          <dt>{t(locale, "cs.role")}</dt>
+          <dd>{project.data.role}</dd>
+        </div>
+        <div>
+          <dt>{t(locale, "cs.timeframe")}</dt>
+          <dd>{project.data.timeframe}</dd>
+        </div>
+        <div>
+          <dt>{t(locale, "cs.stack")}</dt>
+          <dd><span class="ltr-island">{project.data.stack.join(" · ")}</span></dd>
+        </div>
+        <div>
+          <dt>{t(locale, "cs.links")}</dt>
+          <dd style="display:flex; flex-direction:column; gap:0.15rem;">
+            {project.data.links.map((l) => <a href={l.href}>{l.label}</a>)}
+          </dd>
+        </div>
+      </dl>
+    </header>
+
+    <Content />
+  </article>
+</Base>
