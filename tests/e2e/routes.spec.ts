@@ -17,6 +17,8 @@ const routes: string[] = [
   "/ar/work/",
   "/en/about/",
   "/ar/about/",
+  "/en/resume/",
+  "/ar/resume/",
   "/en/contact/",
   "/ar/contact/",
   "/en/notes/",

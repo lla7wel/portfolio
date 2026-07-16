@@ -11,6 +11,8 @@ const pages = [
   "/en/notes/",
   "/en/notes/hardware-only-bug/",
   "/en/about/",
+  "/en/resume/",
+  "/ar/resume/",
   "/en/contact/",
 ];
 

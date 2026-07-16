@@ -1,0 +1,521 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { type Locale, type UiKey, t, localePath } from "../../lib/i18n";
+
+export function getStaticPaths() {
+  return [{ params: { locale: "en" } }, { params: { locale: "ar" } }];
+}
+const locale = Astro.params.locale as Locale;
+const ar = locale === "ar";
+
+const projects = (await getCollection("projects", (e) => e.data.locale === locale)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const pdfHref = "/resume-mohamed-elbahlool.pdf";
+
+/** Skills by domain — mirrors the six capability lanes on the home page. */
+const skillDomains: { key: UiKey; items: string }[] = [
+  { key: "cap.firmware", items: "C · C++ · RP2040 / Pico SDK · PIO · DMA · SPI / I2S / UART · Arduino" },
+  { key: "cap.logic", items: "VHDL · GHDL · Vivado · Basys 3 (Artix-7) · self-checking testbenches" },
+  { key: "cap.network", items: "Python · FastAPI · WebSocket · PostgreSQL · Docker Compose · Caddy · DNS" },
+  { key: "cap.interface", items: "TypeScript · Next.js · React · Astro · Meta Graph API" },
+  { key: "cap.validation", items: "GitHub Actions CI · Playwright · GHDL simulation · hardware bring-up" },
+  { key: "cap.physical", items: ar
+      ? "مستشعرات (DHT11، ميكروفون I2S) · PWM · توصيل يدوي · قراءة مخططات"
+      : "Sensors (DHT11, I2S mic) · PWM · hand-wiring · schematic reading" },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  mainEntity: {
+    "@type": "Person",
+    name: "Mohamed Khalid Elbahlool",
+    jobTitle: "Computer Engineering student",
+    alumniOf: { "@type": "CollegeOrUniversity", name: "Florida International University" },
+    knowsLanguage: ["en", "ar", "tr"],
+    email: "mailto:tmtmd24@gmail.com",
+    sameAs: [
+      "https://github.com/lla7wel",
+      "https://www.linkedin.com/in/mohamed-elbahlool-1373002bb/",
+    ],
+  },
+};
+---
+
+<Base
+  locale={locale}
+  title={t(locale, "resume.title")}
+  description={ar
+    ? "السيرة الذاتية التفاعلية لمحمد الباهلول — سجل موسَّع مرتبط بالأدلة خلف السيرة المختصرة."
+    : "Mohamed Elbahlool's interactive resume — the extended, evidence-linked record behind the one-page resume."}
+  jsonLd={jsonLd}
+  routeLabel="RESUME"
+>
+  <div class="canvas resume">
+    <header class="head">
+      <p class="anno" data-tone="signal">{ar ? "سيرة تفاعلية" : "INTERACTIVE RESUME"}</p>
+      <h1>{t(locale, "resume.title")}</h1>
+      <p class="lead">
+        {
+          ar
+            ? "السجل الموسَّع خلف السيرة الذاتية المختصرة: كل لوحة قابلة للتوسيع، وكل نظام يقود إلى دراسة حالته وأدلته المنشورة."
+            : "The extended record behind the one-page resume: every panel expands, and every system links to its case study and published evidence."
+        }
+      </p>
+      <div class="actions">
+        <a class="btn" data-variant="primary" href={pdfHref} download>
+          {t(locale, "resume.download")}
+        </a>
+        <a class="btn" href={localePath(locale, "contact/")}>{t(locale, "cta.contact")}</a>
+      </div>
+    </header>
+
+    <div class="grid-2">
+      <div class="prose">
+        <p class="lead">
+          {
+            ar
+              ? "مهندس حاسوب يبني أنظمة متكاملة — من برمجيات ثابتة منخفضة المستوى تُختبر على عتاد حقيقي، إلى منطق FPGA مُتحقق منه في التكامل المستمر، إلى منصة إنتاجية مستضافة ذاتيًا تخدم نشاطًا تجاريًا حقيقيًا بالعربية."
+              : "A computer engineer who builds complete systems — from bare-metal firmware debugged on real hardware, to FPGA logic verified in CI, to a self-hosted production platform serving a real business in Arabic."
+          }
+        </p>
+        <p>
+          {
+            ar
+              ? "طريقة العمل واحدة في كل طبقة: أدلة قبل الادعاءات، وحواجز أمان مصدرها أعطال حقيقية، وتوثيق يجعل التحقق ممكنًا لأي أحد."
+              : "The working method is the same at every layer: evidence before claims, guards born from real incidents, and documentation that lets anyone verify."
+          }
+        </p>
+      </div>
+
+      <aside class="facts">
+        <div class="fact-block corner-marks">
+          <p class="anno">{ar ? "الملف" : "PROFILE"}</p>
+          <ul role="list">
+            <li>{ar ? "طالب سنة رابعة في هندسة الحاسوب · جامعة فلوريدا الدولية · ميامي" : "Computer Engineering senior · Florida International University · Miami"}</li>
+            <li>{t(locale, "hero.langs")}</li>
+            <li>
+              <a href="mailto:tmtmd24@gmail.com">tmtmd24@gmail.com</a> ·
+              <a href="https://github.com/lla7wel" rel="me">GitHub</a> ·
+              <a href="https://www.linkedin.com/in/mohamed-elbahlool-1373002bb/" rel="me">LinkedIn</a>
+            </li>
+          </ul>
+        </div>
+        <div class="fact-block corner-marks">
+          <p class="anno">{ar ? "التعليم" : "EDUCATION"}</p>
+          <ul role="list">
+            {
+              ar ? (
+                <>
+                  <li>بكالوريوس هندسة الحاسوب، جامعة فلوريدا الدولية — سنة رابعة (93 ساعة معتمدة)، تخرج متوقع أغسطس 2027</li>
+                  <li>معدل تراكمي +3.6 (تم التحقق في يوليو 2026) · قائمة العميد: خريف 2024 وربيع 2025</li>
+                  <li>مقررات: C و ++C للأنظمة المدمجة، برمجة الأنظمة المدمجة، تصميم المنطق، تحليل الدوائر</li>
+                </>
+              ) : (
+                <>
+                  <li>B.S. Computer Engineering, Florida International University — senior (93 credits), expected August 2027</li>
+                  <li>GPA 3.6+ (verified July 2026) · Dean's List: Fall 2024, Spring 2025</li>
+                  <li>Coursework: C and C++ for Embedded Systems, Programming Embedded Systems, Logic Design, Circuit Analysis</li>
+                </>
+              )
+            }
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <section class="panel-section" aria-labelledby="exp-h">
+      <h2 id="exp-h">{ar ? "الخبرة" : "Experience"}</h2>
+      <details class="panel" open>
+        <summary>
+          <span class="summary-main">
+            <h3>{ar ? "أخصائي أنظمة رقمية وأتمتة — English Home Libya" : "Digital Systems & Automation Specialist — English Home Libya"}</h3>
+            <span class="when mono muted">{ar ? "2023 – حتى الآن · عن بُعد" : "2023 – Present · Remote"}</span>
+          </span>
+          <span class="disclosure-mark" aria-hidden="true"></span>
+        </summary>
+        <div class="panel-body">
+          <ul>
+            {
+              ar ? (
+                <>
+                  <li>أدير العمليات الرقمية لعلامة تجزئة تخدم عملاء في ليبيا: مراسلات العملاء بالعربية والإنجليزية، وكتالوجات المنتجات، والنطاقات والبريد الرسمي — لصفحة فيسبوك يبلغ عدد متابعيها نحو 61,000 (عدد علني، يوليو 2026).</li>
+                  <li>صممت وبنيت وأشغّل منصة خدمة عملاء مستضافة ذاتيًا تجيب استفسارات المنتجات بالعربية الليبية — أسعار مطابقة للكتالوج عبر أكثر من 4,700 منتج، وتعرّف على المنتج من الصورة، وتحويل فوري لإنسان عندما يصبح القصد شرائيًا.</li>
+                  <li>نقلت المنصة من استضافة مجانية متوقفة إلى خادم خاص مستضاف ذاتيًا (Docker Compose و Caddy و Postgres مع نسخ احتياطي ليلي)، وأضفت آليات أمان يعود كل منها إلى حادثة إنتاجية حقيقية.</li>
+                  <li>بنيت خط الكتالوج: أداة جمع أنشأت الكتالوج الكامل (تجاوزت مجموعة الصور 11 غيغابايت أثناء البناء الموثق) ومحرك مطابقة منتجات ثلاثي اللغات.</li>
+                </>
+              ) : (
+                <>
+                  <li>Run the digital operations of a retail brand serving customers in Libya: Arabic/English customer messaging, product catalogs, domain/DNS, and branded email — for a Facebook page with about 61,000 followers (public page count, July 2026).</li>
+                  <li>Designed, built, and operate a self-hosted customer-service platform that answers product inquiries in Libyan Arabic — catalog-true prices across more than 4,700 products, photo-based product recognition, and instant human handoff when intent turns commercial.</li>
+                  <li>Migrated the platform off a paused free-tier database host to a self-hosted VPS (Docker Compose, Caddy, Postgres, nightly backups) and added safety mechanisms that each trace to a real production incident.</li>
+                  <li>Built the catalog pipeline: a scraper that assembled the full catalog (an image set exceeding 11 GB during the documented build) and a trilingual product-matching engine.</li>
+                </>
+              )
+            }
+          </ul>
+          <p class="panel-link">
+            <a href={localePath(locale, "work/english-home-platform/")}>{t(locale, "work.viewCase")}</a>
+          </p>
+        </div>
+      </details>
+
+      <details class="panel">
+        <summary>
+          <span class="summary-main">
+            <h3>{ar ? "مساعد تدريس ثانٍ — مختبر الرياضيات بجامعة FIU" : "Learning Assistant II — FIU Mastery Math Lab"}</h3>
+            <span class="when mono muted">{ar ? "أغسطس 2024 – حتى الآن · نحو 20 ساعة أسبوعيًا" : "August 2024 – Present · ~20 hours/week"}</span>
+          </span>
+          <span class="disclosure-mark" aria-hidden="true"></span>
+        </summary>
+        <div class="panel-body">
+          <ul>
+            {
+              ar ? (
+                <>
+                  <li>أدعم طلاب الجبر وما قبل التفاضل وحساب المثلثات عبر دروس مصغرة وتمارين موجهة ودروس فردية ضمن برنامج جامعي كبير لدعم الرياضيات.</li>
+                  <li>تمرين يومي على التواصل التقني: تشخيص المفاهيم الخاطئة وشرح استراتيجيات حل المشكلات لطلاب من خلفيات متنوعة.</li>
+                </>
+              ) : (
+                <>
+                  <li>Support Algebra, Precalculus, and Trigonometry students through mini-lessons, guided practice, and one-on-one tutoring in a large university math support program.</li>
+                  <li>Daily practice in technical communication: diagnosing misconceptions and explaining problem-solving strategies to students from very different backgrounds.</li>
+                </>
+              )
+            }
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel-section" aria-labelledby="sys-h">
+      <h2 id="sys-h">{ar ? "الأنظمة" : "Systems"}</h2>
+      <p class="section-sub muted">
+        {
+          ar
+            ? "ستة أنظمة منشورة — افتح أي ملف للاطلاع على المشكلة والمساهمة والنتيجة، أو انتقل إلى دراسة الحالة الكاملة."
+            : "Six shipped systems — open any dossier for the problem, contribution, and result, or jump to the full case study."
+        }
+      </p>
+      {
+        projects.map((p) => (
+          <details class="panel dossier" data-project={p.data.key}>
+            <summary>
+              <span class="summary-main">
+                <h3>{p.data.title}</h3>
+                <span class="dossier-meta">
+                  <span class="status-tag">{t(locale, `status.${p.data.status}` as UiKey)}</span>
+                  <span class="when mono muted">{p.data.timeframe}</span>
+                </span>
+              </span>
+              <span class="disclosure-mark" aria-hidden="true"></span>
+            </summary>
+            <div class="panel-body">
+              <p class="outcome">{p.data.outcome}</p>
+              {p.data.summary && (
+                <dl class="pcr">
+                  <dt>{ar ? "المشكلة" : "Problem"}</dt>
+                  <dd>{p.data.summary.problem}</dd>
+                  <dt>{ar ? "المساهمة" : "Contribution"}</dt>
+                  <dd>{p.data.summary.contribution}</dd>
+                  <dt>{ar ? "النتيجة" : "Result"}</dt>
+                  <dd>{p.data.summary.result}</dd>
+                </dl>
+              )}
+              <p class="stack mono muted">{p.data.stack.join(" · ")}</p>
+              <p class="panel-link">
+                <a href={localePath(locale, `work/${p.data.key}/`)}>{t(locale, "work.viewCase")}</a>
+              </p>
+            </div>
+          </details>
+        ))
+      }
+    </section>
+
+    <section class="panel-section" aria-labelledby="skills-h">
+      <h2 id="skills-h">{ar ? "المهارات حسب المجال" : "Skills by domain"}</h2>
+      <div class="skills-grid">
+        {
+          skillDomains.map((d) => (
+            <div class="fact-block corner-marks">
+              <p class="anno">{t(locale, d.key)}</p>
+              <p class="skill-items">{d.items}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="cta-band" aria-labelledby="cta-h">
+      <h2 id="cta-h">{ar ? "النسخة المختصرة" : "The one-page version"}</h2>
+      <p class="muted">
+        {
+          ar
+            ? "النسخة الرسمية المختصرة من هذه الصفحة، بصيغة PDF جاهزة للتوظيف."
+            : "The official condensed version of this page, as a recruiter-ready PDF."
+        }
+      </p>
+      <div class="actions">
+        <a class="btn" data-variant="primary" href={pdfHref} download>
+          {t(locale, "resume.download")}
+        </a>
+        <a class="btn" href={localePath(locale, "contact/")}>{t(locale, "cta.contact")}</a>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .resume {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  :lang(ar) .anno {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .head h1 {
+    font-size: var(--text-section);
+    margin-block: var(--space-3) var(--space-4);
+  }
+  .head .lead {
+    max-inline-size: 62ch;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block-start: var(--space-5);
+  }
+
+  .grid-2 {
+    display: grid;
+    gap: var(--space-6);
+    margin-block-start: var(--space-7);
+  }
+  @media (min-width: 64em) {
+    .grid-2 {
+      grid-template-columns: 7fr 5fr;
+      column-gap: var(--space-8);
+      align-items: start;
+    }
+  }
+  .facts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  .fact-block {
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    padding: var(--space-5);
+  }
+  .fact-block .anno {
+    margin-block-end: var(--space-3);
+  }
+  .fact-block ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    font-size: var(--text-small);
+  }
+
+  .panel-section {
+    margin-block-start: var(--space-8);
+  }
+  .panel-section h2 {
+    font-size: var(--text-sub);
+    margin-block-end: var(--space-4);
+  }
+  .section-sub {
+    max-inline-size: 62ch;
+    margin-block-end: var(--space-5);
+  }
+
+  /* Disclosure panels — native <details>, styled as system dossiers. */
+  .panel {
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    margin-block-end: var(--space-4);
+  }
+  .panel summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    min-block-size: 56px;
+    cursor: pointer;
+    list-style: none;
+  }
+  .panel summary::-webkit-details-marker {
+    display: none;
+  }
+  .panel summary:hover h3 {
+    color: var(--color-signal);
+  }
+  .summary-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin-inline-end: auto;
+    min-inline-size: 0;
+  }
+  .summary-main h3 {
+    font-size: var(--text-body-lg);
+    transition: color var(--dur-control) var(--ease-standard);
+  }
+  .when {
+    font-size: var(--text-annotation);
+  }
+  .dossier-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+  }
+
+  .disclosure-mark {
+    position: relative;
+    flex-shrink: 0;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+  .disclosure-mark::before,
+  .disclosure-mark::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: 0.9rem;
+    block-size: 2px;
+    background: var(--color-ink-muted);
+    translate: -50% -50%;
+  }
+  :dir(rtl) .disclosure-mark::before,
+  :dir(rtl) .disclosure-mark::after {
+    translate: 50% -50%;
+  }
+  .disclosure-mark::after {
+    rotate: 90deg;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .disclosure-mark::after {
+      transition: rotate var(--dur-control) var(--ease-standard);
+    }
+  }
+  .panel[open] .disclosure-mark::after {
+    rotate: 0deg;
+  }
+
+  .panel-body {
+    padding: 0 var(--space-5) var(--space-5);
+    border-block-start: 1px solid var(--color-rule);
+    padding-block-start: var(--space-4);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .panel[open] .panel-body {
+      animation: panel-in 220ms var(--ease-standard);
+    }
+    @keyframes panel-in {
+      from {
+        opacity: 0;
+        translate: 0 -4px;
+      }
+      to {
+        opacity: 1;
+        translate: 0 0;
+      }
+    }
+  }
+  .panel-body ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-inline-start: 1.1em;
+    list-style: disc;
+  }
+  .panel-body li {
+    max-inline-size: 72ch;
+  }
+  .panel-link {
+    margin-block-start: var(--space-4);
+  }
+
+  .dossier .outcome {
+    font-weight: 500;
+    max-inline-size: 68ch;
+  }
+  .pcr {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--space-3) var(--space-5);
+    margin-block-start: var(--space-4);
+    font-size: var(--text-small);
+  }
+  .pcr dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-annotation);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-ink-muted);
+    padding-block-start: 0.15em;
+  }
+  :lang(ar) .pcr dt {
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .pcr dd {
+    max-inline-size: 68ch;
+  }
+  @media (max-width: 40em) {
+    .pcr {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
+    .pcr dd {
+      margin-block-end: var(--space-3);
+    }
+  }
+  .stack {
+    margin-block-start: var(--space-4);
+    font-size: var(--text-small);
+  }
+
+  .skills-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+  @media (min-width: 48em) {
+    .skills-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 64em) {
+    .skills-grid {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+  .skill-items {
+    font-size: var(--text-small);
+    color: var(--color-ink-muted);
+  }
+
+  .cta-band {
+    margin-block-start: var(--space-8);
+    border-block-start: 1px solid var(--color-rule);
+    padding-block-start: var(--space-7);
+  }
+  .cta-band h2 {
+    font-size: var(--text-sub);
+    margin-block-end: var(--space-2);
+  }
+  .cta-band p {
+    max-inline-size: 55ch;
+  }
+</style>
