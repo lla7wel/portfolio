@@ -27,7 +27,7 @@ export const ui = {
     "theme.light": "Dark theme off",
     "hero.name": "Mohamed Khalid Elbahlool",
     "hero.line":
-      "Computer Engineer building complete systems — from low-level embedded systems and FPGA logic to self-hosted platforms used by real businesses.",
+      "Computer Engineering senior building complete systems — from hand-wired hardware and FPGA logic to networked services and production interfaces.",
     "hero.proof":
       "Most recently: a released Raspberry Pi Pico arcade game debugged on real hardware, a hand-wired voice terminal with custom PIO audio capture, and a live omnichannel operations platform for English Home Libya.",
     "hero.sub": "Computer Engineering senior · Florida International University · Miami",
@@ -137,7 +137,7 @@ export const ui = {
     "theme.light": "السمة الداكنة متوقفة",
     "hero.name": "محمد خالد الباهلول",
     "hero.line":
-      "مهندس حاسوب يبني أنظمة متكاملة — من الأنظمة المدمجة منخفضة المستوى ومنطق FPGA إلى منصات مستضافة ذاتيًا تستخدمها أعمال تجارية حقيقية.",
+      "طالب هندسة حاسوب في السنة الرابعة يبني أنظمة متكاملة — من العتاد الموصول يدويًا ومنطق FPGA إلى الخدمات الشبكية والواجهات الإنتاجية.",
     "hero.proof":
       "من أحدث الأعمال: لعبة أركيد منشورة على Raspberry Pi Pico عولج خللها على العتاد الحقيقي، وجهاز صوتي موصول يدويًا بالتقاط صوت مخصص عبر PIO، ومنصة عمليات شاملة مباشرة لـ English Home Libya.",
     "hero.sub": "طالب سنة رابعة في هندسة الحاسوب · جامعة فلوريدا الدولية · ميامي",

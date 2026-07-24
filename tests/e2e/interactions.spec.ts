@@ -4,7 +4,7 @@ test.describe("mobile navigation", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
   test("opens, closes with Escape, and returns focus", async ({ page }) => {
-    await page.goto("/en/");
+    await page.goto("/en/", { waitUntil: "domcontentloaded" });
     const toggle = page.locator("[data-nav-toggle]");
     const panel = page.locator("#mobile-nav-panel");
 
@@ -22,7 +22,7 @@ test.describe("mobile navigation", () => {
   });
 
   test("header stays on one line at 390px", async ({ page }) => {
-    await page.goto("/en/");
+    await page.goto("/en/", { waitUntil: "domcontentloaded" });
     const bar = page.locator(".site-header .bar");
     const box = await bar.boundingBox();
     expect(box!.height).toBeLessThan(80);
@@ -31,7 +31,7 @@ test.describe("mobile navigation", () => {
 
 test("theme switch initializes and persists", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
-  await page.goto("/en/");
+  await page.goto("/en/", { waitUntil: "domcontentloaded" });
   const btn = page.locator("[data-theme-switch]").first();
   // Initial aria-pressed reflects the actual (system dark) theme.
   await expect(btn).toHaveAttribute("aria-pressed", "true");
@@ -49,7 +49,7 @@ test("theme switch initializes and persists", async ({ page }) => {
 });
 
 test("stage explainer is keyboard operable", async ({ page }) => {
-  await page.goto("/en/work/english-home-platform/");
+  await page.goto("/en/work/english-home-platform/", { waitUntil: "domcontentloaded" });
   const explainer = page.locator("[data-stage-explainer]").first();
   await expect(explainer).toHaveAttribute("data-enhanced", "true");
 
@@ -68,12 +68,18 @@ test("stage explainer is keyboard operable", async ({ page }) => {
 });
 
 test("3D engineering view supports pause and keyboard rotation", async ({ page }) => {
-  await page.goto("/en/work/nova-raid/");
+  await page.goto("/en/work/nova-raid/", { waitUntil: "domcontentloaded" });
   const scene = page.locator("[data-engineering-scene]").first();
   await scene.scrollIntoViewIfNeeded();
-  await expect(scene).toHaveAttribute("data-ready", /true|fallback/);
+  await expect(scene).toHaveAttribute("data-ready", /true|fallback|manual/);
 
   const toggle = scene.locator("[data-scene-toggle]");
+  if ((await scene.getAttribute("data-ready")) === "manual") {
+    await expect(toggle).toHaveAttribute("aria-pressed", "false");
+    await toggle.click();
+    await expect(scene).toHaveAttribute("data-ready", /true|fallback/);
+  }
+
   if (await toggle.isVisible()) {
     await expect(toggle).toHaveAttribute("aria-pressed", "true");
     await toggle.click();
@@ -86,7 +92,7 @@ test("3D engineering view supports pause and keyboard rotation", async ({ page }
 });
 
 test("lightbox opens, traps Escape, and restores focus", async ({ page }) => {
-  await page.goto("/en/work/nova-raid/");
+  await page.goto("/en/work/nova-raid/", { waitUntil: "domcontentloaded" });
   const trigger = page.locator("[data-lightbox-trigger]").first();
   await trigger.scrollIntoViewIfNeeded();
   await trigger.click();
@@ -103,7 +109,7 @@ test("lightbox opens, traps Escape, and restores focus", async ({ page }) => {
 test("copy-email announces success", async ({ page, context, browserName }) => {
   test.skip(browserName !== "chromium", "clipboard permission API is Chromium-only");
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-  await page.goto("/en/contact/");
+  await page.goto("/en/contact/", { waitUntil: "domcontentloaded" });
   await page.locator("[data-copy-email]").click();
   await expect(page.locator("[data-copy-status]")).toHaveText(/copied/i);
   const value = await page.evaluate(() => navigator.clipboard.readText());
@@ -111,7 +117,7 @@ test("copy-email announces success", async ({ page, context, browserName }) => {
 });
 
 test("locale switch stores the preference for the root redirect", async ({ page }) => {
-  await page.goto("/en/");
+  await page.goto("/en/", { waitUntil: "domcontentloaded" });
   await page.locator("header [data-lang-switch]").click();
   await page.waitForURL("/ar/");
   const stored = await page.evaluate(() => localStorage.getItem("locale"));
@@ -120,7 +126,7 @@ test("locale switch stores the preference for the root redirect", async ({ page 
 
 test("case-study ToC tracks scrolling with a non-color indicator", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "the sticky ToC is desktop-only");
-  await page.goto("/en/work/nova-raid/");
+  await page.goto("/en/work/nova-raid/", { waitUntil: "domcontentloaded" });
   await page.locator("#cs-evidence").scrollIntoViewIfNeeded();
   await page.waitForTimeout(400);
   const current = page.locator(".desktop-toc a[aria-current='true']");

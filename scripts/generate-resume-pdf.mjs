@@ -55,12 +55,12 @@ li{margin-top:1.5px}
 
 <header>
   <h1>MOHAMED KHALID ELBAHLOOL</h1>
-  <p class="tagline">Computer Engineering Senior | Embedded, Digital Logic &amp; Software Systems</p>
+  <p class="tagline">Computer Engineering Senior | Embedded | FPGA | Networked &amp; Production Systems</p>
   <p class="contact">Miami, FL &nbsp;|&nbsp; <a href="mailto:tmtmd24@gmail.com">tmtmd24@gmail.com</a> &nbsp;|&nbsp; <a href="https://github.com/lla7wel">github.com/lla7wel</a> &nbsp;|&nbsp; <a href="https://www.linkedin.com/in/mohamed-elbahlool-1373002bb/">LinkedIn</a> &nbsp;|&nbsp; <a href="https://www.mohamedelbahlool.com">mohamedelbahlool.com</a></p>
 </header>
 
 <h2>Summary</h2>
-<p class="summary">Computer Engineering senior who builds complete systems from physical inputs and low-level firmware through FPGA logic, networks, backends, and production interfaces. Shipped bare-metal RP2040 software, exhaustively verified VHDL, and a self-hosted omnichannel retail platform operating in Arabic. Project evidence is documented at mohamedelbahlool.com.</p>
+<p class="summary">Computer Engineering senior who builds complete systems from physical signals and embedded firmware through FPGA logic, networks, backends, and production interfaces. Shipped bare-metal RP2040 software, exhaustively verified VHDL, and a self-hosted omnichannel retail platform operating in Arabic. Project evidence is documented at mohamedelbahlool.com.</p>
 
 <h2>Education</h2>
 <div class="edu"><p><b>Florida International University</b> - B.S. Computer Engineering | GPA 3.6 | Dean's List: Fall 2024, Spring 2025</p><span class="when">Expected Aug 2027</span></div>
@@ -69,8 +69,8 @@ li{margin-top:1.5px}
 <div class="skills">
   <p><b>Languages:</b> C, C++, Python, TypeScript, VHDL, SQL, HTML/CSS</p>
   <p><b>Embedded:</b> RP2040/Pico SDK, PIO, DMA, SPI, I2S, UART, Arduino</p>
-  <p><b>Systems:</b> FastAPI, PostgreSQL, Docker Compose, Caddy, WebSocket, REST/webhooks</p>
-  <p><b>Web &amp; verification:</b> Next.js, React, Astro, Playwright, GHDL, Vivado, GitHub Actions</p>
+  <p><b>Networks &amp; systems:</b> TLS WebSocket, REST/webhooks, FastAPI, PostgreSQL, Docker Compose, Caddy</p>
+  <p><b>Software &amp; verification:</b> Next.js, React, Astro, Playwright, GHDL, Vivado, GitHub Actions</p>
 </div>
 
 <h2>Experience</h2>
@@ -107,7 +107,7 @@ li{margin-top:1.5px}
   <li>Designed, built, and deployed solo for an Istanbul construction-materials supplier with typed bilingual content, a selective Three.js scene with static fallback, and Playwright smoke tests in CI.</li>
 </ul></div>
 
-<p style="margin-top:5px;font-size:9.4px;color:var(--muted)"><b>Human languages:</b> Arabic (native), English, Turkish (professional working proficiency)</p>
+<p style="margin-top:5px;font-size:9.4px;color:var(--muted)"><b>Human languages:</b> Arabic (native), English (professional fluency), Turkish (professional working proficiency)</p>
 
 </body></html>`;
 

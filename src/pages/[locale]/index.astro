@@ -66,7 +66,10 @@ const jsonLd = {
           {t(locale, "hero.explore")}
           <Icon name="arrow" />
         </a>
-        <a class="btn" href={localePath(locale, "contact/")}>{t(locale, "hero.contact")}</a>
+        <a class="btn" href="/resume-mohamed-elbahlool.pdf" download>
+          {ar ? "السيرة الذاتية الإنجليزية (PDF)" : "Resume (English PDF)"}
+        </a>
+        <a class="text-cta" href={localePath(locale, "contact/")}>{t(locale, "hero.contact")}</a>
       </div>
     </div>
     <div class="hero-visual">
@@ -225,7 +228,15 @@ const jsonLd = {
   .ctas {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: var(--space-3);
+  }
+  .text-cta {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    padding-inline: var(--space-2);
+    font-weight: 500;
   }
 
   .proof-strip {

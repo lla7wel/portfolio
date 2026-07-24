@@ -17,7 +17,7 @@ npm install
 npm run dev       # dev server
 npm run build     # static build to dist/
 npm run preview   # serve dist/
-npm run verify    # claims + locales + astro check + build + Playwright
+npm run verify    # claims/locales/SVG/PDF + typecheck + build/links + Playwright
 ```
 
 ## Architecture
@@ -36,7 +36,7 @@ npm run verify    # claims + locales + astro check + build + Playwright
   procedural Three.js geometry rather than unverified product renders.
 - `src/assets/` — rasters processed by `astro:assets` (responsive AVIF/
   WebP). `public/images/` — stable-URL SVG diagrams only. `public/og/` —
-  generated social cards.
+  generated project cards plus the portfolio's conceptual system social card.
 - `src/data/projectVisuals.ts` — nonlocalized per-project visual config
   (codes, figure prefixes, hero media, layer coverage).
 

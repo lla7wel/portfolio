@@ -10,12 +10,16 @@
     "check": "astro check",
     "validate:claims": "node scripts/validate-claims.mjs",
     "validate:locales": "node scripts/validate-locales.mjs",
+    "validate:svg": "node scripts/validate-svg-assets.mjs",
+    "validate:links": "node scripts/validate-built-links.mjs",
+    "verify:resume": "node scripts/verify-resume-pdf.mjs",
+    "generate:resume": "node scripts/generate-resume-pdf.mjs",
     "generate:og": "node scripts/generate-og.mjs",
     "generate:icons": "node scripts/generate-icons.mjs",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --workers=1",
     "test:a11y": "playwright test tests/e2e/accessibility.spec.ts",
     "audit:perf": "lhci autorun",
-    "verify": "npm run validate:claims && npm run validate:locales && npm run check && npm run build && npm run test:e2e"
+    "verify": "npm run validate:claims && npm run validate:locales && npm run validate:svg && npm run verify:resume && npm run check && npm run build && npm run validate:links && npm run test:e2e"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",

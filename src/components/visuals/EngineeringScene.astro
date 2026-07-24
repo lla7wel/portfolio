@@ -109,6 +109,25 @@ const description = descriptions[scene];
     display: grid;
     gap: var(--space-4);
     margin: 0;
+    cursor: grab;
+  }
+  .engineering-scene[data-dragging="true"] {
+    cursor: grabbing;
+  }
+  .engineering-scene[data-scene="english-home-platform"] {
+    --scene-accent: #43ddd0;
+  }
+  .engineering-scene[data-scene="nova-raid"] {
+    --scene-accent: #63dcff;
+  }
+  .engineering-scene[data-scene="pico-voice-terminal"] {
+    --scene-accent: #69ff8d;
+  }
+  .engineering-scene[data-scene="fpga-digital-logic"] {
+    --scene-accent: #88a8ff;
+  }
+  .engineering-scene[data-scene="smart-home-controller"] {
+    --scene-accent: #ffbd57;
   }
   .scene-stage {
     position: relative;
@@ -117,13 +136,26 @@ const description = descriptions[scene];
     border: 1px solid color-mix(in oklab, var(--scene-accent) 28%, var(--color-rule));
     border-radius: var(--radius-media);
     background:
-      linear-gradient(135deg, transparent 0 48%, color-mix(in oklab, var(--scene-accent) 8%, transparent) 49% 51%, transparent 52%),
-      radial-gradient(circle at 50% 48%, color-mix(in oklab, var(--scene-accent) 17%, transparent), transparent 42%),
-      linear-gradient(155deg, #07100f, #0c1215 58%, #050809);
+      linear-gradient(135deg, transparent 0 48%, color-mix(in oklab, var(--scene-accent) 7%, transparent) 49% 51%, transparent 52%),
+      radial-gradient(circle at 52% 44%, color-mix(in oklab, var(--scene-accent) 21%, transparent), transparent 44%),
+      linear-gradient(155deg, #071111, #0b1418 56%, #040708);
     box-shadow:
       0 28px 70px rgb(0 0 0 / 0.26),
       inset 0 1px rgb(255 255 255 / 0.08);
     isolation: isolate;
+  }
+  .scene-stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.22;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.07) 1px, transparent 1px);
+    background-size: 3.75rem 3.75rem;
+    mask-image: linear-gradient(to bottom, transparent 4%, black 24%, black 76%, transparent 98%);
   }
   .compact .scene-stage {
     min-block-size: clamp(18rem, 38vw, 29rem);
@@ -188,8 +220,8 @@ const description = descriptions[scene];
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgb(0 0 0 / 0.34), transparent 20% 68%, rgb(0 0 0 / 0.48)),
-      radial-gradient(circle, transparent 45%, rgb(0 0 0 / 0.44));
+      linear-gradient(180deg, rgb(0 0 0 / 0.3), transparent 20% 68%, rgb(0 0 0 / 0.5)),
+      radial-gradient(circle at 52% 44%, transparent 48%, rgb(0 0 0 / 0.48));
     pointer-events: none;
   }
   .scene-code,
@@ -236,6 +268,7 @@ const description = descriptions[scene];
     border-radius: var(--radius-control);
     color: var(--color-ink-muted);
     font-size: var(--text-small);
+    cursor: pointer;
   }
   .scene-toggle:hover,
   .engineering-scene:focus-visible .scene-toggle {
