@@ -42,7 +42,7 @@ for (const route of routes) {
       }
     });
 
-    const res = await page.goto(route);
+    const res = await page.goto(route, { waitUntil: "domcontentloaded" });
     expect(res?.status()).toBe(200);
 
     // Exactly one h1, correct lang/dir.
@@ -60,6 +60,7 @@ for (const route of routes) {
 
     // OG basics.
     await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
+    await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", /.+/);
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
       "content",
       "summary_large_image",
@@ -81,33 +82,35 @@ for (const route of routes) {
 }
 
 test("root redirects to a locale home", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.waitForURL(/\/(en|ar)\/$/);
   await expect(page.locator("h1")).toHaveCount(1);
 });
 
 test("unknown route serves the 404 page", async ({ page }) => {
-  const res = await page.goto("/en/work/does-not-exist/");
+  const res = await page.goto("/en/work/does-not-exist/", { waitUntil: "domcontentloaded" });
   expect(res?.status()).toBe(404);
   await expect(page.locator("h1")).toContainText(/not found/i);
   await expect(page.locator('a[href="/en/"]').first()).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
+  await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
 });
 
 test("case studies expose prev/next and evidence in plain HTML", async ({ page }) => {
-  await page.goto("/en/work/nova-raid/");
+  await page.goto("/en/work/nova-raid/", { waitUntil: "domcontentloaded" });
   await expect(page.locator("#cs-evidence figure").first()).toBeAttached();
   await expect(page.locator(".cs-nav a").first()).toBeVisible();
 });
 
 test("work index keeps all project links in the HTML", async ({ page }) => {
-  await page.goto("/en/work/");
+  await page.goto("/en/work/", { waitUntil: "domcontentloaded" });
   for (const slug of projectSlugs) {
     await expect(page.locator(`a[href="/en/work/${slug}/"]`).first()).toBeAttached();
   }
 });
 
 test("language switch preserves the route", async ({ page }) => {
-  await page.goto("/en/work/nova-raid/");
+  await page.goto("/en/work/nova-raid/", { waitUntil: "domcontentloaded" });
   const switchLink = page.locator('header a[hreflang="ar"]');
   await expect(switchLink).toHaveAttribute("href", "/ar/work/nova-raid/");
 });

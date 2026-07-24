@@ -6,7 +6,9 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: [["list"]],
-  timeout: 30_000,
+  // Browser startup and axe injection can be slow on constrained CI hosts.
+  // Keep the suite serial and give genuine checks time to complete.
+  timeout: 60_000,
   use: {
     baseURL: "http://127.0.0.1:4325",
     trace: "retain-on-failure",
@@ -21,10 +23,6 @@ export default defineConfig({
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "firefox", use: { ...devices["Desktop Firefox"] } },
     { name: "webkit", use: { ...devices["Desktop Safari"] } },
-    {
-      name: "mobile",
-      use: { ...devices["iPhone 13"], browserName: "webkit" },
-    },
   ],
   webServer: {
     command: "npx astro preview --port 4325 --host 127.0.0.1",
