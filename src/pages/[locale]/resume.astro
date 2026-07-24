@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Base from "../../layouts/Base.astro";
+import EngineeringScene from "../../components/visuals/EngineeringScene.astro";
 import { type Locale, type UiKey, t, localePath } from "../../lib/i18n";
 
 export function getStaticPaths() {
@@ -49,29 +50,38 @@ const jsonLd = {
   locale={locale}
   title={t(locale, "resume.title")}
   description={ar
-    ? "السيرة الذاتية التفاعلية لمحمد الباهلول — سجل موسَّع مرتبط بالأدلة خلف السيرة المختصرة."
-    : "Mohamed Elbahlool's interactive resume — the extended, evidence-linked record behind the one-page resume."}
+    ? "السيرة الذاتية لمحمد البهلول — مهندس حاسوب يبني أنظمة مدمجة ومنطقًا رقميًا ومنتجات برمجية متكاملة."
+    : "Mohamed Elbahlool's resume — a computer engineer building embedded systems, digital logic, and complete software products."}
   jsonLd={jsonLd}
   routeLabel="RESUME"
 >
   <div class="canvas resume">
     <header class="head">
-      <p class="anno" data-tone="signal">{ar ? "سيرة تفاعلية" : "INTERACTIVE RESUME"}</p>
+      <p class="anno" data-tone="signal">{ar ? "ملف مهني موثّق" : "EVIDENCE-LINKED RESUME"}</p>
       <h1>{t(locale, "resume.title")}</h1>
       <p class="lead">
         {
           ar
-            ? "السجل الموسَّع خلف السيرة الذاتية المختصرة: كل لوحة قابلة للتوسيع، وكل نظام يقود إلى دراسة حالته وأدلته المنشورة."
-            : "The extended record behind the one-page resume: every panel expands, and every system links to its case study and published evidence."
+            ? "نظرة شاملة واحدة على خبرتي في هندسة الحاسوب، من العتاد والبرمجيات الثابتة والمنطق الرقمي إلى المنصات الإنتاجية. تقود كل تجربة ومشروع إلى أدلته المنشورة."
+            : "One complete view of my Computer Engineering work, from hardware, firmware, and digital logic to production platforms. Every experience and project leads to published evidence."
         }
       </p>
       <div class="actions">
         <a class="btn" data-variant="primary" href={pdfHref} download>
-          {t(locale, "resume.download")}
+          {ar ? "تنزيل السيرة الذاتية الإنجليزية (PDF)" : "Download resume (English PDF)"}
         </a>
         <a class="btn" href={localePath(locale, "contact/")}>{t(locale, "cta.contact")}</a>
       </div>
     </header>
+
+    <div class="resume-scene">
+      <EngineeringScene
+        locale={locale}
+        scene="cross-section"
+        title={ar ? "هندسة حاسوب عبر كامل النظام" : "Computer Engineering across the complete system"}
+        compact
+      />
+    </div>
 
     <div class="grid-2">
       <div class="prose">
@@ -96,7 +106,7 @@ const jsonLd = {
           <p class="anno">{ar ? "الملف" : "PROFILE"}</p>
           <ul role="list">
             <li>{ar ? "طالب سنة رابعة في هندسة الحاسوب · جامعة فلوريدا الدولية · ميامي" : "Computer Engineering senior · Florida International University · Miami"}</li>
-            <li>{t(locale, "hero.langs")}</li>
+            <li>{ar ? "العربية: اللغة الأم · الإنجليزية: طلاقة مهنية · التركية: كفاءة مهنية عملية" : "Arabic (native) · English (professional fluency) · Turkish (professional working)"}</li>
             <li>
               <a href="mailto:tmtmd24@gmail.com">tmtmd24@gmail.com</a> ·
               <a href="https://github.com/lla7wel" rel="me">GitHub</a> ·
@@ -110,14 +120,14 @@ const jsonLd = {
             {
               ar ? (
                 <>
-                  <li>بكالوريوس هندسة الحاسوب، جامعة فلوريدا الدولية — سنة رابعة (93 ساعة معتمدة)، تخرج متوقع أغسطس 2027</li>
-                  <li>معدل تراكمي +3.6 (تم التحقق في يوليو 2026) · قائمة العميد: خريف 2024 وربيع 2025</li>
+                  <li>بكالوريوس هندسة الحاسوب، جامعة فلوريدا الدولية — سنة رابعة، تخرج متوقع أغسطس 2027</li>
+                  <li>معدل تراكمي 3.6 · قائمة العميد: خريف 2024 وربيع 2025</li>
                   <li>مقررات: C و ++C للأنظمة المدمجة، برمجة الأنظمة المدمجة، تصميم المنطق، تحليل الدوائر</li>
                 </>
               ) : (
                 <>
-                  <li>B.S. Computer Engineering, Florida International University — senior (93 credits), expected August 2027</li>
-                  <li>GPA 3.6+ (verified July 2026) · Dean's List: Fall 2024, Spring 2025</li>
+                  <li>B.S. Computer Engineering, Florida International University — senior, expected August 2027</li>
+                  <li>GPA 3.6 · Dean's List: Fall 2024, Spring 2025</li>
                   <li>Coursework: C and C++ for Embedded Systems, Programming Embedded Systems, Logic Design, Circuit Analysis</li>
                 </>
               )
@@ -142,17 +152,15 @@ const jsonLd = {
             {
               ar ? (
                 <>
-                  <li>أدير العمليات الرقمية لعلامة تجزئة تخدم عملاء في ليبيا: مراسلات العملاء بالعربية والإنجليزية، وكتالوجات المنتجات، والنطاقات والبريد الرسمي — لصفحة فيسبوك يبلغ عدد متابعيها نحو 61,000 (عدد علني، يوليو 2026).</li>
-                  <li>صممت وبنيت وأشغّل منصة خدمة عملاء مستضافة ذاتيًا تجيب استفسارات المنتجات بالعربية الليبية — أسعار مطابقة للكتالوج عبر أكثر من 4,700 منتج، وتعرّف على المنتج من الصورة، وتحويل فوري لإنسان عندما يصبح القصد شرائيًا.</li>
-                  <li>نقلت المنصة من استضافة مجانية متوقفة إلى خادم خاص مستضاف ذاتيًا (Docker Compose و Caddy و Postgres مع نسخ احتياطي ليلي)، وأضفت آليات أمان يعود كل منها إلى حادثة إنتاجية حقيقية.</li>
-                  <li>بنيت خط الكتالوج: أداة جمع أنشأت الكتالوج الكامل (تجاوزت مجموعة الصور 11 غيغابايت أثناء البناء الموثق) ومحرك مطابقة منتجات ثلاثي اللغات.</li>
+                  <li>بنيت وأدير منصة عمليات مباشرة تربط Facebook Messenger وInstagram Direct وContent Studio بكتالوج يضم أكثر من 4,700 منتج، مع إجابات عربية وإنجليزية وتحويل بشري عند نية الشراء.</li>
+                  <li>صممت عاملًا دائمًا مدعومًا بـPostgreSQL وصندوق معاملات للإرسال الموثوق، مع مصادقة متعددة المسؤولين وسجلات تدقيق، وشغّلت النظام على خادم خاص عبر Docker Compose وCaddy ونسخ احتياطي ليلي.</li>
+                  <li>أنشأت خط بيانات يجمع كتالوجًا تجاريًا كاملًا ويطابق المنتجات بصريًا ونصيًا عبر العربية والإنجليزية والتركية، مع إبقاء السعر والهوية مرتبطين بمصدر الكتالوج.</li>
                 </>
               ) : (
                 <>
-                  <li>Run the digital operations of a retail brand serving customers in Libya: Arabic/English customer messaging, product catalogs, domain/DNS, and branded email — for a Facebook page with about 61,000 followers (public page count, July 2026).</li>
-                  <li>Designed, built, and operate a self-hosted customer-service platform that answers product inquiries in Libyan Arabic — catalog-true prices across more than 4,700 products, photo-based product recognition, and instant human handoff when intent turns commercial.</li>
-                  <li>Migrated the platform off a paused free-tier database host to a self-hosted VPS (Docker Compose, Caddy, Postgres, nightly backups) and added safety mechanisms that each trace to a real production incident.</li>
-                  <li>Built the catalog pipeline: a scraper that assembled the full catalog (an image set exceeding 11 GB during the documented build) and a trilingual product-matching engine.</li>
+                  <li>Built and operate a live operations platform connecting Facebook Messenger, Instagram Direct, and Content Studio to a 4,700+ product catalog, with Arabic/English responses and human handoff for purchase intent.</li>
+                  <li>Designed durable PostgreSQL-backed jobs and a transactional outbox for reliable delivery, plus multi-admin authentication and audit trails; deployed the system on a VPS with Docker Compose, Caddy, and nightly backups.</li>
+                  <li>Created the data pipeline that assembles a full retail catalog and matches products visually and textually across Arabic, English, and Turkish while keeping price and identity tied to catalog evidence.</li>
                 </>
               )
             }
@@ -254,13 +262,13 @@ const jsonLd = {
       <p class="muted">
         {
           ar
-            ? "النسخة الرسمية المختصرة من هذه الصفحة، بصيغة PDF جاهزة للتوظيف."
-            : "The official condensed version of this page, as a recruiter-ready PDF."
+            ? "نسخة إنجليزية موحّدة من صفحة واحدة، محسّنة لأنظمة التوظيف وجاهزة للمشاركة."
+            : "One universal English version, condensed to a recruiter-ready and ATS-friendly page."
         }
       </p>
       <div class="actions">
         <a class="btn" data-variant="primary" href={pdfHref} download>
-          {t(locale, "resume.download")}
+          {ar ? "تنزيل السيرة الذاتية الإنجليزية (PDF)" : "Download resume (English PDF)"}
         </a>
         <a class="btn" href={localePath(locale, "contact/")}>{t(locale, "cta.contact")}</a>
       </div>
@@ -294,6 +302,9 @@ const jsonLd = {
   .grid-2 {
     display: grid;
     gap: var(--space-6);
+    margin-block-start: var(--space-7);
+  }
+  .resume-scene {
     margin-block-start: var(--space-7);
   }
   @media (min-width: 64em) {

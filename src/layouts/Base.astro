@@ -80,7 +80,7 @@ const displayFont = locale === "ar" ? sansArabic600 : sansLatin600;
     <meta name="generator" content={Astro.generator} />
     {
       jsonLd && (
-        <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
       )
     }
     <script is:inline>
@@ -116,4 +116,3 @@ const displayFont = locale === "ar" ? sansArabic600 : sansLatin600;
     </script>
   </body>
 </html>
-

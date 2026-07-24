@@ -1,1 +1,99 @@
-<svg xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" viewBox="0 0 960 560"><defs><linearGradient id="accent" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#818cf8"/></linearGradient><marker id="arrow" markerHeight="7" markerWidth="7" orient="auto-start-reverse" refX="9" refY="5" viewBox="0 0 10 10"><path fill="#64748b" d="m0 0 10 5-10 5z"/></marker></defs><style>.box{fill:#0f172a;stroke:#334155;stroke-width:1.2;rx:12}.boxlight{fill:#1e293b;stroke:#475569;stroke-width:1}.t{fill:#e2e8f0;font-size:14px;font-weight:600}.s{fill:#94a3b8;font-size:11px}.lbl{fill:#64748b;font-size:10.5px}.edge,.edged{stroke:#64748b;stroke-width:1.4;fill:none;marker-end:url(#arrow)}.edged{stroke-dasharray:5 4}</style><path fill="#020617" d="M0 0h960v560H0z"/><text x="30" y="38" fill="#f8fafc" font-size="19" font-weight="700">English Home Libya — system architecture</text><text x="30" y="58" class="s">One owned VPS · external dependencies: Gemini API + Meta Graph only</text><rect width="170" height="64" x="30" y="110" class="box" rx="12"/><text x="48" y="138" class="t">Customer</text><text x="48" y="156" class="s">Facebook Messenger</text><rect width="170" height="64" x="30" y="210" class="box" rx="12"/><text x="48" y="238" class="t">Meta Graph API</text><text x="48" y="256" class="s">webhooks · send · publish</text><rect width="170" height="64" x="30" y="310" class="box" rx="12"/><text x="48" y="338" class="t">Gemini API</text><text x="48" y="356" class="s">text · vision · embeddings</text><rect width="170" height="64" x="30" y="410" class="box" rx="12"/><text x="48" y="438" class="t">Admin</text><text x="48" y="456" class="s">browser (AR/EN, RTL)</text><rect width="650" height="440" x="280" y="90" fill="none" stroke="url(#accent)" stroke-dasharray="7 5" stroke-width="1.6" rx="16"/><text x="300" y="116" fill="#22d3ee" font-size="12" font-weight="700" letter-spacing="1">VPS · DOCKER COMPOSE</text><rect width="180" height="96" x="310" y="140" class="box" rx="12"/><text x="328" y="168" class="t">Caddy</text><text x="328" y="186" class="s">auto-HTTPS (Let&apos;s Encrypt)</text><text x="328" y="202" class="s">app.domain → Next.js</text><text x="328" y="218" class="s">media.domain → /srv/eh-media</text><rect width="360" height="230" x="540" y="140" class="box" rx="12"/><text x="558" y="168" class="t">Next.js 16 (standalone)</text><text x="558" y="186" class="s">admin UI · API routes · jose session auth</text><rect width="156" height="72" x="558" y="200" class="boxlight" rx="9"/><text x="570" y="222" fill="#e2e8f0" font-size="12" font-weight="600">Messenger pipeline</text><text x="570" y="238" class="lbl">burst batching · supersede</text><text x="570" y="252" class="lbl">guard · catalog-grounded replies</text><rect width="156" height="72" x="726" y="200" class="boxlight" rx="9"/><text x="738" y="222" fill="#e2e8f0" font-size="12" font-weight="600">Image matcher</text><text x="738" y="238" class="lbl">dHash → learned corrections</text><text x="738" y="252" class="lbl">→ vision → vector re-rank</text><rect width="156" height="70" x="558" y="284" class="boxlight" rx="9"/><text x="570" y="306" fill="#e2e8f0" font-size="12" font-weight="600">Prompt compiler</text><text x="570" y="322" class="lbl">typed task · exact AI Control</text><text x="570" y="336" class="lbl">runtime JSON · trace · schema</text><rect width="156" height="70" x="726" y="284" class="boxlight" rx="9"/><text x="738" y="306" fill="#e2e8f0" font-size="12" font-weight="600">Campaign engine</text><text x="738" y="322" class="lbl">current master direction · fallback</text><text x="738" y="336" class="lbl">fidelity/text review · approval</text><rect width="220" height="100" x="540" y="400" class="box" rx="12"/><text x="558" y="428" class="t">PostgreSQL 16</text><text x="558" y="446" class="s">Kysely (typed SQL) · AI Control</text><text x="558" y="462" class="s">catalog · conversations · memory</text><text x="558" y="478" class="s">JSONB embeddings · dHash prints</text><rect width="110" height="100" x="790" y="400" class="box" rx="12"/><text x="806" y="428" class="t">Media</text><text x="806" y="446" class="s">/srv/eh-media</text><text x="806" y="462" class="s">product +</text><text x="806" y="478" class="s">campaign imgs</text><rect width="180" height="100" x="310" y="400" class="box" rx="12"/><text x="328" y="428" class="t">Host cron</text><text x="328" y="446" class="s">*/5 scheduler tick</text><text x="328" y="462" class="s">nightly pg_dump</text><text x="328" y="478" class="s">→ offsite backup</text><path d="M200 142c50 0 40 58 0 84" class="edge"/><text x="212" y="150" class="lbl">DM</text><path d="m200 242 110-42" class="edge"/><text x="228" y="212" class="lbl">webhook POST</text><path d="M490 188h50" class="edge"/><path d="M540 250c-60 10-240 10-335 0" class="edged"/><text x="330" y="248" class="lbl">send replies · publish posts</text><path d="M636 284c-36 46-236 61-431 61" class="edged"/><text x="330" y="330" class="lbl">text · vision · image generation · embeddings</text><path d="M200 442c40 0 60-232 110-242" class="edge"/><text x="212" y="425" class="lbl">HTTPS</text><path d="M660 370v30" class="edge"/><path d="m840 370 5 30" class="edge"/><path d="M400 400c30-20 100-25 140-40" class="edge"/><text x="410" y="385" class="lbl">tick</text><path d="M490 210c30 50 210 170 300 210" class="edged"/></svg>
+<svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#818cf8"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <style>
+    .box{fill:#0f172a;stroke:#334155;stroke-width:1.2}
+    .hot{fill:#111c31;stroke:url(#accent);stroke-width:1.6}
+    .t{fill:#e2e8f0;font-size:14px;font-weight:600}
+    .s{fill:#94a3b8;font-size:11px}
+    .lbl{fill:#64748b;font-size:10.5px}
+    .edge{stroke:#64748b;stroke-width:1.4;fill:none;marker-end:url(#arrow)}
+    .return{stroke:#22d3ee;stroke-width:1.4;fill:none;marker-end:url(#arrow);stroke-dasharray:5 4}
+  </style>
+  <rect width="960" height="600" fill="#020617"/>
+  <text x="30" y="38" fill="#f8fafc" font-size="19" font-weight="700">English Home Libya — live operations architecture</text>
+  <text x="30" y="58" class="s">One owned VPS · durable PostgreSQL jobs · transactional delivery · Meta + Gemini integrations</text>
+
+  <rect x="30" y="105" width="190" height="104" rx="12" class="hot"/>
+  <text x="48" y="132" class="t">Meta Graph API</text>
+  <text x="48" y="153" class="s">Messenger · Instagram Direct</text>
+  <text x="48" y="171" class="s">Facebook / Instagram publishing</text>
+  <text x="48" y="189" class="s">comments · Stories · webhooks</text>
+
+  <rect x="30" y="255" width="190" height="76" rx="12" class="box"/>
+  <text x="48" y="282" class="t">Gemini API</text>
+  <text x="48" y="303" class="s">text · vision · embeddings</text>
+
+  <rect x="30" y="377" width="190" height="76" rx="12" class="box"/>
+  <text x="48" y="404" class="t">Admin team</text>
+  <text x="48" y="425" class="s">Arabic / English browser UI</text>
+
+  <rect x="270" y="88" width="660" height="470" rx="16" fill="none" stroke="url(#accent)" stroke-width="1.6" stroke-dasharray="7 5"/>
+  <text x="290" y="115" fill="#22d3ee" font-size="12" font-weight="700" letter-spacing="1">VPS · DOCKER COMPOSE</text>
+
+  <rect x="300" y="145" width="150" height="92" rx="12" class="box"/>
+  <text x="318" y="172" class="t">Caddy</text>
+  <text x="318" y="193" class="s">HTTPS · reverse proxy</text>
+  <text x="318" y="211" class="s">app + public media</text>
+
+  <rect x="495" y="145" width="190" height="120" rx="12" class="hot"/>
+  <text x="513" y="172" class="t">Next.js application</text>
+  <text x="513" y="193" class="s">admin UI · API · verified webhooks</text>
+  <text x="513" y="211" class="s">multi-admin auth · audit trail</text>
+  <text x="513" y="229" class="s">Content Studio · catalog controls</text>
+  <text x="513" y="247" class="s">readiness + operational views</text>
+
+  <rect x="735" y="145" width="165" height="210" rx="12" class="hot"/>
+  <text x="753" y="172" class="t">Durable worker</text>
+  <text x="753" y="196" class="s">customer-turn jobs</text>
+  <text x="753" y="216" class="s">catalog / photo resolution</text>
+  <text x="753" y="236" class="s">transactional outbox</text>
+  <text x="753" y="256" class="s">content publishing</text>
+  <text x="753" y="276" class="s">comment automation</text>
+  <text x="753" y="296" class="s">promotion expiry</text>
+  <text x="753" y="316" class="s">analytics + readiness</text>
+  <text x="753" y="336" class="s">lease / retry / uncertainty</text>
+
+  <rect x="495" y="330" width="220" height="148" rx="12" class="hot"/>
+  <text x="513" y="357" class="t">PostgreSQL 16</text>
+  <text x="513" y="379" class="s">catalog · conversations · content</text>
+  <text x="513" y="399" class="s">jobs · outbox · publications</text>
+  <text x="513" y="419" class="s">sessions · audit · readiness</text>
+  <text x="513" y="439" class="s">typed SQL · idempotent migrations</text>
+  <text x="513" y="459" class="s">FOR UPDATE SKIP LOCKED leases</text>
+
+  <rect x="760" y="405" width="140" height="82" rx="12" class="box"/>
+  <text x="778" y="432" class="t">Media volume</text>
+  <text x="778" y="453" class="s">catalog + content</text>
+  <text x="778" y="471" class="s">served through Caddy</text>
+
+  <rect x="300" y="368" width="150" height="110" rx="12" class="box"/>
+  <text x="318" y="395" class="t">Recovery</text>
+  <text x="318" y="416" class="s">nightly pg_dump</text>
+  <text x="318" y="434" class="s">offsite backup</text>
+  <text x="318" y="452" class="s">health + readiness</text>
+
+  <path class="edge" d="M220 157 L300 180"/>
+  <text x="232" y="151" class="lbl">signed webhook</text>
+  <path class="return" d="M735 205 C620 110,350 105,220 145"/>
+  <text x="390" y="104" class="lbl">reply · publish · comment</text>
+  <path class="edge" d="M450 190 L495 190"/>
+  <path class="edge" d="M590 265 L590 330"/>
+  <text x="598" y="300" class="lbl">persist first</text>
+  <path class="edge" d="M715 365 L735 330"/>
+  <text x="688" y="337" class="lbl">claim</text>
+  <path class="return" d="M735 344 C730 390,722 430,715 450"/>
+  <path class="return" d="M735 245 C650 270,300 295,220 293"/>
+  <text x="408" y="283" class="lbl">bounded AI calls</text>
+  <path class="edge" d="M220 415 L300 210"/>
+  <text x="232" y="397" class="lbl">HTTPS</text>
+  <path class="edge" d="M450 423 L495 423"/>
+  <path class="edge" d="M817 355 L830 405"/>
+</svg>

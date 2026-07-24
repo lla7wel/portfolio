@@ -35,8 +35,8 @@ const ar = locale === "ar";
           <dd>
             {
               ar
-                ? "أسعار تُقرأ من الكتالوج الحي فقط — ولا يُخمَّن منتج أبدًا: المجموعة الفارغة تعني «لا يوجد»، لا أقرب تخمين."
-                : "Prices are read only from the live catalog and a product is never guessed: an empty candidate pool returns none, not the least-bad match."
+                ? "تدفق واحد لـMessenger وInstagram وContent Studio، مع وظائف دائمة وصندوق معاملات؛ ويبقى السعر وهوية المنتج مرتبطين بالكتالوج."
+                : "One flow for Messenger, Instagram, and Content Studio, backed by durable jobs and a transactional outbox; product identity and price stay tied to the catalog."
             }
           </dd>
         </div>
@@ -62,13 +62,13 @@ const ar = locale === "ar";
         </p>
       </div>
       <p class="pipeline mono" aria-hidden="true">
-        webhook → batch → catalog → match → sanitize → deliver → handoff
+        Meta → persist → resolve → compose → outbox → publish / handoff
       </p>
       <p class="visually-hidden">
         {
           ar
-            ? "تسلسل المعالجة: استقبال الرسالة، تجميع الدفعات، البحث في الكتالوج، مطابقة المنتج، تعقيم الرد، تسليم موثوق، ثم تحويل بشري عند الحاجة."
-            : "Processing sequence: webhook receipt, burst batching, catalog lookup, product matching, output sanitizing, confirmed delivery, then human handoff when needed."
+            ? "تسلسل المعالجة: استقبال من قنوات Meta، حفظ دائم، حل المنتج من الكتالوج، إنشاء الرد، إدخاله في صندوق المعاملات، ثم النشر أو التحويل البشري."
+            : "Processing sequence: intake from Meta channels, durable persistence, catalog resolution, response composition, transactional outbox, then publishing or human handoff."
         }
       </p>
     </div>

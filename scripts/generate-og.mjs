@@ -24,8 +24,8 @@ const cards = [
   {
     file: "english-home-platform.png",
     code: "SYS-01 · IN PRODUCTION",
-    title: "Retail customer-service platform",
-    sub: "Self-hosted Facebook customer service for English Home Libya in Arabic — catalog-true prices, photo product recognition, human handoff.",
+    title: "Retail operations platform",
+    sub: "Live Messenger, Instagram, and Content Studio operations — durable jobs, catalog-grounded product answers, reliable publishing, and human handoff.",
   },
   {
     file: "nova-raid.png",
