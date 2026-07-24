@@ -55,16 +55,13 @@ test("headings are hierarchical on the home page", async ({ page }) => {
   }
 });
 
-test("reduced motion removes the hero signal traversal", async ({ page }) => {
+test("reduced motion pauses the 3D engineering view", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/en/");
-  // The play/pause control hides itself and the path renders complete.
-  await expect(page.locator("[data-signal-toggle]")).toBeHidden();
-  const offset = await page
-    .locator("[data-signal-path]")
-    .evaluate((el) => (el as SVGPathElement).style.strokeDashoffset);
-  // Engines serialize the zero offset differently ("0", "0px", or unset).
-  expect(["0", "0px", ""]).toContain(offset);
+  const scene = page.locator("[data-engineering-scene]").first();
+  await scene.scrollIntoViewIfNeeded();
+  await expect(scene).toHaveAttribute("data-ready", /true|fallback/);
+  await expect(scene.locator("[data-scene-toggle]")).toHaveAttribute("aria-pressed", "false");
 });
 
 test("interactive diagrams keep a static no-JS fallback", async ({ browser }) => {

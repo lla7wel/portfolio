@@ -1,0 +1,264 @@
+---
+import type { Locale } from "../../lib/i18n";
+
+type SceneKind =
+  | "cross-section"
+  | "english-home-platform"
+  | "nova-raid"
+  | "pico-voice-terminal"
+  | "fpga-digital-logic"
+  | "smart-home-controller";
+
+interface Props {
+  locale: Locale;
+  scene: SceneKind;
+  title?: string;
+  compact?: boolean;
+}
+
+const { locale, scene, title, compact = false } = Astro.props;
+const ar = locale === "ar";
+
+const descriptions: Record<SceneKind, { en: string; ar: string; code: string }> = {
+  "cross-section": {
+    code: "CE-SYSTEM",
+    en: "A cinematic cross-section from physical input and firmware through logic, networks, services, and human-facing interfaces.",
+    ar: "مقطع بصري من المدخل الفيزيائي والبرمجيات الثابتة، مرورًا بالمنطق والشبكات والخدمات، وصولًا إلى الواجهات البشرية.",
+  },
+  "english-home-platform": {
+    code: "OPS-FLOW",
+    en: "Conceptual 3D operations flow: social channels, durable intake, catalog resolution, transactional delivery, and human handoff.",
+    ar: "تدفق عمليات ثلاثي الأبعاد: القنوات الاجتماعية، والاستقبال الدائم، وحل الكتالوج، والتسليم المعاملاتي، والتحويل البشري.",
+  },
+  "nova-raid": {
+    code: "RP2040-RENDER",
+    en: "Evidence-based visualization of the Pico W, display, framebuffer, and dual-core DMA render path.",
+    ar: "تصور مبني على الأدلة للوحة Pico W والشاشة والإطار ومسار العرض ثنائي النواة عبر DMA.",
+  },
+  "pico-voice-terminal": {
+    code: "VOICE-SIGNAL",
+    en: "Exploded visualization of microphone capture, PIO/DMA buffering, WebSocket transport, control plane, and display response.",
+    ar: "تصور تفكيكي لالتقاط الميكروفون وتخزين PIO/DMA ونقل WebSocket ومنصة التحكم واستجابة الشاشة.",
+  },
+  "fpga-digital-logic": {
+    code: "RTL-CARRY",
+    en: "Conceptual signal propagation through a four-stage ripple-carry chain and verified decoder outputs.",
+    ar: "انتشار تصوري للإشارة عبر سلسلة حمل متموج من أربع مراحل ومخرجات مفككات الشفرة المتحقق منها.",
+  },
+  "smart-home-controller": {
+    code: "SENSE-CONTROL",
+    en: "Evidence-based controller composition: sensors, Arduino state machine, LCD, PWM fan, and safety override.",
+    ar: "تركيب مبني على الأدلة: المستشعرات، وآلة حالات Arduino، وشاشة LCD، ومروحة PWM، وتجاوز الأمان.",
+  },
+};
+
+const description = descriptions[scene];
+---
+
+<figure
+  class:list={["engineering-scene", { compact }]}
+  data-engineering-scene
+  data-scene={scene}
+  tabindex="0"
+  aria-labelledby={`${scene}-scene-title`}
+  aria-describedby={`${scene}-scene-desc`}
+>
+  <div class="scene-stage">
+    <canvas aria-hidden="true"></canvas>
+    <div class="scene-fallback" aria-hidden="true">
+      <span class="fallback-orbit orbit-a"></span>
+      <span class="fallback-orbit orbit-b"></span>
+      <span class="fallback-core"></span>
+      <span class="fallback-node node-a"></span>
+      <span class="fallback-node node-b"></span>
+      <span class="fallback-node node-c"></span>
+    </div>
+    <div class="scene-vignette" aria-hidden="true"></div>
+    <p class="scene-code mono">{description.code}</p>
+    <p class="scene-state mono" data-scene-state>
+      {ar ? "تصور تفاعلي · اسحب للاستكشاف" : "Interactive visualization · drag to inspect"}
+    </p>
+  </div>
+  <figcaption>
+    <div>
+      <p class="anno" data-tone="signal">{ar ? "تصور هندسي ثلاثي الأبعاد" : "3D ENGINEERING VIEW"}</p>
+      <h2 id={`${scene}-scene-title`}>{title ?? (ar ? description.ar : description.en)}</h2>
+      {title && <p id={`${scene}-scene-desc`} class="muted">{ar ? description.ar : description.en}</p>}
+      {!title && <span id={`${scene}-scene-desc`} class="visually-hidden">{ar ? description.ar : description.en}</span>}
+    </div>
+    <button type="button" class="scene-toggle" data-scene-toggle aria-pressed="true">
+      <span data-label-playing>{ar ? "إيقاف الحركة" : "Pause motion"}</span>
+      <span data-label-paused>{ar ? "تشغيل الحركة" : "Play motion"}</span>
+    </button>
+  </figcaption>
+  <p class="visually-hidden">
+    {ar
+      ? "يمكن استخدام سهمي اليمين واليسار لتدوير المشهد. يوجد وصف نصي كامل، ولا تعتمد أي حقيقة على الرسم وحده."
+      : "Use the left and right arrow keys to rotate the scene. A complete text description is provided; no factual claim depends on the visualization alone."}
+  </p>
+</figure>
+
+<script>
+  import { initEngineeringScenes } from "../../scripts/engineering-scenes";
+  initEngineeringScenes();
+</script>
+
+<style>
+  .engineering-scene {
+    --scene-accent: var(--color-signal);
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+  }
+  .scene-stage {
+    position: relative;
+    min-block-size: clamp(21rem, 48vw, 36rem);
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, var(--scene-accent) 28%, var(--color-rule));
+    border-radius: var(--radius-media);
+    background:
+      linear-gradient(135deg, transparent 0 48%, color-mix(in oklab, var(--scene-accent) 8%, transparent) 49% 51%, transparent 52%),
+      radial-gradient(circle at 50% 48%, color-mix(in oklab, var(--scene-accent) 17%, transparent), transparent 42%),
+      linear-gradient(155deg, #07100f, #0c1215 58%, #050809);
+    box-shadow:
+      0 28px 70px rgb(0 0 0 / 0.26),
+      inset 0 1px rgb(255 255 255 / 0.08);
+    isolation: isolate;
+  }
+  .compact .scene-stage {
+    min-block-size: clamp(18rem, 38vw, 29rem);
+  }
+  canvas {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    opacity: 0;
+    transition: opacity 500ms ease;
+    touch-action: pan-y;
+  }
+  [data-ready="true"] canvas {
+    opacity: 1;
+  }
+  .scene-fallback {
+    position: absolute;
+    inset: 0;
+    transition: opacity 400ms ease;
+  }
+  [data-ready="true"] .scene-fallback {
+    opacity: 0;
+  }
+  .fallback-core,
+  .fallback-node,
+  .fallback-orbit {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    translate: -50% -50%;
+  }
+  .fallback-core {
+    inline-size: 8rem;
+    aspect-ratio: 1.55;
+    border: 1px solid color-mix(in oklab, var(--scene-accent) 70%, white);
+    background: color-mix(in oklab, var(--scene-accent) 18%, #081110);
+    box-shadow: 0 0 40px color-mix(in oklab, var(--scene-accent) 35%, transparent);
+    transform: rotateX(58deg) rotateZ(-24deg);
+  }
+  .fallback-orbit {
+    inline-size: 62%;
+    aspect-ratio: 2.3;
+    border: 1px solid color-mix(in oklab, var(--scene-accent) 35%, transparent);
+    border-radius: 50%;
+    transform: rotate(-16deg);
+  }
+  .orbit-b {
+    inline-size: 42%;
+    transform: rotate(28deg);
+  }
+  .fallback-node {
+    inline-size: 0.7rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--scene-accent);
+    box-shadow: 0 0 18px var(--scene-accent);
+  }
+  .node-a { translate: -11rem -5rem; }
+  .node-b { translate: 10rem 3rem; }
+  .node-c { translate: 3rem -8rem; }
+  .scene-vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgb(0 0 0 / 0.34), transparent 20% 68%, rgb(0 0 0 / 0.48)),
+      radial-gradient(circle, transparent 45%, rgb(0 0 0 / 0.44));
+    pointer-events: none;
+  }
+  .scene-code,
+  .scene-state {
+    position: absolute;
+    z-index: 2;
+    margin: 0;
+    color: rgb(226 255 246 / 0.76);
+    font-size: var(--text-annotation);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .scene-code {
+    inset-block-start: var(--space-4);
+    inset-inline-start: var(--space-4);
+  }
+  .scene-state {
+    inset-block-end: var(--space-4);
+    inset-inline-end: var(--space-4);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  figcaption {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+  figcaption h2 {
+    max-inline-size: 35ch;
+    font-size: var(--text-body-lg);
+    margin-block-start: var(--space-1);
+  }
+  figcaption .muted {
+    max-inline-size: 66ch;
+    margin-block-start: var(--space-2);
+    font-size: var(--text-small);
+  }
+  .scene-toggle {
+    flex: none;
+    min-block-size: 44px;
+    padding-inline: var(--space-4);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-control);
+    color: var(--color-ink-muted);
+    font-size: var(--text-small);
+  }
+  .scene-toggle:hover,
+  .engineering-scene:focus-visible .scene-toggle {
+    border-color: var(--scene-accent);
+    color: var(--color-ink);
+  }
+  .scene-toggle[aria-pressed="true"] [data-label-paused],
+  .scene-toggle[aria-pressed="false"] [data-label-playing] {
+    display: none;
+  }
+  @media (max-width: 40em) {
+    .scene-stage {
+      min-block-size: 20rem;
+    }
+    figcaption {
+      align-items: start;
+      flex-direction: column;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    canvas,
+    .scene-fallback {
+      transition: none;
+    }
+  }
+</style>

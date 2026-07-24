@@ -11,8 +11,8 @@
     "claim": "Cumulative GPA 3.65",
     "source": "FIU unofficial record, printed 2026-03-31",
     "status": "confirmed",
-    "safeWording": "GPA 3.6+",
-    "lastVerified": "2026-07-14",
+    "safeWording": "GPA 3.6",
+    "lastVerified": "2026-07-24",
     "expires": "2026-09-01"
   },
   {
@@ -79,6 +79,15 @@
     "lastVerified": "2026-07-14"
   },
   {
+    "id": "B8",
+    "claim": "Live omnichannel operations platform: Facebook Messenger, Instagram Direct, Content Studio, durable PostgreSQL-backed jobs, transactional outbox, multi-admin authentication, and audit trail",
+    "source": "Customer-Service-Agent main branch (commit 6ce9c180) plus owner confirmation 2026-07-24 that the expansion is running live",
+    "status": "confirmed",
+    "safeWording": "Describe concrete live capabilities; do not publish unsupported traffic, reach, uptime, or conversion figures",
+    "lastVerified": "2026-07-24",
+    "expires": "2027-01-24"
+  },
+  {
     "id": "C1",
     "claim": "NOVA RAID validated on real hardware; display-inversion defect found on first hardware run and fixed in v1.0.1 (missing INVON init)",
     "source": "nova-raid v1.0.1 release note, fix commit, 5 owner hardware photos",
@@ -140,10 +149,10 @@
   },
   {
     "id": "H1",
-    "claim": "Trilingual AR/EN/TR; Learning Assistant II, FIU Mastery Math Lab (Aug 2024-present, ~20 h/wk, Algebra/Precalc/Trig); Digital Systems & Automation Specialist, English Home Libya (2023-present)",
-    "source": "Owner-confirmed 2026-07-14",
+    "claim": "Arabic native, English professional fluency, Turkish professional working proficiency; Learning Assistant II, FIU Mastery Math Lab (Aug 2024-present, ~20 h/wk, Algebra/Precalc/Trig); Digital Systems & Automation Specialist, English Home Libya (2023-present)",
+    "source": "Owner-confirmed 2026-07-24",
     "status": "confirmed",
-    "lastVerified": "2026-07-14"
+    "lastVerified": "2026-07-24"
   },
   {
     "id": "H2",

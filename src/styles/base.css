@@ -11,10 +11,30 @@
     line-height: var(--leading-body);
     display: flex;
     flex-direction: column;
+    background:
+      radial-gradient(circle at 12% 18%, color-mix(in oklab, var(--color-signal) 5%, transparent), transparent 28rem),
+      radial-gradient(circle at 88% 42%, color-mix(in oklab, var(--color-accent-2, var(--color-signal)) 4%, transparent), transparent 32rem),
+      var(--color-canvas);
   }
 
   main {
     flex: 1;
+    position: relative;
+    isolation: isolate;
+  }
+
+  main::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.18;
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--color-rule) 35%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, var(--color-rule) 35%, transparent) 1px, transparent 1px);
+    background-size: 4rem 4rem;
+    mask-image: linear-gradient(to bottom, transparent, black 18%, black 78%, transparent);
   }
 
   h1,

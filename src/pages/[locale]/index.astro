@@ -1,6 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
-import SystemCrossSection from "../../components/home/SystemCrossSection.astro";
+import EngineeringScene from "../../components/visuals/EngineeringScene.astro";
 import FlagshipEnglishHome from "../../components/home/FlagshipEnglishHome.astro";
 import FlagshipNova from "../../components/home/FlagshipNova.astro";
 import FlagshipPico from "../../components/home/FlagshipPico.astro";
@@ -70,7 +70,12 @@ const jsonLd = {
       </div>
     </div>
     <div class="hero-visual">
-      <SystemCrossSection locale={locale} />
+      <EngineeringScene
+        locale={locale}
+        scene="cross-section"
+        title={ar ? "من الإشارة الفيزيائية إلى النظام المستخدم فعليًا" : "From physical signal to a system people use"}
+        compact
+      />
     </div>
 
     <ul class="proof-strip" role="list" aria-label={ar ? "أدلة موجزة" : "Proof at a glance"}>

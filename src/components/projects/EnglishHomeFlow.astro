@@ -16,18 +16,18 @@ const stages = [
   {
     id: "message",
     code: "MSG",
-    label: ar ? "رسالة العميل" : "Customer message",
+    label: ar ? "قناة Meta" : "Meta channel",
     detail: ar
-      ? "يرسل العميل سؤالًا على صفحة فيسبوك — غالبًا «بكم هذا؟» مع صورة. تصل الرسالة عبر Meta webhook."
-      : "A customer messages the Facebook page — usually “how much is this?” with a photo. It arrives over a Meta webhook.",
+      ? "يرسل العميل سؤالًا عبر Messenger أو Instagram Direct — غالبًا «بكم هذا؟» مع صورة. تصل الرسالة عبر Meta webhook."
+      : "A customer messages through Messenger or Instagram Direct — usually “how much is this?” with a photo. It arrives over a Meta webhook.",
   },
   {
     id: "batch",
-    code: "BAT",
-    label: ar ? "تجميع الدفعات" : "Burst batching",
+    code: "JOB",
+    label: ar ? "استقبال دائم" : "Durable intake",
     detail: ar
-      ? "يرسل العملاء خمس رسائل قصيرة لا رسالة واحدة طويلة؛ نافذة خمس ثوانٍ «الأحدث يفوز» تمنع خمسة ردود منفصلة."
-      : "Customers send five short messages, not one long one; a five-second newest-wins window prevents five separate replies.",
+      ? "تُحفظ الأحداث في PostgreSQL كوظائف قابلة للاستئناف قبل المعالجة؛ كما تمنع مفاتيح الإزالة تكرار معالجة webhook نفسه."
+      : "Events are persisted as resumable PostgreSQL-backed jobs before processing, while deduplication keys prevent the same webhook from being handled twice.",
   },
   {
     id: "catalog",
@@ -50,8 +50,8 @@ const stages = [
     code: "AI",
     label: ar ? "قرار النموذج" : "AI decision",
     detail: ar
-      ? "يقرر النموذج الرد اعتمادًا على أدوات الكتالوج فقط، مع إعادة فحص ai_enabled لحظة الإرسال — إن تدخل إنسان أثناء التوليد يُسقَط الرد."
-      : "The model composes a reply using catalog tools only, with a send-time ai_enabled re-check — if a human took over mid-generation, the AI reply is dropped.",
+      ? "يجمع النظام الرسائل المتتابعة ويقرر الرد اعتمادًا على أدوات الكتالوج فقط، مع إعادة فحص ai_enabled لحظة الإرسال — إن تدخل إنسان أثناء التوليد يُسقَط الرد."
+      : "The system batches message bursts and composes a reply using catalog tools only, with a send-time ai_enabled re-check — if a human took over mid-generation, the AI reply is dropped.",
   },
   {
     id: "sanitize",
@@ -63,11 +63,11 @@ const stages = [
   },
   {
     id: "deliver",
-    code: "DLV",
-    label: ar ? "حارس التسليم" : "Delivery guard",
+    code: "OUT",
+    label: ar ? "صندوق المعاملات" : "Transactional outbox",
     detail: ar
-      ? "لا تُوسم رسالة بأنها «سلّمت» إلا بعد تأكيد واجهة Meta؛ ولا يمكن لرد بطيء أن يطمس حالة محادثة أحدث."
-      : "A message is only marked delivered when the API confirms it, and a slow response can never overwrite a newer conversation state.",
+      ? "تُسجّل نية الإرسال داخل المعاملة نفسها ثم ينفذها عامل دائم؛ لا تُوسم رسالة بأنها «سلّمت» إلا بعد تأكيد واجهة Meta."
+      : "The send intent is recorded in the same database transaction and delivered by a durable worker; a message is only marked delivered when Meta confirms it.",
   },
   {
     id: "handoff",
@@ -85,7 +85,7 @@ const nodeX = (i: number) => 40 + i * ((W - 80) / (stages.length - 1));
 
 <StageExplainerShell
   locale={locale}
-  title={ar ? "مسار القرار — من رسالة العميل إلى التسليم البشري" : "The decision path — from customer message to human handoff"}
+  title={ar ? "مسار الطلب — من قناة Meta إلى التسليم البشري" : "The request path — from Meta channel to human handoff"}
   stages={stages}
   diagramText={ar
     ? "مخطط خطي بثماني عقد يمثل تسلسل المعالجة من استقبال الرسالة حتى التسليم البشري."

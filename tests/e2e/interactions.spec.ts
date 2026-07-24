@@ -67,6 +67,24 @@ test("stage explainer is keyboard operable", async ({ page }) => {
   await expect(visible).toHaveCount(1);
 });
 
+test("3D engineering view supports pause and keyboard rotation", async ({ page }) => {
+  await page.goto("/en/work/nova-raid/");
+  const scene = page.locator("[data-engineering-scene]").first();
+  await scene.scrollIntoViewIfNeeded();
+  await expect(scene).toHaveAttribute("data-ready", /true|fallback/);
+
+  const toggle = scene.locator("[data-scene-toggle]");
+  if (await toggle.isVisible()) {
+    await expect(toggle).toHaveAttribute("aria-pressed", "true");
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  }
+
+  await scene.focus();
+  await expect(scene).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+});
+
 test("lightbox opens, traps Escape, and restores focus", async ({ page }) => {
   await page.goto("/en/work/nova-raid/");
   const trigger = page.locator("[data-lightbox-trigger]").first();

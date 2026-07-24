@@ -1,8 +1,8 @@
 ---
 key: english-home-platform
 locale: en
-title: "Retail customer-service platform"
-outcome: "A self-hosted platform that runs Facebook customer service for English Home Libya in Libyan Arabic — catalog-true prices, photo-based product recognition, and human handoff."
+title: "Retail operations platform"
+outcome: "A self-hosted omnichannel platform running customer service and content operations for English Home Libya — catalog-true answers, photo recognition, reliable publishing, and human handoff."
 tier: flagship
 order: 1
 status: production
@@ -18,34 +18,39 @@ links:
     href: "https://github.com/lla7wel/trilingual-catalog-matcher"
   - label: "Visual matcher"
     href: "https://github.com/lla7wel/visual-product-matcher"
-claims: ["B1", "B3", "B5", "B7"]
+claims: ["B1", "B3", "B5", "B7", "B8"]
 summary:
-  problem: "A retail Facebook page with roughly 61,000 followers (public page count, July 2026) receives a constant stream of product questions in Libyan Arabic — answering means identifying one of more than 4,700 catalog products, often from a photo, without ever inventing a price."
-  contribution: "Designed, built, and operate the entire platform solo — the message pipeline, the matching engines, the bilingual admin console, and the self-hosted infrastructure it runs on."
-  result: "In production for English Home Libya: catalog-true answers, safety guards that each trace to a real incident, and instant human handoff the moment intent turns commercial."
+  problem: "A retail brand needs one reliable system for Arabic product questions, image-based identification, catalog pricing, social publishing, and human takeover across Facebook and Instagram."
+  contribution: "Designed, built, deployed, and operate the platform solo — message ingestion, matching engines, bilingual admin console, Content Studio, durable worker, and self-hosted infrastructure."
+  result: "Live for English Home Libya: catalog-true answers, exactly-once publishing controls, safety guards grounded in real incidents, and immediate human handoff when intent becomes commercial."
 translationStatus: reviewed
 ---
 
 ## The problem
 
 Built and operated for English Home Libya, a retail business serving
-customers in Libya. Its Facebook page — a public audience of roughly 61,000
-followers (public page count, July 2026) — receives a constant stream of
-product questions in Libyan Arabic, most of them "how much is this?" with a
-photo attached. Answering them means knowing exactly which of more than
-4,700 catalog products (as of July 2026) is in the picture, and never
-inventing a price. As the business's Digital Systems & Automation
-Specialist, I had spent two years handling those messages myself, which is
-where the requirements came from.
+customers in Libya. Product questions arrive in Libyan Arabic across
+Facebook Messenger and Instagram Direct, often as a photo with "how much is
+this?" Answering safely means identifying one item from more than 4,700
+catalog products (as of July 2026), publishing content without duplicate
+sends, and never inventing a price or operational state. My experience
+running the brand's digital systems supplied the requirements.
 
 ## The system
 
-Customers message the page; the platform batches bursts of messages, works
-out what's being asked, identifies the product (by code, by text in three
-languages, or from a photo), answers with prices read only from the live
-catalog, and hands the conversation to a human the moment intent moves to
-orders, refunds, or complaints. A bilingual, RTL-first admin console covers
-inbox, analytics, campaigns, image review, and runtime AI controls.
+Customers message either channel; the platform persists the signed webhook,
+batches message bursts, identifies the product by code, trilingual text, or
+photo, answers with prices read only from the live catalog, and hands the
+conversation to a human when intent moves to orders, refunds, or complaints.
+A bilingual, RTL-first operations console covers inbox, analytics, image
+review, runtime controls, and a Content Studio that prepares and publishes
+Facebook and Instagram posts and stories.
+
+The webhook returns only after the event is committed. A separate worker
+claims PostgreSQL-backed jobs and a transactional outbox, making customer
+replies and social publications resumable without silently duplicating
+provider sends. Multi-admin sessions, readiness checks, and an audit trail
+keep the operational state explicit.
 
 The pipeline is fed by two subsystems published as standalone repositories:
 a resumable catalog scraper (real Chrome over CDP) that assembled an image
@@ -71,22 +76,21 @@ Each of these guards exists because something actually went wrong once:
 
 The platform originally leaned on a hosted free-tier database — until the
 provider paused the project and took the system down with it. I migrated
-everything to a single self-managed VPS: Postgres 16, the Next.js app, and
-Caddy under Docker Compose, with nightly `pg_dump` backups and a written
-deployment runbook. The repository preserves that migration as fourteen
-ordered SQL migrations.
+everything to a single self-managed VPS: Postgres 16, the Next.js app,
+worker, and Caddy under Docker Compose, with nightly backups and a written
+deployment runbook. The repository preserves that work as an ordered,
+forward-only migration chain with documented backup and restore procedures.
 
 ## Verification and limits
 
-Pure-logic behavior (sanitizer, policy, hashing) is covered by assertion
-scripts; the extracted visual matcher runs its six-test suite in CI. What I
-*don't* claim: uptime numbers or traffic statistics — the repository contains
-no benchmarks, and this page doesn't invent any. Operational metrics will be
-published when they can be sourced.
+Unit, integration, and browser tests cover the migration chain, job queue,
+webhook durability, deduplication, delivery states, catalog rules,
+authentication, and channel readiness. What I *don't* claim: uptime, traffic,
+conversion, or reach figures — the repository contains no defensible
+production benchmarks, and this page does not invent any.
 
 ## Credits
 
 Solo project, built with modern tooling. It runs on Gemini and Meta's Graph
 API; everything else — including the matching engines — is in the linked
 repositories.
-

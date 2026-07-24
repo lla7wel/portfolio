@@ -5,9 +5,10 @@ Mohamed Khalid Elbahlool. Live at <https://www.mohamedelbahlool.com>
 (apex 308-redirects to `www`).
 
 **Measured Systems** design language: an engineering field manual meets a
-premium hardware launch — semantic tokens, IBM Plex (Sans / Sans Arabic /
+cinematic hardware launch — semantic tokens, IBM Plex (Sans / Sans Arabic /
 Mono, self-hosted), figure numbering and artifact labels, project-specific
-accents, and interactive system explainers with static no-JS fallbacks.
+accents, real-time Three.js engineering compositions, and interactive system
+explainers with static no-JS/WebGL fallbacks.
 
 ## Develop
 
@@ -29,9 +30,10 @@ npm run verify    # claims + locales + astro check + build + Playwright
   `src/layouts/CaseStudy.astro` — the shared case-study framework
   (identity → hero evidence → recruiter summary → explainer → MDX prose →
   evidence gallery → related note → prev/next).
-- `src/components/global|content|home|projects/` — Astro components only;
+- `src/components/global|content|home|projects|visuals/` — Astro components;
   no UI framework, no `client:*` directives. Interactivity is small vanilla
-  TS modules in `src/scripts/` loaded per page.
+  TS modules in `src/scripts/` loaded per page. The visual layer uses
+  procedural Three.js geometry rather than unverified product renders.
 - `src/assets/` — rasters processed by `astro:assets` (responsive AVIF/
   WebP). `public/images/` — stable-URL SVG diagrams only. `public/og/` —
   generated social cards.
@@ -64,7 +66,7 @@ npm run generate:og        # rebuild public/og/*.png after design changes
 ```
 
 The claim validator fails the build when any referenced or text-bound claim
-(e.g. GPA 3.6+, expiring 2026-09-01) has lapsed — expiry is automatic.
+(e.g. GPA 3.6, expiring 2026-09-01) has lapsed — expiry is automatic.
 
 ## Deploy (Vercel)
 
@@ -75,7 +77,7 @@ may override the canonical origin for previews; production defaults to
 ## Maintenance checklist (each semester)
 
 - Update GPA/standing/coursework in `about.astro` + `claims.json` after
-  grades post; claims with `expires` dates fail `verify` when they lapse.
+  grades post; expiring claims fail `verify` when they lapse.
 - Re-verify the public follower counts and catalog count (expire
   2027-01) before renewing them on the English Home case study.
 - Arabic pages marked `translationStatus: draft` need native review.

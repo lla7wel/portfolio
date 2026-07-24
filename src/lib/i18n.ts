@@ -29,7 +29,7 @@ export const ui = {
     "hero.line":
       "Computer Engineer building complete systems — from low-level embedded systems and FPGA logic to self-hosted platforms used by real businesses.",
     "hero.proof":
-      "Most recently: a released Raspberry Pi Pico arcade game debugged on real hardware, a hand-wired voice terminal with custom PIO audio capture, and a self-hosted platform answering customers for English Home Libya in Arabic.",
+      "Most recently: a released Raspberry Pi Pico arcade game debugged on real hardware, a hand-wired voice terminal with custom PIO audio capture, and a live omnichannel operations platform for English Home Libya.",
     "hero.sub": "Computer Engineering senior · Florida International University · Miami",
     "hero.langs": "English · العربية · Türkçe",
     "hero.explore": "Explore the systems",
@@ -139,7 +139,7 @@ export const ui = {
     "hero.line":
       "مهندس حاسوب يبني أنظمة متكاملة — من الأنظمة المدمجة منخفضة المستوى ومنطق FPGA إلى منصات مستضافة ذاتيًا تستخدمها أعمال تجارية حقيقية.",
     "hero.proof":
-      "من أحدث الأعمال: لعبة أركيد منشورة على Raspberry Pi Pico عولج خللها على العتاد الحقيقي، وجهاز صوتي موصول يدويًا بالتقاط صوت مخصص عبر PIO، ومنصة مستضافة ذاتيًا تجيب عملاء English Home Libya بالعربية.",
+      "من أحدث الأعمال: لعبة أركيد منشورة على Raspberry Pi Pico عولج خللها على العتاد الحقيقي، وجهاز صوتي موصول يدويًا بالتقاط صوت مخصص عبر PIO، ومنصة عمليات شاملة مباشرة لـ English Home Libya.",
     "hero.sub": "طالب سنة رابعة في هندسة الحاسوب · جامعة فلوريدا الدولية · ميامي",
     "hero.langs": "العربية · English · Türkçe",
     "hero.explore": "استكشف الأنظمة",

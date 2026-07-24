@@ -9,11 +9,11 @@ import PicoSignalPath from "../../../components/projects/PicoSignalPath.astro";
 import FpgaCarryPath from "../../../components/projects/FpgaCarryPath.astro";
 import SmartHomeStateMachine from "../../../components/projects/SmartHomeStateMachine.astro";
 import MiramarPresentation from "../../../components/projects/MiramarPresentation.astro";
+import EngineeringScene from "../../../components/visuals/EngineeringScene.astro";
 import { type Locale } from "../../../lib/i18n";
 import { projectVisuals } from "../../../data/projectVisuals";
 
 // Evidence media (processed by astro:assets)
-import novaSplash from "../../../assets/nova-raid/hardware-splash.jpg";
 import novaGameplay from "../../../assets/nova-raid/hardware-gameplay.jpg";
 import novaDiagnostics from "../../../assets/nova-raid/hardware-diagnostics.jpg";
 import novaHallOfFame from "../../../assets/nova-raid/hardware-hall-of-fame.jpg";
@@ -21,7 +21,6 @@ import novaR01 from "../../../assets/nova-raid/01-splash.png";
 import novaR03 from "../../../assets/nova-raid/03-gameplay.png";
 import novaR09 from "../../../assets/nova-raid/09-hiscores.png";
 import novaR10 from "../../../assets/nova-raid/10-diagnostics.png";
-import picoHero from "../../../assets/pico/hero.jpg";
 import picoBoot from "../../../assets/pico/screen-boot.jpg";
 import picoListening from "../../../assets/pico/screen-listening.jpg";
 import picoReady from "../../../assets/pico/screen-ready.jpg";
@@ -30,7 +29,6 @@ import picoConsoleDevices from "../../../assets/pico/console-devices.png";
 import picoConsoleBehavior from "../../../assets/pico/console-behavior.png";
 import fpgaWaveCollapsed from "../../../assets/fpga/waveform-collapsed.png";
 import fpgaWaveExpanded from "../../../assets/fpga/waveform-expanded.png";
-import shFull from "../../../assets/smart-home/full-system.jpg";
 import shAngle from "../../../assets/smart-home/full-system-angle.jpg";
 import shBreadboard from "../../../assets/smart-home/breadboard-wiring.jpg";
 import shStartup from "../../../assets/smart-home/startup.jpg";
@@ -59,8 +57,8 @@ const vis = projectVisuals[key];
 const heroContent: Record<string, { alt: string; caption: string }> = {
   "english-home-platform": {
     alt: ar
-      ? "بنية النشر: Caddy أمام تطبيق Next.js وقاعدة Postgres، ونواة تكاملات تربط Meta webhooks و Gemini"
-      : "Deployment architecture: Caddy in front of the Next.js admin app and Postgres, with an integrations core connecting Meta webhooks and Gemini",
+      ? "البنية المباشرة: Caddy وتطبيق Next.js وعامل دائم وقاعدة PostgreSQL تربط Messenger وInstagram وContent Studio عبر Meta"
+      : "Live architecture: Caddy, a Next.js app, a durable worker, and PostgreSQL connecting Messenger, Instagram, and Content Studio through Meta",
     caption: ar
       ? "بنية النشر الفعلية من المستودع — خادم واحد مُدار ذاتيًا تحت Docker Compose (نطاقات توضيحية)."
       : "The production deployment architecture from the repository — one self-managed VPS under Docker Compose (placeholder domains).",
@@ -152,6 +150,14 @@ const F = vis?.figPrefix ?? "00";
 >
   {/* ---- Interactive explainer ---- */}
   <Fragment slot="explainer">
+    {key !== "miramar" && (
+      <EngineeringScene
+        locale={locale}
+        scene={key as "english-home-platform" | "nova-raid" | "pico-voice-terminal" | "fpga-digital-logic" | "smart-home-controller"}
+        title={ar ? "النظام كتركيب تفاعلي" : "The system as an interactive composition"}
+        compact
+      />
+    )}
     {key === "english-home-platform" && <EnglishHomeFlow locale={locale} />}
     {key === "nova-raid" && <NovaPipeline locale={locale} />}
     {key === "pico-voice-terminal" && <PicoSignalPath locale={locale} />}
@@ -174,11 +180,11 @@ const F = vis?.figPrefix ?? "00";
             width={960}
             height={620}
             alt={ar
-              ? "تدفق الرسائل: webhook، تجميع الدفعات، أدوات الكتالوج، المعقم، حارس التسليم، التسليم البشري"
-              : "Message flow: webhook, burst batching, catalog tools, sanitizer, delivery guard, human handoff"}
+              ? "تدفق طلب دائم: تحقق webhook، حفظ الحدث والوظيفة، عامل دائم، حل الكتالوج، حواجز الرد، صندوق المعاملات، تأكيد Meta، والتسليم البشري"
+              : "Durable request flow: webhook verification, event and job persistence, worker, catalog resolution, response guards, transactional outbox, Meta confirmation, and human handoff"}
             caption={ar
-              ? "تدفق رسالة العميل عبر وسائل الأمان — من المستودع."
-              : "The customer-message flow through the safety guards — from the repository."}
+              ? "تدفق طلب العميل عبر حدود المتانة والأمان — مطابق للبنية المباشرة الموثقة في المستودع."
+              : "The customer request across durability and safety boundaries — aligned with the live architecture documented in the repository."}
             code={`${F}.1`}
             kind="diagram"
             sourceHref="https://github.com/lla7wel/Customer-Service-Agent"
