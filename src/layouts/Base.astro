@@ -3,7 +3,9 @@ import "../styles/global.css";
 import sansLatin400 from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url";
 import sansLatin600 from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2?url";
 import sansArabic400 from "@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-400-normal.woff2?url";
+import sansArabic500 from "@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-500-normal.woff2?url";
 import sansArabic600 from "@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-600-normal.woff2?url";
+import monoLatin400 from "@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url";
 import {
   type Locale,
   t,
@@ -21,11 +23,24 @@ interface Props {
   jsonLd?: object | object[];
   /** Absolute-path OG image (1200×630); defaults to the site card. */
   ogImage?: string;
+  /** Concise text alternative for the social preview image. */
+  ogImageAlt?: string;
   /** Optional mono route label shown in the desktop header, e.g. "SYS-01". */
   routeLabel?: string;
+  /** Exclude utility/error pages from indexing and canonical language clusters. */
+  noIndex?: boolean;
 }
 
-const { locale, title, description, jsonLd, ogImage, routeLabel } = Astro.props;
+const {
+  locale,
+  title,
+  description,
+  jsonLd,
+  ogImage,
+  ogImageAlt,
+  routeLabel,
+  noIndex = false,
+} = Astro.props;
 const dir = dirFor(locale);
 const pageTitle = title ? `${title} — ${t(locale, "hero.name")}` : t(locale, "site.title");
 const pageDescription = description ?? t(locale, "site.description");
@@ -37,7 +52,12 @@ const altPath = pathname.startsWith("/404")
 const enUrl = new URL(locale === "en" ? pathname : altPath, Astro.site);
 const arUrl = new URL(locale === "ar" ? pathname : altPath, Astro.site);
 const canonical = new URL(pathname, Astro.site);
-const ogImageUrl = new URL(ogImage ?? "/og/default.png", Astro.site);
+const ogImageUrl = new URL(ogImage ?? "/og/portfolio-system.png", Astro.site);
+const socialImageAlt =
+  ogImageAlt ??
+  (locale === "ar"
+    ? `معاينة بصرية توضيحية لصفحة ${pageTitle}`
+    : `Conceptual visual preview for ${pageTitle}`);
 // Body face + the heading weight (measured: h1 at 600 drives mobile LCP).
 const bodyFont = locale === "ar" ? sansArabic400 : sansLatin400;
 const displayFont = locale === "ar" ? sansArabic600 : sansLatin600;
@@ -50,12 +70,15 @@ const displayFont = locale === "ar" ? sansArabic600 : sansLatin600;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
-    <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="en" href={enUrl} />
-    <link rel="alternate" hreflang="ar" href={arUrl} />
-    <link rel="alternate" hreflang="x-default" href={enUrl} />
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+    {!noIndex && <link rel="canonical" href={canonical} />}
+    {!noIndex && <link rel="alternate" hreflang="en" href={enUrl} />}
+    {!noIndex && <link rel="alternate" hreflang="ar" href={arUrl} />}
+    {!noIndex && <link rel="alternate" hreflang="x-default" href={enUrl} />}
     <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    {locale === "ar" && <link rel="preload" href={sansArabic500} as="font" type="font/woff2" crossorigin />}
+    <link rel="preload" href={monoLatin400} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -68,6 +91,7 @@ const displayFont = locale === "ar" ? sansArabic600 : sansLatin600;
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content={socialImageAlt} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content={locale === "ar" ? "ar" : "en_US"} />
@@ -77,6 +101,7 @@ const displayFont = locale === "ar" ? sansArabic600 : sansLatin600;
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={socialImageAlt} />
     <meta name="generator" content={Astro.generator} />
     {
       jsonLd && (
